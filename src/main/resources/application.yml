@@ -1,3 +1,0 @@
-spring:
-  profiles: # 이렇게 하면 커멘드창에 spring.profiles.active=dev 근데 이러면 dev도 읽으라고 알려주는거
-    active: dev
