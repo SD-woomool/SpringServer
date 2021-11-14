@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,15 @@ import java.util.Map;
 @Configuration
 @ConfigurationProperties(prefix = "oauth2")
 public class OauthConfig {
+
+    //private final DataSource dataSource;
+    //private final EntityManager em;
+
+    //public OauthConfig(DataSource dataSource, EntityManager em){
+    //    this.dataSource = dataSource;
+    //    this.em = em;
+    //}
+
 
     private Map<String, Provider> providers = new HashMap<>();
 

@@ -1,10 +1,17 @@
 package app.joycourse.www.prod.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.text.SimpleDateFormat;
 
+@Entity
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,14 +27,15 @@ public class User {
 
     private String createAt;
 
+    private String profileUrl;
 
-    public Long getId(){
-        return id;
-    }
 
-    public void setId(Long id){
+    public Long getId() {return id;}
+
+    public void setId(Long id) {
         this.id = id;
     }
+
     public String getNickname() {
         return nickname;
     }
@@ -69,5 +77,13 @@ public class User {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createAt = format.format(millis);
         this.createAt = createAt;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
     }
 }

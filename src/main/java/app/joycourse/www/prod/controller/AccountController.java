@@ -1,6 +1,8 @@
 package app.joycourse.www.prod.controller;
 
 import app.joycourse.www.prod.config.OauthConfig;
+import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,26 +18,29 @@ import java.util.*;
 public class AccountController {
     private AccountService service;
     private OauthConfig oauthConfig;
-    public AccountController(OauthConfig oauthConfig, AccountService service){
+    private JpaAccountRepository jpaAccountRepository;
+
+    public AccountController(OauthConfig oauthConfig, AccountService service, JpaAccountRepository jpaAccountRepository) {
         this.oauthConfig = oauthConfig;
         this.service = service;
+        this.jpaAccountRepository = jpaAccountRepository;
     }
 
     @GetMapping("/hello")
     @ResponseBody
-    public String hello2(){
+    public String hello2() {
         System.out.println(oauthConfig.getProviders().keySet());
         return "hello";
     }
 
     @GetMapping("/{provider}/login")
-    public String login(@PathVariable("provider") String provider){
+    public String login(@PathVariable("provider") String provider) {
 
         List<String> providerList = new ArrayList<>(oauthConfig.getProviders().keySet());
         RestTemplate rt = new RestTemplate();
 
         System.out.println(providerList);
-        if(!providerList.contains(provider)) {
+        if (!providerList.contains(provider)) {
             System.out.println("error");
         }
         OauthConfig.Provider providers = oauthConfig.getProviders().get(provider);
@@ -46,11 +51,11 @@ public class AccountController {
 
     @GetMapping("/{provider}/callback")
     @ResponseBody
-    public String callback(@RequestParam(value="code", required = false) String code, @PathVariable("provider") String provider){
+    public String callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider) {
         Map<String, String> response = service.getToken(code, "hello", provider);
         String accessToken = response.get("access_token");
         String expiresIn = response.get("expires_in");
-        if(accessToken == null || accessToken.isEmpty()){
+        if (accessToken == null || accessToken.isEmpty()) {
             String error = response.get("error");
             String errorDescription = response.get("error_description");
             return error + ": " + errorDescription;
@@ -61,6 +66,12 @@ public class AccountController {
         System.out.println(userInfo);
         String email = userInfo.split("\"email\":")[1].split("\"")[1];
         System.out.println(email);
+        Optional<User> user = jpaAccountRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return "yes";
+        }
+        System.out.println("new member");
+
 
         return "hello";
     }

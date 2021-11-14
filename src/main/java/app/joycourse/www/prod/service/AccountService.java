@@ -1,10 +1,12 @@
 package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.config.OauthConfig;
+import app.joycourse.www.prod.repository.JpaAccountRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -13,16 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Transactional
 public class AccountService {
     OauthConfig oauthconfig;
-
     RestTemplate restTemplate;
+    JpaAccountRepository jpaAccountRepository;
 
 
-    public AccountService(OauthConfig oauthConfig, RestTemplate restTemplate) {
+    public AccountService(OauthConfig oauthConfig, RestTemplate restTemplate, JpaAccountRepository jpaAccountRepository) {
         this.oauthconfig = oauthConfig;
         this.restTemplate = restTemplate;
-
+        this.jpaAccountRepository = jpaAccountRepository;
     }
 
     public Map<String, String> getToken(String code, String state, String provider) {
