@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class JpaAccountRepository {
+public class JpaAccountRepository implements AccountRepository{
     private final EntityManager em;
 
     public JpaAccountRepository(EntityManager em){
         this.em = em;
     }
 
+    @Override
     public Optional<User> findByEmail(String email){
         List<User> result = em.createQuery("select m from User m where m.email = :email", User.class).
                 setParameter("email", email).getResultList();

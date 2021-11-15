@@ -1,15 +1,21 @@
 package app.joycourse.www.prod.controller;
 
 import app.joycourse.www.prod.config.OauthConfig;
+import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.dto.UserInfo;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.AccountService;
+import app.joycourse.www.prod.service.JwtService;
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -17,13 +23,15 @@ import java.util.*;
 @RequestMapping("/accounts")
 public class AccountController {
     private AccountService service;
+    private JwtService jwtService;
     private OauthConfig oauthConfig;
     private JpaAccountRepository jpaAccountRepository;
 
-    public AccountController(OauthConfig oauthConfig, AccountService service, JpaAccountRepository jpaAccountRepository) {
+    public AccountController(OauthConfig oauthConfig, AccountService service, JpaAccountRepository jpaAccountRepository, JwtService jwtService) {
         this.oauthConfig = oauthConfig;
         this.service = service;
         this.jpaAccountRepository = jpaAccountRepository;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/hello")
@@ -51,29 +59,39 @@ public class AccountController {
 
     @GetMapping("/{provider}/callback")
     @ResponseBody
-    public String callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider) {
+    public UserInfo callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider, HttpServletResponse setCookieResponse) throws HttpException {
         Map<String, String> response = service.getToken(code, "hello", provider);
         String accessToken = response.get("access_token");
         String expiresIn = response.get("expires_in");
+        String profileImageUrl = null;
+        String nickname = null;
         if (accessToken == null || accessToken.isEmpty()) {
             String error = response.get("error");
             String errorDescription = response.get("error_description");
-            return error + ": " + errorDescription;
+            throw new HttpException("이메일 없어요");
         }
-        System.out.println(accessToken);
 
         String userInfo = service.getUserInfo(accessToken, provider);
-        System.out.println(userInfo);
         String email = userInfo.split("\"email\":")[1].split("\"")[1];
         System.out.println(email);
         Optional<User> user = jpaAccountRepository.findByEmail(email);
+        String jwtToken;
+        boolean login;
         if (user.isPresent()) {
-            return "yes";
+            jwtToken = jwtService.createToken(user.get().getId().toString(), Constants.getTtlMillis());
+            nickname = user.get().getNickname();
+            login = true;
+
+        } else {
+            jwtToken = jwtService.createToken(email, Constants.getTtlMillis());
+            login = false;
         }
-        System.out.println("new member");
+        Cookie jwtCookie = new Cookie(Constants.getCookieName(), jwtToken);
+        jwtCookie.setMaxAge(3000);
+        jwtCookie.setPath("/");
+        setCookieResponse.addCookie(jwtCookie);
 
-
-        return "hello";
+        return UserInfo.builder().login(login).email(email).profileImageUrl(profileImageUrl).nickname(nickname).build();
     }
 
 }
