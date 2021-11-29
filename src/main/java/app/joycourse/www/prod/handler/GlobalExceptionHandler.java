@@ -2,6 +2,7 @@ package app.joycourse.www.prod.handler;
 
 import app.joycourse.www.prod.dto.Response;
 import app.joycourse.www.prod.exception.CustomException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -16,6 +17,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public Response<Object> handleNotFoundException(NoHandlerFoundException e) {
         CustomException.CustomError error = CustomException.CustomError.PAGE_NOT_FOUND;
+        return new Response<>(error.getMessage(), error.getStatus());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public Response<Object> handleMissingParameters(MissingServletRequestParameterException e) {
+        CustomException.CustomError error = CustomException.CustomError.MISSING_PARAMETERS;
         return new Response<>(error.getMessage(), error.getStatus());
     }
 

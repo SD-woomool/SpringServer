@@ -14,7 +14,6 @@ import java.util.Optional;
 
 @SpringBootTest(properties = {"nickname=nickname", "email=email@email.com", "ageRange=0", "gender=0"})
 @Transactional
-@Slf4j
 public class JpaAccountRepositoryTests {
     @Autowired
     private AccountRepository repository;
@@ -33,22 +32,19 @@ public class JpaAccountRepositoryTests {
 
     @Test
     public void 유저_저장() {
-        String methodName = new Object() {
-        }.getClass().getEnclosingMethod().getName();
-        log.info("*********************start {}**************************", methodName);
+        // given
         User user = new User();
         user.setNickname(nickname);
         user.setEmail(email);
         user.setAgeRange(ageRange);
         user.setGender(gender);
         user.setCreateAt();
-
         repository.save(user);
-        log.info("Save User Success");
 
+        // when
         Optional<User> target = repository.findById(user.getId());
-        log.info("Find User by id, isPresent: {}", target.isPresent());
 
+        // then
         Assertions.assertThat(target.isPresent()).isEqualTo(true);
         if (target.isPresent()) {
             User targetUser = target.get();
@@ -57,24 +53,20 @@ public class JpaAccountRepositoryTests {
             Assertions.assertThat(targetUser.getAgeRange()).isEqualTo(ageRange);
             Assertions.assertThat(targetUser.getGender()).isEqualTo(gender);
         }
-        log.info("*********************end {}**************************", methodName);
     }
 
     @Test
     public void 중복유저_저장() {
-        String methodName = new Object() {
-        }.getClass().getEnclosingMethod().getName();
-        log.info("*********************start {}**************************", methodName);
+        // given
         User user = new User();
         user.setNickname(nickname);
         user.setEmail(email);
         user.setAgeRange(ageRange);
         user.setGender(gender);
         user.setCreateAt();
-
         repository.save(user);
-        log.info("Save User Success");
 
+        // when
         User duplicatedUser = new User();
         duplicatedUser.setNickname(nickname);
         duplicatedUser.setEmail(email);
@@ -82,11 +74,10 @@ public class JpaAccountRepositoryTests {
         duplicatedUser.setGender(gender);
         duplicatedUser.setCreateAt();
 
+        // then
         Assertions.assertThatThrownBy(() -> {
             repository.save(duplicatedUser);
         }).isInstanceOf(DataIntegrityViolationException.class);
-        log.info("Fail to save Duplicated User. email and nickname");
-        log.info("*********************end {}**************************", methodName);
     }
 
 }

@@ -27,7 +27,6 @@ public class AccountController {
     private AccountService service;
     private JwtService jwtService;
 
-
     @GetMapping("/{provider}/login")
     public void login(@PathVariable(value = "provider") String provider, HttpServletResponse response) throws IOException {
         String redirectUri = "/";
@@ -73,6 +72,8 @@ public class AccountController {
         Cookie cookie = new Cookie(Constants.JWT_COOKIE_NAME, jwtToken);
         cookie.setPath("/");
         cookie.setMaxAge(Constants.JWT_COOKIE_EXPIRED);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         response.addCookie(cookie);
 
         return new Response<>(new UserInfo(signed, email, nickname, profileImageUrl));
