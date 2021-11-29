@@ -11,7 +11,8 @@ public class CustomException extends RuntimeException {
         PROVIDER_WRONG(400, "PROVIDER IS NOT VALID"),
         PAGE_NOT_FOUND(404, "INVALID ROUTE OR METHOD"),
         SERVER_ERROR(500, "SERVER ERROR"),
-        BAD_REQUEST(400, "BAD REQUEST");
+        BAD_REQUEST(400, "BAD REQUEST"),
+        MISSING_PARAMETERS(400, "MISSING PARAMETERS");
 
         private int status;
         private String message;
