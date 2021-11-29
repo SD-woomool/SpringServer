@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(properties = {"provider=naver", "code=cPFGokPnRVbHfWgd4J"})
@@ -94,7 +93,6 @@ public class AccountControllerTests {
             // given - provider: naver, no parameter
             // when
             mockMvc.perform(get("/accounts/" + provider + "/callback"))
-                    .andDo(print())
                     // then
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json"))
