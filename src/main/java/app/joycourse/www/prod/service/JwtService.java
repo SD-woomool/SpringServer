@@ -1,15 +1,11 @@
 package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.config.JwtConfig;
-import com.zaxxer.hikari.pool.HikariProxyCallableStatement;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

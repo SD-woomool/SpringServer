@@ -1,7 +1,6 @@
 package app.joycourse.www.prod.repository;
 
 import app.joycourse.www.prod.domain.User;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,8 @@ public class JpaAccountRepositoryTests {
 
     @Test
     public void 유저_저장() {
-        String methodName = new Object(){}.getClass().getEnclosingMethod().getName();
+        String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
         log.info("*********************start {}**************************", methodName);
         User user = new User();
         user.setNickname(nickname);
@@ -62,7 +62,8 @@ public class JpaAccountRepositoryTests {
 
     @Test
     public void 중복유저_저장() {
-        String methodName = new Object(){}.getClass().getEnclosingMethod().getName();
+        String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
         log.info("*********************start {}**************************", methodName);
         User user = new User();
         user.setNickname(nickname);
@@ -81,7 +82,7 @@ public class JpaAccountRepositoryTests {
         duplicatedUser.setGender(gender);
         duplicatedUser.setCreateAt();
 
-        Assertions.assertThatThrownBy(()->{
+        Assertions.assertThatThrownBy(() -> {
             repository.save(duplicatedUser);
         }).isInstanceOf(DataIntegrityViolationException.class);
         log.info("Fail to save Duplicated User. email and nickname");

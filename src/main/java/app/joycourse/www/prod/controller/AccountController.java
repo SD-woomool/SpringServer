@@ -9,7 +9,6 @@ import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.AccountService;
 import app.joycourse.www.prod.service.JwtService;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
