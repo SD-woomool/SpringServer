@@ -25,7 +25,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(properties = {"provider=naver", "code=cPFGokPnRVbHfWgd4J"})
+@SpringBootTest(properties = {"provider=naver", "code=code", "invalidCode=invalidCode", "accessToken=accessToken"})
 @AutoConfigureMockMvc
 @Transactional
 public class AccountControllerTests {
@@ -46,6 +46,12 @@ public class AccountControllerTests {
 
     @Value("${code}")
     private String code;
+
+    @Value("${invalidCode}")
+    private String invalidCode;
+
+    @Value("${accessToken}")
+    private String accessToken;
 
     private final UserInfo signedUserInfo = new UserInfo(true, "email@emai.com", "nickname", null);
     private final UserInfo firstLoginUserInfo = new UserInfo(false, "email@emai.com", null, null);
@@ -119,13 +125,12 @@ public class AccountControllerTests {
         public void oauthLoginCallbackFailByInvalidCode() throws Exception {
             CustomException.CustomError error = CustomException.CustomError.BAD_REQUEST;
             final String expectedResponseContent = objectMapper.writeValueAsString(new Response<>(error.getMessage(), error.getStatus()));
-            final String INVALID_CODE = "INVALID_CODE";
 
-            given(accountService.getAccessToken(provider, INVALID_CODE, null)).willReturn(null);
+            given(accountService.getAccessToken(provider, invalidCode, null)).willReturn(null);
 
             // given - provider: naver, parameter: code=INVALID_CODE
             // when
-            mockMvc.perform(get("/accounts/" + provider + "/callback").param("code", INVALID_CODE))
+            mockMvc.perform(get("/accounts/" + provider + "/callback").param("code", invalidCode))
                     // then
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json"))
@@ -137,10 +142,9 @@ public class AccountControllerTests {
         public void oauthLoginCallbackFailByGettingEmail() throws Exception {
             CustomException.CustomError error = CustomException.CustomError.BAD_REQUEST;
             final String expectedResponseContent = objectMapper.writeValueAsString(new Response<>(error.getMessage(), error.getStatus()));
-            final String ACCESS_TOKEN = "ACCESS_TOKEN";
 
-            given(accountService.getAccessToken(provider, code, null)).willReturn(ACCESS_TOKEN);
-            given(accountService.getEmail(provider, ACCESS_TOKEN)).willReturn(null);
+            given(accountService.getAccessToken(provider, code, null)).willReturn(accessToken);
+            given(accountService.getEmail(provider, accessToken)).willReturn(null);
 
             // given - provider: naver, parameter: code=code
             // when
@@ -155,10 +159,9 @@ public class AccountControllerTests {
         @DisplayName("Success when first login")
         public void oauthLoginCallbackSuccessFirstLogin() throws Exception {
             final String expectedResponseContent = objectMapper.writeValueAsString(new Response<>(firstLoginUserInfo));
-            final String ACCESS_TOKEN = "ACCESS_TOKEN";
 
-            given(accountService.getAccessToken(provider, code, null)).willReturn(ACCESS_TOKEN);
-            given(accountService.getEmail(provider, ACCESS_TOKEN)).willReturn(firstLoginUserInfo.getEmail());
+            given(accountService.getAccessToken(provider, code, null)).willReturn(accessToken);
+            given(accountService.getEmail(provider, accessToken)).willReturn(firstLoginUserInfo.getEmail());
             given(accountService.getUserByEmail(firstLoginUserInfo.getEmail())).willReturn(Optional.empty());
 
             // given - provider: naver, parameter: code=code
@@ -178,10 +181,9 @@ public class AccountControllerTests {
         @DisplayName("Success when already signed up")
         public void oauthLoginCallbackSuccess() throws Exception {
             final String expectedResponseContent = objectMapper.writeValueAsString(new Response<>(signedUserInfo));
-            final String ACCESS_TOKEN = "ACCESS_TOKEN";
 
-            given(accountService.getAccessToken(provider, code, null)).willReturn(ACCESS_TOKEN);
-            given(accountService.getEmail(provider, ACCESS_TOKEN)).willReturn(signedUserInfo.getEmail());
+            given(accountService.getAccessToken(provider, code, null)).willReturn(accessToken);
+            given(accountService.getEmail(provider, accessToken)).willReturn(signedUserInfo.getEmail());
             User user = new User();
             user.setEmail(signedUserInfo.getEmail());
             user.setNickname(signedUserInfo.getNickname());
