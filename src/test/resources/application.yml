@@ -5,7 +5,7 @@ jwt:
   type: JWT
   algorithm: HS256
   expired-time: 3600000
-  secret-key: ${JWT_SECRET_KEY}
+  secret-key: JWT_SECRET_KEY
 url:
   frontend: http://127.0.0.1:3000
 oauth2:
