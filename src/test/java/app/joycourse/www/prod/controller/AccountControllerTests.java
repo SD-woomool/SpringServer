@@ -203,4 +203,20 @@ public class AccountControllerTests {
         }
     }
 
+    @Test
+    @DisplayName("Check cookie is empty when logout")
+    public void logout() throws Exception {
+        // given: call logout api
+        // when: logout cookie should be empty
+        final String expectedResponseContent = objectMapper.writeValueAsString(new Response<>(null));
+        mockMvc.perform(get("/accounts/logout"))
+                // then
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().json(expectedResponseContent))
+                .andExpect(cookie().exists(Constants.JWT_COOKIE_NAME))
+                .andExpect(cookie().value(Constants.JWT_COOKIE_NAME, ""))
+                .andExpect(cookie().httpOnly(Constants.JWT_COOKIE_NAME, true))
+                .andExpect(cookie().secure(Constants.JWT_COOKIE_NAME, true));
+    }
 }
