@@ -27,6 +27,18 @@ public class AccountController {
     private AccountService service;
     private JwtService jwtService;
 
+    @GetMapping("/logout")
+    public Response<Object> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie(Constants.JWT_COOKIE_NAME, "");
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+
+        return new Response<>(null);
+    }
+
     @GetMapping("/{provider}/login")
     public void login(@PathVariable(value = "provider") String provider, HttpServletResponse response) throws IOException {
         String redirectUri = "/";
@@ -78,6 +90,4 @@ public class AccountController {
 
         return new Response<>(new UserInfo(signed, email, nickname, profileImageUrl));
     }
-
-
 }
