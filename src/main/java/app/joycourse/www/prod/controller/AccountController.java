@@ -3,6 +3,7 @@ package app.joycourse.www.prod.controller;
 import app.joycourse.www.prod.config.OauthConfig;
 import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.dto.Response;
 import app.joycourse.www.prod.dto.UserInfo;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.AccountService;
@@ -16,10 +17,11 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 
-@Controller
+@RestController
 @RequestMapping("/accounts")
 public class AccountController {
     private AccountService service;
@@ -42,7 +44,7 @@ public class AccountController {
     }
 
     @GetMapping("/{provider}/login")
-    public String login(@PathVariable("provider") String provider) {
+    public void login(@PathVariable("provider") String provider, HttpServletResponse response)  throws IOException{
 
         List<String> providerList = new ArrayList<>(oauthConfig.getProviders().keySet());
         RestTemplate rt = new RestTemplate();
@@ -53,13 +55,14 @@ public class AccountController {
         }
         OauthConfig.Provider providers = oauthConfig.getProviders().get(provider);
         String redirectUri = String.format("%s?response_type=code&client_id=%s&state=hello&redirect_uri=%s", providers.getLoginUri(), providers.getClientId(), providers.getRedirectUri());
+        response.sendRedirect(redirectUri);
 
-        return "redirect:" + redirectUri;
+        //return "redirect:" + redirectUri;
     }
 
     @GetMapping("/{provider}/callback")
     @ResponseBody
-    public UserInfo callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider, HttpServletResponse setCookieResponse) throws HttpException {
+    public Response callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider, HttpServletResponse setCookieResponse) throws HttpException {
         Map<String, String> response = service.getToken(code, "hello", provider);
         String accessToken = response.get("access_token");
         String expiresIn = response.get("expires_in");
@@ -90,8 +93,10 @@ public class AccountController {
         jwtCookie.setMaxAge(3000);
         jwtCookie.setPath("/");
         setCookieResponse.addCookie(jwtCookie);
+        UserInfo data = new UserInfo(login, email, profileImageUrl, nickname);
 
-        return UserInfo.builder().login(login).email(email).profileImageUrl(profileImageUrl).nickname(nickname).build();
+        return new Response(data);
+        //return UserInfo.builder().login(login).email(email).profileImageUrl(profileImageUrl).nickname(nickname).build();
     }
 
 }

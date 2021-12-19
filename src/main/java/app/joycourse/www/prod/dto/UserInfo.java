@@ -17,4 +17,11 @@ public class UserInfo {
     private String email;
     private String nickname;
     private String profileImageUrl;
+
+    public UserInfo(Boolean login, String email, String nickname, String profileImageUrl){
+        this.login = login;
+        this.email = email;
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
+    }
 }
