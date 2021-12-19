@@ -51,7 +51,7 @@ public class AccountController {
 
         System.out.println(providerList);
         if (!providerList.contains(provider)) {
-            System.out.println("error");
+            throw new IOException("INVALID PROVIDER");
         }
         OauthConfig.Provider providers = oauthConfig.getProviders().get(provider);
         String redirectUri = String.format("%s?response_type=code&client_id=%s&state=hello&redirect_uri=%s", providers.getLoginUri(), providers.getClientId(), providers.getRedirectUri());
