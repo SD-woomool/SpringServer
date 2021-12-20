@@ -1,6 +1,7 @@
 package app.joycourse.www.prod.controller;
 
 
+import app.joycourse.www.prod.Exception.CustomException;
 import app.joycourse.www.prod.dto.Response;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,8 +16,8 @@ import java.io.IOException;
 public class ErrorController {
 
     @ExceptionHandler
-    public Response IoExceptionHandler(Exception e){
-        String errorDescription = "";
+    public Response IoExceptionHandler(CustomException e){
+        String errorDescription = e.getCustomError().getError();
         String error = e.toString();
         if(e.getMessage() != ""){
             errorDescription = e.getMessage();

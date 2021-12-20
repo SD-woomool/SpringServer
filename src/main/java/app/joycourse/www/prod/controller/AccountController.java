@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.controller;
 
+import app.joycourse.www.prod.Exception.CustomException;
 import app.joycourse.www.prod.config.OauthConfig;
 import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.domain.User;
@@ -51,7 +52,7 @@ public class AccountController {
 
         System.out.println(providerList);
         if (!providerList.contains(provider)) {
-            throw new IOException("INVALID PROVIDER");
+            throw new CustomException("INVALID_PROVIDER", CustomException.CustomError.INVALID_PROVIDER);
         }
         OauthConfig.Provider providers = oauthConfig.getProviders().get(provider);
         String redirectUri = String.format("%s?response_type=code&client_id=%s&state=hello&redirect_uri=%s", providers.getLoginUri(), providers.getClientId(), providers.getRedirectUri());
@@ -62,7 +63,7 @@ public class AccountController {
 
     @GetMapping("/{provider}/callback")
     @ResponseBody
-    public Response callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider, HttpServletResponse setCookieResponse) throws HttpException {
+    public Response<UserInfo> callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider, HttpServletResponse setCookieResponse) throws HttpException {
         Map<String, String> response = service.getToken(code, "hello", provider);
         String accessToken = response.get("access_token");
         String expiresIn = response.get("expires_in");
@@ -95,7 +96,7 @@ public class AccountController {
         setCookieResponse.addCookie(jwtCookie);
         UserInfo data = new UserInfo(login, email, profileImageUrl, nickname);
 
-        return new Response(data);
+        return new Response<UserInfo>(data);
         //return UserInfo.builder().login(login).email(email).profileImageUrl(profileImageUrl).nickname(nickname).build();
     }
 
