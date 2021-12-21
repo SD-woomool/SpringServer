@@ -45,7 +45,7 @@ public class AccountController {
     }
 
     @GetMapping("/{provider}/login")
-    public void login(@PathVariable("provider") String provider, HttpServletResponse response)  throws IOException{
+    public void login(@PathVariable("provider") String provider, HttpServletResponse response)  throws IOException, CustomException{
 
         List<String> providerList = new ArrayList<>(oauthConfig.getProviders().keySet());
         RestTemplate rt = new RestTemplate();
@@ -63,7 +63,7 @@ public class AccountController {
 
     @GetMapping("/{provider}/callback")
     @ResponseBody
-    public Response<UserInfo> callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider, HttpServletResponse setCookieResponse) throws HttpException {
+    public Response<UserInfo> callback(@RequestParam(value = "code", required = false) String code, @PathVariable("provider") String provider, HttpServletResponse setCookieResponse) throws CustomException {
         Map<String, String> response = service.getToken(code, "hello", provider);
         String accessToken = response.get("access_token");
         String expiresIn = response.get("expires_in");
@@ -72,7 +72,7 @@ public class AccountController {
         if (accessToken == null || accessToken.isEmpty()) {
             String error = response.get("error");
             String errorDescription = response.get("error_description");
-            throw new HttpException("이메일 없어요");
+            throw new CustomException("");
         }
 
         String userInfo = service.getUserInfo(accessToken, provider);

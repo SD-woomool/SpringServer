@@ -23,12 +23,6 @@ public class CustomException extends RuntimeException{
 
     CustomError customError;
 
-
-
-    public CustomError getCustomError(){
-        return this.customError;
-    }
-
     public CustomException(){
         super();
     }
@@ -43,4 +37,9 @@ public class CustomException extends RuntimeException{
         super();
         this.customError = customError;
     }
+
+    public CustomError getCustomError(){
+        return this.customError;
+    }
+
 }

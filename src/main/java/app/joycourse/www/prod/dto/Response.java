@@ -31,4 +31,10 @@ public class Response<T> {
         this.data = null;
     }
 
+    public Response (String error, String errorDescription, T data){
+        this.error = error;
+        this.errorDescription = errorDescription;
+        this.data = data;
+    }
+
 }
