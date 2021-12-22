@@ -114,7 +114,6 @@ public class AccountController {
             data.put("check", true);
         }
         return new Response<Map>(data);
-
     }
 
 }
