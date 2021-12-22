@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface AccountRepository {
     Optional<User> findByEmail(String email);
+    Optional<User> findByNickname(String nickname);
 }

@@ -6,6 +6,7 @@ import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.Response;
 import app.joycourse.www.prod.dto.UserInfo;
+import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.AccountService;
 import app.joycourse.www.prod.service.JwtService;
@@ -28,12 +29,12 @@ public class AccountController {
     private AccountService service;
     private JwtService jwtService;
     private OauthConfig oauthConfig;
-    private JpaAccountRepository jpaAccountRepository;
+    private AccountRepository accountRepository;
 
     public AccountController(OauthConfig oauthConfig, AccountService service, JpaAccountRepository jpaAccountRepository, JwtService jwtService) {
         this.oauthConfig = oauthConfig;
         this.service = service;
-        this.jpaAccountRepository = jpaAccountRepository;
+        this.accountRepository = jpaAccountRepository;
         this.jwtService = jwtService;
     }
 
@@ -72,13 +73,13 @@ public class AccountController {
         if (accessToken == null || accessToken.isEmpty()) {
             String error = response.get("error");
             String errorDescription = response.get("error_description");
-            throw new CustomException("");
+            throw new CustomException("GET_TOKEN_ERROR", CustomException.CustomError.GET_TOKEN_ERROR);
         }
 
         String userInfo = service.getUserInfo(accessToken, provider);
         String email = userInfo.split("\"email\":")[1].split("\"")[1];
         System.out.println(email);
-        Optional<User> user = jpaAccountRepository.findByEmail(email);
+        Optional<User> user = accountRepository.findByEmail(email);
         String jwtToken;
         boolean login;
         if (user.isPresent()) {
@@ -100,4 +101,22 @@ public class AccountController {
         //return UserInfo.builder().login(login).email(email).profileImageUrl(profileImageUrl).nickname(nickname).build();
     }
 
+    @GetMapping("/nickname")
+    @ResponseBody
+    public Response<Map> checkNickname(@RequestParam(value = "nickname", required = false) String nickname){
+        Optional<User> user = accountRepository.findByNickname(nickname);
+        Map<String, Boolean> data = new HashMap<>();
+        if(user.isPresent()){
+            data.put("login", false);
+            data.put("check", false);
+        }else{
+            data.put("login", false);
+            data.put("check", true);
+        }
+        return new Response<Map>(data);
+
+    }
+
 }
+
+

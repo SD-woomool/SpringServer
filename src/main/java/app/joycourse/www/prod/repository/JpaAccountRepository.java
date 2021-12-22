@@ -21,4 +21,11 @@ public class JpaAccountRepository implements AccountRepository{
                 setParameter("email", email).getResultList();
         return result.stream().findAny();
     }
+
+    @Override
+    public Optional<User> findByNickname(String nickname){
+        List<User> result = em.createQuery("select m from User m where m.nickname = :nickname", User.class).
+                setParameter("nickname", nickname).getResultList();
+        return result.stream().findAny();
+    }
 }

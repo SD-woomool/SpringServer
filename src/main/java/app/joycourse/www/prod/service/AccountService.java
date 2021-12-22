@@ -1,6 +1,7 @@
 package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.config.OauthConfig;
+import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,13 +20,13 @@ import java.util.Map;
 public class AccountService {
     OauthConfig oauthconfig;
     RestTemplate restTemplate;
-    JpaAccountRepository jpaAccountRepository;
+    AccountRepository accountRepository;
 
 
     public AccountService(OauthConfig oauthConfig, RestTemplate restTemplate, JpaAccountRepository jpaAccountRepository) {
         this.oauthconfig = oauthConfig;
         this.restTemplate = restTemplate;
-        this.jpaAccountRepository = jpaAccountRepository;
+        this.accountRepository = jpaAccountRepository;
     }
 
     public Map<String, String> getToken(String code, String state, String provider) {
