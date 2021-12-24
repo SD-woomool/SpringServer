@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.Map;
 @Controller
 @ControllerAdvice
 @RestControllerAdvice
+@EnableWebMvc
 public class ErrorController {
 
     String error;
@@ -30,6 +33,17 @@ public class ErrorController {
         if(e.getMessage() == ""){
             this.errorDescription = null;
         }
+        return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
+    }
+
+    @ExceptionHandler({NoHandlerFoundException.class})
+    public Response<Map<String, Integer>> noHandlerFoundException(Exception e){
+        CustomException customException = new CustomException("PAGE_NOT_FOUND", CustomException.CustomError.PAGE_NOT_FOUND);
+        this.errorDescription = customException.getMessage();
+        this.error = customException.getCustomError().getError();
+        Map<String, Integer> status = new HashMap<>();
+        status.put("status", customException.getCustomError().getStatus());
+
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 
