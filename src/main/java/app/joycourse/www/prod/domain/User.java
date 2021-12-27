@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 @Setter
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 이것도 찾아보자. 디비를 뒤져서 제일 높은수를 주는건지?
     private Long id;
 
     private String nickname;

@@ -23,7 +23,7 @@ public class ErrorController {
     String error;
     String errorDescription;
 
-    @ExceptionHandler
+    @ExceptionHandler({CustomException.class})
     public Response<Map<String, Integer>> customExceptionHandler(CustomException e){
         this.errorDescription = e.getMessage();
         this.error = e.getCustomError().getError();
@@ -36,6 +36,18 @@ public class ErrorController {
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 
+    @ExceptionHandler({RuntimeException.class})
+    public Response<Map<String, Integer>> RuntimeException(Exception e){
+        this.errorDescription = "RuntimeException";
+        this.error = "SERVER_ERROR";
+        Map<String, Integer> status = new HashMap<>();
+        status.put("status", 500);
+        return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
+    }
+
+
+
+
     @ExceptionHandler({NoHandlerFoundException.class})
     public Response<Map<String, Integer>> noHandlerFoundException(Exception e){
         CustomException customException = new CustomException("PAGE_NOT_FOUND", CustomException.CustomError.PAGE_NOT_FOUND);
@@ -47,14 +59,13 @@ public class ErrorController {
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 
-    @ExceptionHandler
-    public Response exceptionHandler(Exception e){
-        this.error = "IOException";
-        this.errorDescription = e.getMessage();
+    @ExceptionHandler({Exception.class})
+    public Response<Map<String, Integer>> exceptionHandler(Exception e){
+        this.error = "SERVER_ERROR";
+        this.errorDescription = "IOException";//e.getMessage();
+        Map<String, Integer> status = new HashMap<>();
+        status.put("status", 500);
 
-        if(this.errorDescription.equals("")){
-            this.errorDescription = null;
-        }
-        return new Response(this.error, this.errorDescription);
+        return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 }

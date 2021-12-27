@@ -14,6 +14,7 @@ import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -46,7 +47,7 @@ public class AccountController {
     }
 
     @GetMapping("/{provider}/login")
-    public void login(@PathVariable("provider") String provider, HttpServletResponse response)  throws IOException, CustomException{
+    public void login(@PathVariable("provider") String provider, HttpServletResponse response)  throws IOException, RuntimeException{
 
         List<String> providerList = new ArrayList<>(oauthConfig.getProviders().keySet());
         RestTemplate rt = new RestTemplate();
@@ -54,6 +55,7 @@ public class AccountController {
         System.out.println(providerList);
         if (!providerList.contains(provider)) {
             throw new CustomException("INVALID_PROVIDER", CustomException.CustomError.INVALID_PROVIDER);
+            //throw new RuntimeException();
         }
         OauthConfig.Provider providers = oauthConfig.getProviders().get(provider);
         String redirectUri = String.format("%s?response_type=code&client_id=%s&state=hello&redirect_uri=%s", providers.getLoginUri(), providers.getClientId(), providers.getRedirectUri());
@@ -103,7 +105,7 @@ public class AccountController {
 
     @GetMapping("/nickname")
     @ResponseBody
-    public Response<Map> checkNickname(@RequestParam(value = "nickname", required = false) String nickname){
+    public Response<Map> checkNickname(@RequestParam(value = "nickname", required = false) String nickname){ // 닉네임 길이 체크 등등 하자
         Optional<User> user = accountRepository.findByNickname(nickname);
         Map<String, Boolean> data = new HashMap<>();
         if(user.isPresent()){
@@ -114,6 +116,22 @@ public class AccountController {
             data.put("check", true);
         }
         return new Response<Map>(data);
+    }
+
+    @PostMapping("/")
+    @Transactional
+    @ResponseBody
+    public Response<Map<String, String>> join(@RequestBody User userInfo) throws CustomException{
+        Optional<User> user = this.accountRepository.findByEmail(userInfo.getEmail());
+        if(user.isPresent()){
+            throw new CustomException("User is already exist", CustomException.CustomError.BAD_REQUEST);
+        }
+        User newUser = this.accountRepository.newUser(userInfo);
+        Map<String, String> data = new HashMap<>();
+        data.put("join", "true");
+        data.put("login", "true");
+        data.put("email", newUser.getEmail());
+        return new Response<Map<String, String>>(data);
     }
 
 }

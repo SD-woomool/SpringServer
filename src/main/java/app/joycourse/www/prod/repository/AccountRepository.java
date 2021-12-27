@@ -8,4 +8,5 @@ public interface AccountRepository {
     Optional<User> findByEmail(String email);
     Optional<User> findById(String id);
     Optional<User> findByNickname(String nickname);
+    User newUser(User user);
 }

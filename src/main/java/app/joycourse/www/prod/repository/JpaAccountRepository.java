@@ -36,4 +36,10 @@ public class JpaAccountRepository implements AccountRepository{
         return result.stream().findAny();
     }
 
+    @Override
+    public User newUser(User user){
+        em.persist(user); // 한번 찾아보자
+        return user;
+    }
+
 }
