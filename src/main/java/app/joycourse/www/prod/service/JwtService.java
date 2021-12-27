@@ -16,18 +16,22 @@ import java.util.Date;
 @Service
 public class JwtService {
 
+    SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+    String secretKey = Constants.getJwtSecretKey();
+
     public String createToken(String data, long ttlMillis){
         if(ttlMillis == 0){
             throw new RuntimeException("토큰만료기간을 0이상을 설정하세요");
         }
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-        String secretKey = Constants.getJwtSecretKey();
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secretKey);
-        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(this.secretKey);
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, this.signatureAlgorithm.getJcaName());
 
         JwtBuilder builder = Jwts.builder().setSubject(data).signWith(signatureAlgorithm, signingKey);
         long nowMillis = System.currentTimeMillis();
         builder.setExpiration(new Date(nowMillis + ttlMillis));
         return builder.compact();
     }
+
+
 }

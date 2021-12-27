@@ -8,7 +8,7 @@ public class CustomException extends RuntimeException{
         INVALID_PROVIDER(400, "BAD_REQUEST"),
         GET_TOKEN_ERROR(500, "SERVER_ERROR"),
         PAGE_NOT_FOUND(404, "PAGE_NOT_FOUND"),
-        //UNAUTHORIZED(401, "UNAUTHORIZED"),
+        UNAUTHORIZED(401, "UNAUTHORIZED"),
         SERVER_ERROR(500, "SERVER_ERROR");
 
         private int status;

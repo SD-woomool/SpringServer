@@ -30,7 +30,7 @@ public class ErrorController {
         Map<String ,Integer> status = new HashMap<>();
         status.put("status", e.getCustomError().getStatus());
 
-        if(e.getMessage() == ""){
+        if(e.getMessage().equals("")){
             this.errorDescription = null;
         }
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
@@ -52,7 +52,7 @@ public class ErrorController {
         this.error = "IOException";
         this.errorDescription = e.getMessage();
 
-        if(this.errorDescription == ""){
+        if(this.errorDescription.equals("")){
             this.errorDescription = null;
         }
         return new Response(this.error, this.errorDescription);
