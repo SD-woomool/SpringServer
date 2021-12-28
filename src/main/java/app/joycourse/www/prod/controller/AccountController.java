@@ -27,10 +27,10 @@ import java.util.*;
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
-    private AccountService service;
-    private JwtService jwtService;
-    private OauthConfig oauthConfig;
-    private AccountRepository accountRepository;
+    private final AccountService service;
+    private final JwtService jwtService;
+    private final OauthConfig oauthConfig;
+    private final AccountRepository accountRepository;
 
     public AccountController(OauthConfig oauthConfig, AccountService service, JpaAccountRepository jpaAccountRepository, JwtService jwtService) {
         this.oauthConfig = oauthConfig;
@@ -85,12 +85,12 @@ public class AccountController {
         String jwtToken;
         boolean login;
         if (user.isPresent()) {
-            jwtToken = jwtService.createToken(user.get().getId().toString(), Constants.getTtlMillis());
+            jwtToken = jwtService.createToken("id:" + String.valueOf(user.get().getId()), Constants.getTtlMillis());
             nickname = user.get().getNickname();
             login = true;
 
         } else {
-            jwtToken = jwtService.createToken(email, Constants.getTtlMillis());
+            jwtToken = jwtService.createToken("email:" + email, Constants.getTtlMillis());
             login = false;
         }
         Cookie jwtCookie = new Cookie(Constants.getCookieName(), jwtToken);
@@ -105,23 +105,23 @@ public class AccountController {
 
     @GetMapping("/nickname")
     @ResponseBody
-    public Response<Map> checkNickname(@RequestParam(value = "nickname", required = false) String nickname){ // 닉네임 길이 체크 등등 하자
+    public Response<Map<String, Boolean>> checkNickname(@RequestParam(value = "nickname", required = false) String nickname){ // 닉네임 길이 체크 등등 추가할게 있나?
         Optional<User> user = accountRepository.findByNickname(nickname);
         Map<String, Boolean> data = new HashMap<>();
-        if(user.isPresent()){
+        if(user.isPresent() || nickname == null || nickname.length() < 3){
             data.put("login", false);
             data.put("check", false);
         }else{
             data.put("login", false);
             data.put("check", true);
         }
-        return new Response<Map>(data);
+        return new Response<Map<String, Boolean>>(data);
     }
 
     @PostMapping("/")
     @Transactional
     @ResponseBody
-    public Response<Map<String, String>> join(@RequestBody User userInfo) throws CustomException{
+    public Response<Map<String, String>> join(@RequestBody User userInfo) throws CustomException{ // 쿠키설정까지 해야함
         Optional<User> user = this.accountRepository.findByEmail(userInfo.getEmail());
         if(user.isPresent()){
             throw new CustomException("User is already exist", CustomException.CustomError.BAD_REQUEST);

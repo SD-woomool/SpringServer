@@ -30,7 +30,7 @@ public class JpaAccountRepository implements AccountRepository{
     }
 
     @Override
-    public Optional<User> findById(String id){
+    public Optional<User> findById(Long id){
         List<User> result = em.createQuery("select m from User m where m.id = :id", User.class).
                 setParameter("id", id).getResultList();
         return result.stream().findAny();
