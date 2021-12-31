@@ -6,6 +6,8 @@ import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.JwtService;
+import org.springframework.core.annotation.Order;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -18,26 +20,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@WebFilter
-public class AuthorizationFilter implements Filter {
+@WebFilter("/*")
+//@Order(1)
+public class AuthorizationFilter extends OncePerRequestFilter {
     AccountRepository accountRepository;
     JwtService jwtService;
+
+
 
     public AuthorizationFilter(JpaAccountRepository jpaAccountRepository, JwtService service){
         this.accountRepository = jpaAccountRepository;
         this.jwtService = service;
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException, CustomException {
-        HttpServletRequest req = (HttpServletRequest)request;
-        HttpServletResponse rep = (HttpServletResponse)response;
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, RuntimeException {
+
 
         //final String tokenHeader = req.getHeader("token");
 
-        Cookie[] cookies = req.getCookies();
+        Cookie[] cookies = request.getCookies();
         if(cookies == null){
-            String target = req.getRequestURI();
-            throw new CustomException("NO_COOKIE", CustomException.CustomError.UNAUTHORIZED);
+            String target = request.getRequestURI();
+            throw new ServletException("NO_TOKEN");
         }
 
         int flag = 0;
@@ -48,11 +53,12 @@ public class AuthorizationFilter implements Filter {
                     String jwt = cookie.getValue();
                     Map<String, Object> payloadData = new HashMap<>();
                     payloadData = jwtService.getPayload(jwt);
-                    Optional<User> user = accountRepository.findById(Long.valueOf(String.valueOf(payloadData.get("id"))));
+                    System.out.println("#########"+String.valueOf(payloadData.get("id")) + "##########");
+                    Optional<User> user = accountRepository.findById(Long.valueOf(String.valueOf(payloadData.get("id")))); // 유저를 못찾는중
                     if (user.isPresent()){
                         filterChain.doFilter(request, response);
                     }else{
-                        throw new CustomException("NO_USER", CustomException.CustomError.UNAUTHORIZED); // dispatchServlet 지나기 전이라 IOException으로 해야할지도?
+                        throw new ServletException("NO_USER"); // dispatchServlet 지나기 전이라 IOException으로 해야할지도?
                     }
                 }
                 catch(NullPointerException e){
@@ -63,7 +69,7 @@ public class AuthorizationFilter implements Filter {
             }
         }
         if(flag == 0){
-            throw new CustomException("INVALID_TOKEN", CustomException.CustomError.UNAUTHORIZED);
+            throw new RuntimeException("INVALID_TOKEN");
         }
 
     }

@@ -1,6 +1,8 @@
 package app.joycourse.www.prod.service;
 
+import app.joycourse.www.prod.Exception.CustomException;
 import app.joycourse.www.prod.config.OauthConfig;
+import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import org.springframework.http.HttpEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -43,5 +46,14 @@ public class AccountService {
         HttpEntity<?> entity = new HttpEntity(headers);
         headers.add("Authorization", "Bearer " + accessToken);
         return restTemplate.exchange(uri, HttpMethod.GET, entity, String.class).getBody();
+    }
+
+    public User saveUser(User userInfo){
+        Optional<User> user = this.accountRepository.findByEmail(userInfo.getEmail());
+        if(user.isPresent()){
+            throw new CustomException("User is already exist", CustomException.CustomError.BAD_REQUEST);
+        }
+        User newUser = this.accountRepository.newUser(userInfo);
+        return newUser;
     }
 }

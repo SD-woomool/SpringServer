@@ -119,21 +119,15 @@ public class AccountController {
     }
 
     @PostMapping("/")
-    @Transactional
     @ResponseBody
-    public Response<Map<String, String>> join(@RequestBody User userInfo) throws CustomException{ // 쿠키설정까지 해야함
-        Optional<User> user = this.accountRepository.findByEmail(userInfo.getEmail());
-        if(user.isPresent()){
-            throw new CustomException("User is already exist", CustomException.CustomError.BAD_REQUEST);
-        }
-        User newUser = this.accountRepository.newUser(userInfo);
+    public Response<Map<String, String>> join(@RequestBody User userInfo) throws CustomException{ // 쿠키설정까지 해야함, createAt 등등 해야함
+        User newUser = this.service.saveUser(userInfo);
         Map<String, String> data = new HashMap<>();
         data.put("join", "true");
         data.put("login", "true");
         data.put("email", newUser.getEmail());
         return new Response<Map<String, String>>(data);
     }
-
 }
 
 
