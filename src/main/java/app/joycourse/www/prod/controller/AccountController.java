@@ -1,6 +1,7 @@
 package app.joycourse.www.prod.controller;
 
-import app.joycourse.www.prod.Exception.CustomException;
+
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.config.OauthConfig;
 import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.domain.User;
@@ -10,18 +11,12 @@ import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.AccountService;
 import app.joycourse.www.prod.service.JwtService;
-import org.apache.http.HttpException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 @RestController
@@ -129,5 +124,3 @@ public class AccountController {
         return new Response<Map<String, String>>(data);
     }
 }
-
-

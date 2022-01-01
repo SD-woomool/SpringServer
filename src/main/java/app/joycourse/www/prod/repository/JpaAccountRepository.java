@@ -1,6 +1,7 @@
 package app.joycourse.www.prod.repository;
 
 import app.joycourse.www.prod.domain.User;
+
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,9 +17,10 @@ public class JpaAccountRepository implements AccountRepository{
     }
 
     @Override
-    public Optional<User> findByEmail(String email){
-        List<User> result = em.createQuery("select m from User m where m.email = :email", User.class).
-                setParameter("email", email).getResultList();
+    public Optional<User> findByEmail(String email) {
+        List<User> result = em.createQuery("select u from User u where u.email = :email", User.class)
+                .setParameter("email", email)
+                .getResultList();
         return result.stream().findAny();
     }
 
@@ -41,3 +43,5 @@ public class JpaAccountRepository implements AccountRepository{
     }
 
 }
+
+

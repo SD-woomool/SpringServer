@@ -1,14 +1,16 @@
-package app.joycourse.www.prod.Exception;
+package app.joycourse.www.prod.exception;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public class CustomException extends RuntimeException{
+public class CustomException extends RuntimeException {
     @AllArgsConstructor
     public enum CustomError{
         INVALID_PROVIDER(400, "BAD_REQUEST"),
         GET_TOKEN_ERROR(500, "SERVER_ERROR"),
         PAGE_NOT_FOUND(404, "PAGE_NOT_FOUND"),
         UNAUTHORIZED(401, "UNAUTHORIZED"),
+        MISSING_PARAMETERS(400, "PARAMETER IS MISSING"),
         BAD_REQUEST(400, "BAD_REQUEST"),
         SERVER_ERROR(500, "SERVER_ERROR");
 
@@ -43,5 +45,4 @@ public class CustomException extends RuntimeException{
     public CustomError getCustomError(){
         return this.customError;
     }
-
 }
