@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.controller;
 
+import app.joycourse.www.prod.config.JwtConfig;
 import app.joycourse.www.prod.config.OauthConfig;
-import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.Response;
 import app.joycourse.www.prod.dto.UserInfo;
@@ -24,12 +24,13 @@ import java.util.Optional;
 @RequestMapping("/accounts")
 public class AccountController {
     private OauthConfig oauthConfig;
+    private JwtConfig jwtConfig;
     private AccountService service;
     private JwtService jwtService;
 
     @GetMapping("/logout")
     public Response<Object> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(Constants.JWT_COOKIE_NAME, "");
+        Cookie cookie = new Cookie(jwtConfig.getJwtCookieName(), "");
         cookie.setPath("/");
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
@@ -81,9 +82,9 @@ public class AccountController {
         }
 
         String jwtToken = jwtService.createToken(payloads);
-        Cookie cookie = new Cookie(Constants.JWT_COOKIE_NAME, jwtToken);
+        Cookie cookie = new Cookie(jwtConfig.getJwtCookieName(), jwtToken);
         cookie.setPath("/");
-        cookie.setMaxAge(Constants.JWT_COOKIE_EXPIRED);
+        cookie.setMaxAge(jwtConfig.getJwtCookieExpired());
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);

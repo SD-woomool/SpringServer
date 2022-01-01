@@ -14,4 +14,6 @@ public class JwtConfig {
     private String algorithm;
     private Long expiredTime;
     private String secretKey;
+    private String jwtCookieName;
+    private Integer jwtCookieExpired;
 }

@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.controller;
 
+import app.joycourse.www.prod.config.JwtConfig;
 import app.joycourse.www.prod.config.OauthConfig;
-import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.Response;
 import app.joycourse.www.prod.dto.UserInfo;
@@ -29,33 +29,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 public class AccountControllerTests {
+    private final UserInfo signedUserInfo = new UserInfo(true, "email@emai.com", "nickname", null);
+    private final UserInfo firstLoginUserInfo = new UserInfo(false, "email@emai.com", null, null);
     @MockBean
     private AccountService accountService;
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private OauthConfig oauthConfig;
+    @Autowired
+    private JwtConfig jwtConfig;
 
     @Value("${provider}")
     private String provider;
-
     @Value("${code}")
     private String code;
-
     @Value("${invalidCode}")
     private String invalidCode;
-
     @Value("${accessToken}")
     private String accessToken;
 
-    private final UserInfo signedUserInfo = new UserInfo(true, "email@emai.com", "nickname", null);
-    private final UserInfo firstLoginUserInfo = new UserInfo(false, "email@emai.com", null, null);
-
+    @Test
+    @DisplayName("Check cookie is empty when logout")
+    public void logout() throws Exception {
+        // given: call logout api
+        // when: logout cookie should be empty
+        final String expectedResponseContent = objectMapper.writeValueAsString(new Response<>(null));
+        mockMvc.perform(get("/accounts/logout"))
+                // then
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().json(expectedResponseContent))
+                .andExpect(cookie().exists(jwtConfig.getJwtCookieName()))
+                .andExpect(cookie().value(jwtConfig.getJwtCookieName(), ""))
+                .andExpect(cookie().httpOnly(jwtConfig.getJwtCookieName(), true))
+                .andExpect(cookie().secure(jwtConfig.getJwtCookieName(), true));
+    }
 
     @Nested
     @DisplayName("Oauth Redirect Url Test")
@@ -85,7 +96,6 @@ public class AccountControllerTests {
                     .andExpect(redirectedUrl("/"));
         }
     }
-
 
     @Nested
     @DisplayName("Oauth Callback Test")
@@ -171,9 +181,9 @@ public class AccountControllerTests {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json"))
                     .andExpect(content().json(expectedResponseContent))
-                    .andExpect(cookie().exists(Constants.JWT_COOKIE_NAME))
-                    .andExpect(cookie().httpOnly(Constants.JWT_COOKIE_NAME, true))
-                    .andExpect(cookie().secure(Constants.JWT_COOKIE_NAME, true));
+                    .andExpect(cookie().exists(jwtConfig.getJwtCookieName()))
+                    .andExpect(cookie().httpOnly(jwtConfig.getJwtCookieName(), true))
+                    .andExpect(cookie().secure(jwtConfig.getJwtCookieName(), true));
 
         }
 
@@ -197,26 +207,9 @@ public class AccountControllerTests {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType("application/json"))
                     .andExpect(content().json(expectedResponseContent))
-                    .andExpect(cookie().exists(Constants.JWT_COOKIE_NAME))
-                    .andExpect(cookie().httpOnly(Constants.JWT_COOKIE_NAME, true))
-                    .andExpect(cookie().secure(Constants.JWT_COOKIE_NAME, true));
+                    .andExpect(cookie().exists(jwtConfig.getJwtCookieName()))
+                    .andExpect(cookie().httpOnly(jwtConfig.getJwtCookieName(), true))
+                    .andExpect(cookie().secure(jwtConfig.getJwtCookieName(), true));
         }
-    }
-
-    @Test
-    @DisplayName("Check cookie is empty when logout")
-    public void logout() throws Exception {
-        // given: call logout api
-        // when: logout cookie should be empty
-        final String expectedResponseContent = objectMapper.writeValueAsString(new Response<>(null));
-        mockMvc.perform(get("/accounts/logout"))
-                // then
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(content().json(expectedResponseContent))
-                .andExpect(cookie().exists(Constants.JWT_COOKIE_NAME))
-                .andExpect(cookie().value(Constants.JWT_COOKIE_NAME, ""))
-                .andExpect(cookie().httpOnly(Constants.JWT_COOKIE_NAME, true))
-                .andExpect(cookie().secure(Constants.JWT_COOKIE_NAME, true));
     }
 }

@@ -8,3 +8,5 @@ jwt:
   algorithm: HS256
   expired-time: 3600000
   secret-key: ${JWT_SECRET_KEY}
+  jwt-cookie-expired: 3600
+  jwt-cookie-name: J9smYJHad
