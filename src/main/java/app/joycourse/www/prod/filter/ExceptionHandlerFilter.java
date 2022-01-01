@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-//@Component
-@WebFilter("/*")
+@Component
+//@WebFilter("/*")
 //@Order(0)
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 

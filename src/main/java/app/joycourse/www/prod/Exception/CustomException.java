@@ -26,7 +26,7 @@ public class CustomException extends RuntimeException{
     CustomError customError;
 
     public CustomException(){
-        super();
+        super("SERVER_ERROR");
     }
     public CustomException(String message){
         super(message);
@@ -36,7 +36,7 @@ public class CustomException extends RuntimeException{
         this.customError = customError;
     }
     public CustomException(CustomError customError){
-        super();
+        super("SERVER_ERROR");
         this.customError = customError;
     }
 
