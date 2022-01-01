@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.service;
 
+import app.joycourse.www.prod.config.JwtConfig;
 import app.joycourse.www.prod.constants.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,17 +20,36 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 
 @Service
 public class JwtService{
+    private JwtConfig jwtConfig;
 
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     String secretKey = Constants.getJwtSecretKey();
 
     @Resource
     ObjectMapper objectMapper;
+
+    public String createToken(Map<String, Object> payloads) {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("typ", jwtConfig.getType());
+        headers.put("alg", jwtConfig.getAlgorithm());
+
+        Date ext = new Date();
+        ext.setTime(ext.getTime() + jwtConfig.getExpiredTime());
+
+        return Jwts.builder()
+                .setHeader(headers)
+                .setClaims(payloads)
+                .setSubject("user")
+                .setExpiration(ext)
+                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecretKey())
+                .compact();
+    }
 
     public String createToken(String data, long ttlMillis){
         if(ttlMillis == 0){
@@ -58,3 +78,4 @@ public class JwtService{
 
 
 }
+

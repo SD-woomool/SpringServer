@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.controller;
 
 
-import app.joycourse.www.prod.Exception.CustomException;
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.dto.Response;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

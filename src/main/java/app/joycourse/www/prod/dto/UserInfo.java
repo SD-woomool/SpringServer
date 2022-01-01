@@ -12,16 +12,11 @@ import lombok.Setter;
 @Setter
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@AllArgsConstructor
 public class UserInfo {
     private Boolean login;
     private String email;
     private String nickname;
     private String profileImageUrl;
 
-    public UserInfo(Boolean login, String email, String nickname, String profileImageUrl){
-        this.login = login;
-        this.email = email;
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
-    }
 }

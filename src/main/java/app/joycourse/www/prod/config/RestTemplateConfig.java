@@ -31,5 +31,6 @@ public class RestTemplateConfig {
         factory.setHttpClient(httpClient);
         RestTemplate restTemplate = new RestTemplate(factory);
         return restTemplate;
+
     }
 }

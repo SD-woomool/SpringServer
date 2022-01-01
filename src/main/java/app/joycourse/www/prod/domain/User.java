@@ -3,10 +3,11 @@ package app.joycourse.www.prod.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.text.SimpleDateFormat;
+
+
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 
 @Entity
@@ -17,20 +18,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 이것도 찾아보자. 디비를 뒤져서 제일 높은수를 주는건지?
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String nickname;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column
     private Integer ageRange;
 
+    @Column
     private Integer gender;
 
-    private String createAt;
+    @Column
+    private String profileImageUrl;
 
-    private String profileUrl;
+    @Column
+    private String createdAt;
 
 
-    public Long getId() {return id;}
+    public Long getId() {
+        return id;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -68,22 +77,23 @@ public class User {
         this.gender = gender;
     }
 
-    public String getCreateAt() {
-        return createAt;
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
     }
 
     public void setCreateAt() {
         long millis = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String createAt = format.format(millis);
-        this.createAt = createAt;
+        this.createdAt = format.format(millis);
     }
 
-    public void setProfileUrl(String profileUrl) {
-        this.profileUrl = profileUrl;
-    }
-
-    public String getProfileUrl() {
-        return profileUrl;
-    }
 }
+

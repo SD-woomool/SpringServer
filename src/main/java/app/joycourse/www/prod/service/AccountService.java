@@ -1,6 +1,7 @@
 package app.joycourse.www.prod.service;
 
-import app.joycourse.www.prod.Exception.CustomException;
+import app.joycourse.www.prod.dto.OauthToken;
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.config.OauthConfig;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.repository.AccountRepository;
@@ -8,13 +9,12 @@ import app.joycourse.www.prod.repository.JpaAccountRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,6 +32,26 @@ public class AccountService {
         this.accountRepository = jpaAccountRepository;
     }
 
+    public String getAccessToken(String provider, String code, String state) {
+        OauthConfig.Provider providerConfig = oauthconfig.getProviders().get(provider);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("grant_type", "authorization_code");
+        headers.add("client_id", providerConfig.getClientId());
+        headers.add("client_secret", providerConfig.getClientSecret());
+        headers.add("code", code);
+        headers.add("state", state);
+        headers.add("redirect_uri", providerConfig.getRedirectUri());
+
+        String accessToken = null;
+        try {
+            ResponseEntity<OauthToken> oauthResult = restTemplate.postForEntity(providerConfig.getTokenUri(), headers, OauthToken.class);
+            accessToken = oauthResult.getBody().getAccessToken();
+        } catch (HttpClientErrorException e) {
+            return null;
+        }
+        return accessToken;
+    }
+
     public Map<String, String> getToken(String code, String state, String provider) {
         OauthConfig.Provider providers = oauthconfig.getProviders().get(provider);
         String uri = String.format("%s?grant_type=authorization_code&code=%s&client_id=%s&client_secret=%s&state=%s",
@@ -47,6 +67,11 @@ public class AccountService {
         headers.add("Authorization", "Bearer " + accessToken);
         return restTemplate.exchange(uri, HttpMethod.GET, entity, String.class).getBody();
     }
+
+    public Optional<User> getUserByEmail(String email) {
+        return accountRepository.findByEmail(email);
+    }
+
 
     public User saveUser(User userInfo){
         Optional<User> user = this.accountRepository.findByEmail(userInfo.getEmail());

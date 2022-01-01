@@ -17,7 +17,7 @@ import java.io.IOException;
 
 @Component
 //@WebFilter("/*")
-//@Order(0)
+@Order(0)
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     public ExceptionHandlerFilter(){
