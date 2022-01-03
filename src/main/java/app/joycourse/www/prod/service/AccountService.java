@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.service;
 
+import app.joycourse.www.prod.constants.Constants;
 import app.joycourse.www.prod.dto.OauthToken;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.config.OauthConfig;
@@ -15,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Optional;
 
@@ -74,11 +78,23 @@ public class AccountService {
 
 
     public User saveUser(User userInfo){
+        String email = userInfo.getEmail();
+        if (email == null){
+            throw new CustomException("Email is missing", CustomException.CustomError.MISSING_PARAMETERS);
+        }
+        userInfo.setCreateAt();
         Optional<User> user = this.accountRepository.findByEmail(userInfo.getEmail());
         if(user.isPresent()){
             throw new CustomException("User is already exist", CustomException.CustomError.BAD_REQUEST);
         }
         User newUser = this.accountRepository.newUser(userInfo);
         return newUser;
+    }
+
+    public void deleteCookie(HttpServletResponse response){
+        Cookie jwtCookie = new Cookie(Constants.getCookieName(), null);
+        jwtCookie.setMaxAge(0);
+        jwtCookie.setPath("/");
+        response.addCookie(jwtCookie);
     }
 }

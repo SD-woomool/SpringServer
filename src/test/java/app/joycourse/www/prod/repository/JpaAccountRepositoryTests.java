@@ -39,7 +39,7 @@ public class JpaAccountRepositoryTests {
         user.setAgeRange(ageRange);
         user.setGender(gender);
         user.setCreateAt();
-        repository.save(user);
+        repository.newUser(user);
 
         // when
         Optional<User> target = repository.findById(user.getId());
@@ -64,7 +64,7 @@ public class JpaAccountRepositoryTests {
         user.setAgeRange(ageRange);
         user.setGender(gender);
         user.setCreateAt();
-        repository.save(user);
+        repository.newUser(user);
 
         // when
         User duplicatedUser = new User();
@@ -76,7 +76,7 @@ public class JpaAccountRepositoryTests {
 
         // then
         Assertions.assertThatThrownBy(() -> {
-            repository.save(duplicatedUser);
+            repository.newUser(duplicatedUser);
         }).isInstanceOf(DataIntegrityViolationException.class);
     }
 

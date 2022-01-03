@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
@@ -34,20 +35,12 @@ public class AccountController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("/hello")
-    @ResponseBody
-    public String hello2() {
-        System.out.println(oauthConfig.getProviders().keySet());
-        return "hello";
-    }
 
     @GetMapping("/{provider}/login")
     public void login(@PathVariable("provider") String provider, HttpServletResponse response)  throws IOException, RuntimeException{
 
         List<String> providerList = new ArrayList<>(oauthConfig.getProviders().keySet());
         RestTemplate rt = new RestTemplate();
-
-        System.out.println(providerList);
         if (!providerList.contains(provider)) {
             throw new CustomException("INVALID_PROVIDER", CustomException.CustomError.INVALID_PROVIDER);
             //throw new RuntimeException();
@@ -88,10 +81,10 @@ public class AccountController {
             jwtToken = jwtService.createToken("email:" + email, Constants.getTtlMillis());
             login = false;
         }
-        Cookie jwtCookie = new Cookie(Constants.getCookieName(), jwtToken);
+        Cookie jwtCookie = new Cookie(Constants.getCookieName(), jwtToken); // 여기부터
         jwtCookie.setMaxAge(3000);
         jwtCookie.setPath("/");
-        setCookieResponse.addCookie(jwtCookie);
+        setCookieResponse.addCookie(jwtCookie);                    // 여기까지 service로 빼자
         UserInfo data = new UserInfo(login, email, profileImageUrl, nickname);
 
         return new Response<UserInfo>(data);
@@ -122,5 +115,11 @@ public class AccountController {
         data.put("login", "true");
         data.put("email", newUser.getEmail());
         return new Response<Map<String, String>>(data);
+    }
+
+    @PostMapping("/logout")
+    @ResponseBody
+    public void logout(HttpServletResponse response){ // response가 있나?
+        this.service.deleteCookie(response);
     }
 }

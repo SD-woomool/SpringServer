@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@WebFilter("/*")
+//@WebFilter("/*")
 //@Order(1)
 public class AuthorizationFilter extends OncePerRequestFilter {
     AccountRepository accountRepository;
@@ -53,6 +53,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     System.out.println("#########"+String.valueOf(payloadData.get("id")) + "##########");
                     Optional<User> user = accountRepository.findById(Long.valueOf(String.valueOf(payloadData.get("id")))); // 유저를 못찾는중
                     if (user.isPresent()){
+                        request.setAttribute("user", user);
                         filterChain.doFilter(request, response);
                     }else{
                         throw new ServletException("NO_USER"); // dispatchServlet 지나기 전이라 IOException으로 해야할지도?
