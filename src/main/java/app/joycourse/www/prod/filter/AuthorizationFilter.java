@@ -5,6 +5,7 @@ import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.JwtService;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
@@ -17,8 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-//@WebFilter("/*")
-//@Order(1)
+@WebFilter({"/accounts/logout/", "/accounts/"})
+@Order(1)
 public class AuthorizationFilter extends OncePerRequestFilter {
     AccountRepository accountRepository;
     JwtService jwtService;
@@ -32,9 +33,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, RuntimeException {
-
-
-        //final String tokenHeader = req.getHeader("token");
+        System.out.println("authorizationFilter is running!!!");
 
         Cookie[] cookies = request.getCookies();
         if(cookies == null){
@@ -51,12 +50,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     Map<String, Object> payloadData = new HashMap<>();
                     payloadData = jwtService.getPayload(jwt);
                     System.out.println("#########"+String.valueOf(payloadData.get("id")) + "##########");
-                    Optional<User> user = accountRepository.findById(Long.valueOf(String.valueOf(payloadData.get("id")))); // 유저를 못찾는중
+                    Optional<User> user = accountRepository.findById(Long.valueOf(String.valueOf(payloadData.get("id"))));
                     if (user.isPresent()){
                         request.setAttribute("user", user);
                         filterChain.doFilter(request, response);
                     }else{
-                        throw new ServletException("NO_USER"); // dispatchServlet 지나기 전이라 IOException으로 해야할지도?
+                        throw new ServletException("NO_USER");
                     }
                 }
                 catch(NullPointerException e){

@@ -119,7 +119,28 @@ public class AccountController {
 
     @PostMapping("/logout")
     @ResponseBody
-    public void logout(HttpServletResponse response){ // response가 있나?
+    public void logout(HttpServletRequest request, HttpServletResponse response){ // response가 있나?
+        System.out.println("###logout works####");
         this.service.deleteCookie(response);
     }
+
+    @DeleteMapping("/")
+    @ResponseBody
+    public Response<Map<String, Boolean>> disjoin(HttpServletRequest request){
+        try{
+            Optional<User> optionalUser = (Optional<User>) request.getAttribute("User");
+            User user = optionalUser.orElse(null);
+            accountRepository.deleteUser(user);
+        }
+        catch (ClassCastException e){
+            throw new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS);
+        }
+        Map<String, Boolean> data = new HashMap<>();
+        data.put("login", false);
+        data.put("disjoin", true);
+        return new Response<Map<String, Boolean>>(data);
+
+    }
+
+
 }

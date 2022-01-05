@@ -42,6 +42,12 @@ public class JpaAccountRepository implements AccountRepository{
         return user;
     }
 
+    @Override
+    public void deleteUser(User user){
+        Long id = user.getId();
+        em.createQuery("select u from User u where u.id = :id", User.class).
+                setParameter("id", id);
+    }
 }
 
 
