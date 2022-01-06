@@ -11,6 +11,7 @@ import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.repository.JpaAccountRepository;
 import app.joycourse.www.prod.service.AccountService;
 import app.joycourse.www.prod.service.JwtService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -128,9 +129,9 @@ public class AccountController {
     @ResponseBody
     public Response<Map<String, Boolean>> disjoin(HttpServletRequest request){
         try{
-            Optional<User> optionalUser = (Optional<User>) request.getAttribute("User");
+            Optional<User> optionalUser = (Optional<User>) request.getAttribute("user");
             User user = optionalUser.orElse(null);
-            accountRepository.deleteUser(user);
+            service.deleteUser(user);
         }
         catch (ClassCastException e){
             throw new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS);

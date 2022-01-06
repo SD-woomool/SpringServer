@@ -97,4 +97,8 @@ public class AccountService {
         jwtCookie.setPath("/");
         response.addCookie(jwtCookie);
     }
+
+    public void deleteUser(User user){
+        accountRepository.deleteUser(user);
+    }
 }

@@ -35,6 +35,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, RuntimeException {
         System.out.println("authorizationFilter is running!!!");
 
+
+        if(request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI().equals("/accounts/")){
+            filterChain.doFilter(request, response);
+            return;
+        }
         Cookie[] cookies = request.getCookies();
         if(cookies == null){
             String target = request.getRequestURI();

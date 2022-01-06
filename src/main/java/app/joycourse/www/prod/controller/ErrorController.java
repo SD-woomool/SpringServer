@@ -37,7 +37,7 @@ public class ErrorController {
 
     @ExceptionHandler({RuntimeException.class})
     public Response<Map<String, Integer>> RuntimeException(Exception e){
-        this.errorDescription = "RuntimeException";
+        this.errorDescription = e.getMessage();
         this.error = "SERVER_ERROR";
         Map<String, Integer> status = new HashMap<>();
         status.put("status", 500);
