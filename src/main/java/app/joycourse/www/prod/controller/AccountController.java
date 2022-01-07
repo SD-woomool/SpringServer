@@ -129,7 +129,7 @@ public class AccountController {
     @ResponseBody
     public Response<Map<String, Boolean>> disjoin(HttpServletRequest request){
         try{
-            Optional<User> optionalUser = (Optional<User>) request.getAttribute("user");
+            Optional<User> optionalUser = (Optional<User>) request.getAttribute("user"); // 이부분 더 좋은방법을 찾아보자
             User user = optionalUser.orElse(null);
             service.deleteUser(user);
         }
@@ -140,7 +140,22 @@ public class AccountController {
         data.put("login", false);
         data.put("disjoin", true);
         return new Response<Map<String, Boolean>>(data);
+    }
 
+    @PutMapping("/")
+    @ResponseBody
+    public Response<Map<String, Boolean>> edit(@RequestBody User userInfo, HttpServletRequest request){
+        try{
+            Optional<User> optionalUser = (Optional<User>)request.getAttribute("user");
+            User user= optionalUser.orElse(null);
+            service.updateUser(user, userInfo);
+        }
+        catch (ClassCastException e){
+            throw new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS);
+        }
+        Map<String, Boolean> data = new HashMap<>();
+        data.put("edit", true);
+        return new Response<Map<String, Boolean>>(data);
     }
 
 

@@ -49,6 +49,18 @@ public class JpaAccountRepository implements AccountRepository{
                 setParameter("id", id).executeUpdate();
         System.out.println("삭제한 갯수: "+deleteCount);
     }
+
+    @Override
+    public void updateUser(User user, User userInfo){
+        int resultCount = em.createQuery("update User u set u.profileImageUrl = :profileImageUrl, u.gender = :gender, u.ageRange = :ageRange " +
+                "where u.id = :id").
+                setParameter("profileImageUrl", userInfo.getProfileImageUrl()).
+                setParameter("gender", userInfo.getGender()).
+                setParameter("ageRange", userInfo.getAgeRange()).
+                setParameter("id", user.getId()).
+                executeUpdate();
+        System.out.println("업데이트 결과 수: " + resultCount);
+    }
 }
 
 

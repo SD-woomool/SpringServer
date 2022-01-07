@@ -101,4 +101,8 @@ public class AccountService {
     public void deleteUser(User user){
         accountRepository.deleteUser(user);
     }
+
+    public void updateUser(User user, User userInfo){
+        accountRepository.updateUser(user, userInfo);
+    }
 }

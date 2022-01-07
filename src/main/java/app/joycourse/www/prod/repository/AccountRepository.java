@@ -11,6 +11,7 @@ public interface AccountRepository {
     Optional<User> findByNickname(String nickname);
     User newUser(User user);
     void deleteUser(User user);
+    void updateUser(User user, User userInfo);
 
 
 }
