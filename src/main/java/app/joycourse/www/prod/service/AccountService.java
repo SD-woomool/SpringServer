@@ -83,8 +83,9 @@ public class AccountService {
             throw new CustomException("Email is missing", CustomException.CustomError.MISSING_PARAMETERS);
         }
         userInfo.setCreateAt();
-        Optional<User> user = this.accountRepository.findByEmail(userInfo.getEmail());
-        if(user.isPresent()){
+        Optional<User> userFindByEmail = this.accountRepository.findByEmail(userInfo.getEmail());
+        Optional<User> userFindByNickname = this.accountRepository.findByNickname(userInfo.getNickname());
+        if(userFindByEmail.isPresent() || userFindByNickname.isPresent()){
             throw new CustomException("User is already exist", CustomException.CustomError.BAD_REQUEST);
         }
         User newUser = this.accountRepository.newUser(userInfo);
