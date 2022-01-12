@@ -16,6 +16,10 @@ public class JpaAccountRepository implements AccountRepository{
         this.em = em;
     }
 
+    public EntityManager getEm(){
+        return this.em;
+    }
+
     @Override
     public Optional<User> findByEmail(String email) {
         List<User> result = em.createQuery("select u from User u where u.email = :email", User.class)

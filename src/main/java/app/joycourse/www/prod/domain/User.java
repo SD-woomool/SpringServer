@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 이것도 찾아보자. 디비를 뒤져서 제일 높은수를 주는건지?
+    @Column(name = "user_id")
     private Long id;
 
     @Column(unique = true, nullable = false)

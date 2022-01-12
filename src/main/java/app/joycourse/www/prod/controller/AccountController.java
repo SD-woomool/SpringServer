@@ -146,7 +146,7 @@ public class AccountController {
     @ResponseBody
     public Response<Map<String, Boolean>> edit(@RequestBody User userInfo, HttpServletRequest request){
         try{
-            Optional<User> optionalUser = (Optional<User>)request.getAttribute("user"); // gender, ageRange, profileUrl중 넘어온 값이 없는경우 원래값으로 설정하는거 하자
+            Optional<User> optionalUser = (Optional<User>)request.getAttribute("user");
             User user= optionalUser.orElse(null);
 
             service.updateUser(user, userInfo);

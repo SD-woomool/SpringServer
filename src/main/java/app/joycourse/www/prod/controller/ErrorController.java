@@ -44,9 +44,6 @@ public class ErrorController {
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 
-
-
-
     @ExceptionHandler({NoHandlerFoundException.class})
     public Response<Map<String, Integer>> noHandlerFoundException(Exception e){
         CustomException customException = new CustomException("PAGE_NOT_FOUND", CustomException.CustomError.PAGE_NOT_FOUND);

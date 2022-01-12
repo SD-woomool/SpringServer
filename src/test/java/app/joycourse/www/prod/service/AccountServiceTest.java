@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(properties = {"nickname=ykh", "email=ykh8383633@naver.com", "gender=0", "ageRange=1"})
@@ -97,7 +99,8 @@ public class AccountServiceTest {
         User findDeleteUser = accountRepository.findById(findUser.getId()).orElse(null);
 
         //then
-        Assertions.assertThat(findDeleteUser).isEqualTo(null);
+        System.out.println(findDeleteUser.getNickname());
+        Assertions.assertThat(findDeleteUser).isNull();
 
     }
 

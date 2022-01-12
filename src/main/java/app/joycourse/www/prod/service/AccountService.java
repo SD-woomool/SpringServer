@@ -19,6 +19,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -104,6 +106,7 @@ public class AccountService {
     }
 
     public void updateUser(User user, User userInfo){
+
         accountRepository.updateUser(user, userInfo);
     }
 }
