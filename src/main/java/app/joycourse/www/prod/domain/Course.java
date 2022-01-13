@@ -14,7 +14,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)  // 이거 타입 알보자
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -30,4 +30,7 @@ public class Course {
     @Column
     private Float totalPrice;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_detail_id")
+    private CourseDetail courseDetail;
 }

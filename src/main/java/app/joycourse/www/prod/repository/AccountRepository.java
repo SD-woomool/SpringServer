@@ -14,6 +14,4 @@ public interface AccountRepository {
     User newUser(User user);
     void deleteUser(User user);
     void updateUser(User user, User userInfo);
-
-
 }

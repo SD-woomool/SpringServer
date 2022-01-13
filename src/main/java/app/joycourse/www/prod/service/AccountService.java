@@ -34,8 +34,8 @@ public class AccountService {
 
     public AccountService(OauthConfig oauthConfig, RestTemplate restTemplate, JpaAccountRepository jpaAccountRepository) {
         this.oauthconfig = oauthConfig;
-        this.restTemplate = restTemplate;
-        this.accountRepository = jpaAccountRepository;
+        this.restTemplate = restTemplate;            // 여기 보면 다 빈으로 등록된것들만 injection해준다. 빈으로 등록된것들만 해야함?
+        this.accountRepository = jpaAccountRepository;  // 근데 repository에서 em은 등록안했는데 그냥 주입 되던데??
     }
 
     public String getAccessToken(String provider, String code, String state) {

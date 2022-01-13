@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository {
-    Course saveCourse(User user);
+    Course saveCourse(Course course);
     List<Course> findByUser(User user);
 }
