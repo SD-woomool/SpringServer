@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,5 +21,5 @@ public class CourseSaveDto {
     private String content;
     private Integer like_cnt;
     private Float totalPrice;
-    private CourseDetail courseDetail;
+    private List<CourseDetail> courseDetail;
 }

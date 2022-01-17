@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +37,10 @@ public class User {
 
     @Column
     private String createdAt;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private List<Course> course; // manytomany 나 onetomany는 이렇게 해야함?
 
 
     public Long getId() {

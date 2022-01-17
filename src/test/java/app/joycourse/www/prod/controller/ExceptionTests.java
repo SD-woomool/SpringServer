@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 public class ExceptionTests {
+    /*
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,6 +41,6 @@ public class ExceptionTests {
                 .andExpect(content().contentType("application/json"))
                 .andExpect(content().json(expectedResponseContent));
     }
-
+*/
 
 }

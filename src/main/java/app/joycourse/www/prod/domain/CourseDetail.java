@@ -1,10 +1,15 @@
 package app.joycourse.www.prod.domain;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.*;
+
+
+@Entity
+@Getter
+@Setter
 public class CourseDetail {
 
     @Id
@@ -14,4 +19,25 @@ public class CourseDetail {
 
     @Column
     private Float price;
+
+    @Column(nullable = true)
+    private String photo;
+
+    @Column(nullable = true)
+    private String content;
+
+    @Column(nullable = true)
+    private String location;
+
+    @Column(nullable = true)
+    private String thumbnailUrl;
+
+    @Column(nullable = true)
+    private String memo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private Course course;
+
+
 }

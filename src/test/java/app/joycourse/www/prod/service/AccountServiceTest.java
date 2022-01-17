@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(properties = {"nickname=ykh", "email=ykh8383633@naver.com", "gender=0", "ageRange=1"})
 @Transactional
 public class AccountServiceTest {
-
+/*
     @Autowired
     AccountRepository accountRepository;
     @Autowired
@@ -78,8 +78,8 @@ public class AccountServiceTest {
 
         //then
         Assertions.assertThat(e.getMessage()).isEqualTo("User is already exist");
-    }
-
+    }*/
+    /*
     @Test
     public void 회원_삭제(){
         // given
@@ -102,6 +102,6 @@ public class AccountServiceTest {
         System.out.println(findDeleteUser.getNickname());
         Assertions.assertThat(findDeleteUser).isNull();
 
-    }
+    }*/
 
 }

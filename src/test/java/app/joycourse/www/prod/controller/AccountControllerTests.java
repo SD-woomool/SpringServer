@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 public class AccountControllerTests {
+    /*
     @MockBean
     private AccountService accountService;
 
@@ -79,7 +80,7 @@ public class AccountControllerTests {
                     .andExpect(status().is3xxRedirection())
                     .andExpect(redirectedUrl("/"));
         }
-    }
+    }*/
 
 /*
     @Nested
