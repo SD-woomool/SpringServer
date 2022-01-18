@@ -120,7 +120,7 @@ public class AccountController {
 
     @PostMapping("/logout")
     @ResponseBody
-    public void logout(HttpServletRequest request, HttpServletResponse response){ // response가 있나?
+    public void logout(HttpServletRequest request, HttpServletResponse response){ // response가 있나?  여기 권한체크
         System.out.println("###logout works####");
         this.service.deleteCookie(response);
     }
@@ -129,12 +129,12 @@ public class AccountController {
     @ResponseBody
     public Response<Map<String, Boolean>> disjoin(HttpServletRequest request){
         try{
-            Optional<User> optionalUser = (Optional<User>) request.getAttribute("user"); // 이부분 더 좋은방법을 찾아보자
-            User user = optionalUser.orElse(null);
+            Optional<User> optionalUser = Optional.ofNullable((User)request.getAttribute("user"));
+            User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
             service.deleteUser(user);
         }
         catch (ClassCastException e){
-            throw new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS);
+            throw new CustomException("DELETE_ERROR", CustomException.CustomError.SERVER_ERROR);
         }
         Map<String, Boolean> data = new HashMap<>();
         data.put("login", false);
@@ -146,13 +146,13 @@ public class AccountController {
     @ResponseBody
     public Response<Map<String, Boolean>> edit(@RequestBody User userInfo, HttpServletRequest request){
         try{
-            Optional<User> optionalUser = (Optional<User>)request.getAttribute("user");
-            User user= optionalUser.orElse(null);
+            Optional<User> optionalUser = Optional.ofNullable((User)request.getAttribute("user"));
+            User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
             service.updateUser(user, userInfo);
         }
         catch (ClassCastException e){
-            throw new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS);
+            throw new CustomException("UPDATE_ERROR", CustomException.CustomError.SERVER_ERROR);
         }
         Map<String, Boolean> data = new HashMap<>();
         data.put("edit", true);

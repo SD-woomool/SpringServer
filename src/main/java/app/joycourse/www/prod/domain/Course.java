@@ -3,6 +3,7 @@ package app.joycourse.www.prod.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.List;
@@ -30,13 +31,29 @@ public class Course {
     @Column(nullable = true)
     private Integer likeCnt;
 
+    @Column(nullable = true)
+    private String location;
+
+    @Column(nullable = true)
+    private String thumbnailUrl;
+
+    @Column(nullable = true)
+    private String memo;
+
     @Column
+    @ColumnDefault("0")
     private Float totalPrice;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_detail_id")
-    @Column(name = "course_detail", nullable = false)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "course")
+    @Column(nullable = false)
     private List<CourseDetail> courseDetail;
+
+    public void setTotalPrice(){
+        double totalPrice = 0;
+        totalPrice = this.courseDetail.stream().mapToDouble((detail)-> detail.getPrice()).sum();
+        this.totalPrice = Float.valueOf((float)totalPrice);
+    }
 }
+
 
 

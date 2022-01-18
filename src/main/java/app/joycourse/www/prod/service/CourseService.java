@@ -24,11 +24,14 @@ public class CourseService {
 
     public Course saveCourse(User user, Course course){
         course.setUser(user);
-        course.getCourseDetail().stream().forEach(detail -> {
+        course.setTotalPrice();
+        course.getCourseDetail().forEach((detail) -> {
+            detail.setCourse(course);
             courseDetailRepository.saveCourseDetail(detail);
         });
         Course newCourse = courseRepository.saveCourse(course);
-        System.out.println("######courseList: "+course.getCourseDetail());
+
+        System.out.println("######courseList: "+course.getCourseDetail().get(0).getId());
         return newCourse;
     }
 }

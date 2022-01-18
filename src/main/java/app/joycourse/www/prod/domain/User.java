@@ -38,8 +38,7 @@ public class User {
     @Column
     private String createdAt;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
     private List<Course> course; // manytomany 나 onetomany는 이렇게 해야함?
 
 

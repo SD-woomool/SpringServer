@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@WebFilter({"/accounts/logout/", "/accounts/"})
+@WebFilter({"/accounts/logout/", "/accounts/", "/course/"})
 @Order(1)
 public class AuthorizationFilter extends OncePerRequestFilter {
     AccountRepository accountRepository;
@@ -57,7 +57,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     System.out.println("#########"+String.valueOf(payloadData.get("id")) + "##########");
                     Optional<User> user = accountRepository.findById(Long.valueOf(String.valueOf(payloadData.get("id"))));
                     if (user.isPresent()){
-                        request.setAttribute("user", user);
+                        request.setAttribute("user", user.orElse(null));
                         filterChain.doFilter(request, response);
                     }else{
                         throw new ServletException("NO_USER");
