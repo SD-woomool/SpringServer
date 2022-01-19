@@ -29,7 +29,6 @@ public class CourseController {
     @ResponseBody
     public Response<CourseSaveDto> saveCourse(@RequestBody Course course, HttpServletRequest request){  // 예외처리를 하나도 안함.
         Optional<User> optionalUser = Optional.ofNullable((User)request.getAttribute("user"));
-        System.out.println("*************"+optionalUser);
         User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
         Course newCourse =  courseService.saveCourse(user, course);
