@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface CourseRepository {
     Course saveCourse(Course course);
-    List<Course> findByUser(User user);
+    Optional<List<Course>> findByUser(User user, int pageLength, int page);
 }

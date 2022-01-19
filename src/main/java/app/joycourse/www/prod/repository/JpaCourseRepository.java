@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JpaCourseRepository implements CourseRepository{
@@ -24,10 +25,13 @@ public class JpaCourseRepository implements CourseRepository{
     }
 
     @Override
-    public List<Course> findByUser(User user){
-        Course course = new Course();
-        List<Course> list = new ArrayList<>();
-        list.add(course);
-        return list;
+    public Optional<List<Course>> findByUser(User user, int pageLength, int page){ // 이름 바꿔야할듯?
+        List<Course> result = em.createQuery("select c from Course where c.user = :user", Course.class).
+                setParameter("user", user).
+        setMaxResults(pageLength).
+        setFirstResult(page * pageLength).
+                getResultList();
+
+        return Optional.ofNullable(result);
     }
 }

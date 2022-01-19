@@ -29,6 +29,7 @@ public class Course {
     private String content;
 
     @Column(nullable = true)
+    @ColumnDefault("0")
     private Integer likeCnt;
 
     @Column(nullable = true)
@@ -48,10 +49,11 @@ public class Course {
     @Column(nullable = false)
     private List<CourseDetail> courseDetail;
 
-    public void setTotalPrice(){
+    public void setTotalPrice(){   // 좀 허접해 다시 해
         double totalPrice = 0;
-        totalPrice = this.courseDetail.stream().mapToDouble((detail)-> detail.getPrice()).sum();
-        this.totalPrice = Float.valueOf((float)totalPrice);
+        totalPrice = this.courseDetail.stream().filter((detail) -> detail.getPrice() != null).
+                mapToDouble(CourseDetail::getPrice).sum();
+        this.totalPrice = (float) totalPrice;
     }
 }
 
