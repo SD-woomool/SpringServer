@@ -4,6 +4,7 @@ import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.CourseDetail;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.CourseSaveDto;
+import app.joycourse.www.prod.dto.MyCourseListDto;
 import app.joycourse.www.prod.dto.Response;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CourseService;
@@ -49,14 +50,19 @@ public class CourseController {
     * 중요한건 쿼리를 몇개씩 찾아오는게 가능한지, 가능하면 어떻게 해야하는지?
     * paging해야함 -> 시작 인덱스, 가져올 갯수, isEnd, 지금 몇번째 페이지 인지등 알면 될듯?
     */
-    /*
+
     @GetMapping("/my-course")
     @ResponseBody
-    public Response getMyCourse(HttpServletRequest request){
+    public Response<MyCourseListDto> getMyCourse(  // page, pageLength 없는경우 아직 해결 안됌
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageLength", defaultValue = "5") int pageLength,
+            HttpServletRequest request
+    ){
         User user  = Optional.ofNullable((User)request.getAttribute("user")).orElseThrow(() ->
                 new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
+        return new Response<MyCourseListDto>(courseService.pagingMyCourse(user, page, pageLength));
     }
 
-     */
+
 
 }

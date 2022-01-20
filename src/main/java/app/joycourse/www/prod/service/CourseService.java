@@ -36,20 +36,14 @@ public class CourseService {
         return courseRepository.saveCourse(course);
     }
 
-    public Optional pagingMyCourse(User user, int pageLength, int page){ // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
-        MyCourseListDto myCourseListDto = new MyCourseListDto();
-        List<Course> courseList = courseRepository.findByUser(user, pageLength, page).orElseGet(() -> {
-            /*
-            * 여기에 계시물이 없다는 dto를 작성
-            * 효율적으로 작성. 그냥 없으면 courselist를 null로 주는거면? 효율적으로 한번에 처리할 방법을 생각해봐
-            * */
+    public MyCourseListDto pagingMyCourse(User user, int pageLength, int page){ // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
+        MyCourseListDto myCourseListDto = new MyCourseListDto(false, pageLength, page);
+        List<Course> courseList = courseRepository.findByUser(user, pageLength, page).orElse(null);
+        if (courseList == null || courseList.size() < pageLength){
             myCourseListDto.setIsEnd(true);
-
-            myCourseListDto.setPage(page);
-            myCourseListDto.setPageLength(pageLength);
-            return null;
-        });
-        return courseRepository.findByUser(user, pageLength, page);
+        }
+        myCourseListDto.setCourseList(courseList);
+        return myCourseListDto;
     }
 
 }
