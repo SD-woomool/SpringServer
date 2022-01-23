@@ -54,8 +54,8 @@ public class CourseController {
     @GetMapping("/my-course")
     @ResponseBody
     public Response<MyCourseListDto> getMyCourse(  // page, pageLength 없는경우 아직 해결 안됌
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "pageLength", defaultValue = "5") int pageLength,
+            @RequestParam(name = "page", defaultValue = "1") int page, // 이거 1 이하일때 오류 처리 하자
+            @RequestParam(name = "page-length", defaultValue = "5") int pageLength,
             HttpServletRequest request
     ){
         User user  = Optional.ofNullable((User)request.getAttribute("user")).orElseThrow(() ->

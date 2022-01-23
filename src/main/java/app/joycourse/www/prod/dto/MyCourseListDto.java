@@ -31,6 +31,7 @@ public class MyCourseListDto {
 
     public void setCourseList(List<Course> courseList){
         if(courseList == null){
+            System.out.println("****** no course***********");
             this.courseList = null;
             return;
         }

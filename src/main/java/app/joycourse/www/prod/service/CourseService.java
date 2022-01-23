@@ -21,7 +21,7 @@ public class CourseService {
     CourseRepository courseRepository;
     CourseDetailRepository courseDetailRepository;
 
-    public CourseService(JpaCourseRepository jpaCourseRepository, JpaCourseDetailRepository jpaCourseDetailRepository){
+    public CourseService(CourseRepository jpaCourseRepository, CourseDetailRepository jpaCourseDetailRepository){
         this.courseRepository = jpaCourseRepository;
         this.courseDetailRepository = jpaCourseDetailRepository;
     }

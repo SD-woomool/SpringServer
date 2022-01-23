@@ -26,7 +26,7 @@ public class JpaCourseRepository implements CourseRepository{
 
     @Override
     public Optional<List<Course>> findByUser(User user, int pageLength, int page){ // 이름 바꿔야할듯?
-        List<Course> result = em.createQuery("select c from Course where c.user = :user", Course.class).
+        List<Course> result = em.createQuery("select c from Course c where c.user = :user", Course.class).
                 setParameter("user", user).
         setMaxResults(pageLength).
         setFirstResult(page * pageLength).

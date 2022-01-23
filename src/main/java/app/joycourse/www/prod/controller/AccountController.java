@@ -29,7 +29,7 @@ public class AccountController {
     private final OauthConfig oauthConfig;
     private final AccountRepository accountRepository;
 
-    public AccountController(OauthConfig oauthConfig, AccountService service, JpaAccountRepository jpaAccountRepository, JwtService jwtService) {
+    public AccountController(OauthConfig oauthConfig, AccountService service, AccountRepository jpaAccountRepository, JwtService jwtService) {
         this.oauthConfig = oauthConfig;
         this.service = service;
         this.accountRepository = jpaAccountRepository;

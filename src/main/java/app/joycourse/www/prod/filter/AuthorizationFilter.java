@@ -18,7 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@WebFilter({"/accounts/logout/", "/accounts/", "/course/"})
+@WebFilter({"/accounts/logout/",
+        "/accounts/",
+        "/course/",
+        "/course/my-course"
+})
 @Order(1)
 public class AuthorizationFilter extends OncePerRequestFilter {
     AccountRepository accountRepository;
