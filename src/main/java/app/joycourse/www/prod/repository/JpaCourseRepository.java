@@ -29,9 +29,9 @@ public class JpaCourseRepository implements CourseRepository{
         List<Course> result = em.createQuery("select c from Course c where c.user = :user", Course.class).
                 setParameter("user", user).
         setMaxResults(pageLength).
-        setFirstResult(page * pageLength).
+        setFirstResult((page - 1) * pageLength).
                 getResultList();
-
+        System.out.println("this is result: " + result);
         return Optional.ofNullable(result);
     }
 }
