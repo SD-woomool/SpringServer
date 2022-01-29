@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import javax.transaction.Transactional;
+
 @ServletComponentScan
 @SpringBootApplication
 @EnableWebMvc
@@ -27,6 +29,7 @@ public class JoyCourseApplication {
     }
 
     @Bean
+    @Transactional
     CommandLineRunner insertTestData(AccountRepository accountRepository) {
         return args -> {
             User user1 = new User();
