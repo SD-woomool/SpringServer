@@ -1,12 +1,23 @@
 package app.joycourse.www.prod.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
 
+
+import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 @Entity
+@Getter
+@Setter
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // 이것도 찾아보자. 디비를 뒤져서 제일 높은수를 주는건지?
+    @Column(name = "user_id")
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -26,6 +37,9 @@ public class User {
 
     @Column
     private String createdAt;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Course> course; // manytomany 나 onetomany는 이렇게 해야함?
 
 
     public Long getId() {
@@ -85,7 +99,6 @@ public class User {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.createdAt = format.format(millis);
     }
-
 
 }
 

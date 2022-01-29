@@ -6,7 +6,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
-
+/*
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(CustomException.class)
@@ -32,3 +32,4 @@ public class GlobalExceptionHandler {
         return new Response<>(error.getMessage(), error.getStatus());
     }
 }
+*/

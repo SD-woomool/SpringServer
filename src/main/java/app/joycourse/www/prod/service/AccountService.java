@@ -1,30 +1,45 @@
 package app.joycourse.www.prod.service;
 
+import app.joycourse.www.prod.constants.Constants;
+import app.joycourse.www.prod.dto.OauthToken;
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.config.OauthConfig;
 import app.joycourse.www.prod.domain.User;
-import app.joycourse.www.prod.dto.OauthToken;
 import app.joycourse.www.prod.repository.AccountRepository;
-import lombok.AllArgsConstructor;
+import app.joycourse.www.prod.repository.JpaAccountRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Objects;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@Transactional
 public class AccountService {
-    private OauthConfig oauthConfig;
-    private RestTemplate restTemplate;
-    private AccountRepository repository;
+    OauthConfig oauthconfig;
+    RestTemplate restTemplate;
+    AccountRepository accountRepository;
+
+
+    public AccountService(OauthConfig oauthConfig, RestTemplate restTemplate, JpaAccountRepository jpaAccountRepository) {
+        this.oauthconfig = oauthConfig;
+        this.restTemplate = restTemplate;            // 여기 보면 다 빈으로 등록된것들만 injection해준다. 빈으로 등록된것들만 해야함?
+        this.accountRepository = jpaAccountRepository;  // 근데 repository에서 em은 등록안했는데 그냥 주입 되던데??
+    }
 
     public String getAccessToken(String provider, String code, String state) {
-        OauthConfig.Provider providerConfig = oauthConfig.getProviders().get(provider);
+        OauthConfig.Provider providerConfig = oauthconfig.getProviders().get(provider);
         HttpHeaders headers = new HttpHeaders();
         headers.add("grant_type", "authorization_code");
         headers.add("client_id", providerConfig.getClientId());
@@ -43,35 +58,55 @@ public class AccountService {
         return accessToken;
     }
 
-    public String getEmail(String provider, String accessToken) {
-        OauthConfig.Provider providerConfig = oauthConfig.getProviders().get(provider);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
-        HttpEntity<Object> entity = new HttpEntity<>(null, headers);
-        HttpMethod method = provider.equals("google") ? HttpMethod.GET : HttpMethod.POST;
+    public Map<String, String> getToken(String code, String state, String provider) {
+        OauthConfig.Provider providers = oauthconfig.getProviders().get(provider);
+        String uri = String.format("%s?grant_type=authorization_code&code=%s&client_id=%s&client_secret=%s&state=%s",
+                providers.getTokenUri(), code, providers.getClientId(), providers.getClientSecret(), state);
+        return restTemplate.getForEntity(uri, Map.class).getBody();
+    }
 
-        String email = null;
-        try {
-            ResponseEntity<String> infoResult = restTemplate.exchange(providerConfig.getUserInfoUri(), method, entity, String.class);
-            String jsonString = infoResult.getBody();
-            if (Objects.isNull(jsonString)) {
-                return null;
-            }
-            jsonString = jsonString.replaceAll("\\s", "");
-            int index = jsonString.indexOf("\"email\":");
-            if (index == -1) {
-                return null;
-            }
-            index += 9;
-            int lastIndex = jsonString.indexOf("\"", index);
-            email = jsonString.substring(index, lastIndex);
-        } catch (HttpClientErrorException e) {
-            return null;
-        }
-        return email;
+    public String getUserInfo(String accessToken, String provider) {
+        OauthConfig.Provider providers = oauthconfig.getProviders().get(provider);
+        String uri = providers.getUserInfoUri();
+        org.springframework.http.HttpHeaders headers = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity(headers);
+        headers.add("Authorization", "Bearer " + accessToken);
+        return restTemplate.exchange(uri, HttpMethod.GET, entity, String.class).getBody();
     }
 
     public Optional<User> getUserByEmail(String email) {
-        return repository.findByEmail(email);
+        return accountRepository.findByEmail(email);
+    }
+
+
+    public User saveUser(User userInfo){
+        String email = userInfo.getEmail();
+        if (email == null){
+            throw new CustomException("Email is missing", CustomException.CustomError.MISSING_PARAMETERS);
+        }
+        userInfo.setCreateAt();
+        Optional<User> userFindByEmail = this.accountRepository.findByEmail(userInfo.getEmail());
+        Optional<User> userFindByNickname = this.accountRepository.findByNickname(userInfo.getNickname());
+        if(userFindByEmail.isPresent() || userFindByNickname.isPresent()){
+            throw new CustomException("User is already exist", CustomException.CustomError.BAD_REQUEST);
+        }
+        User newUser = this.accountRepository.newUser(userInfo);
+        return newUser;
+    }
+
+    public void deleteCookie(HttpServletResponse response){
+        Cookie jwtCookie = new Cookie(Constants.getCookieName(), null);
+        jwtCookie.setMaxAge(0);
+        jwtCookie.setPath("/");
+        response.addCookie(jwtCookie);
+    }
+
+    public void deleteUser(User user){
+        accountRepository.deleteUser(user);
+    }
+
+    public void updateUser(User user, User userInfo){
+
+        accountRepository.updateUser(user, userInfo);
     }
 }

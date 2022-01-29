@@ -1,6 +1,14 @@
 spring:
   mvc:
     throw-exception-if-no-handler-found: true
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/test
+    driver-class-name: org.h2.Driver
+    username: sa
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
 jwt:
   type: JWT
   algorithm: HS256

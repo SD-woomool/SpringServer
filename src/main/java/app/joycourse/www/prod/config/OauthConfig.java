@@ -5,11 +5,16 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
+
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
+
+
 @Setter
+@Getter
 @Configuration
 @ConfigurationProperties("oauth2")
 public class OauthConfig {
