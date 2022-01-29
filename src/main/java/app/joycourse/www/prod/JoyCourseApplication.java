@@ -29,26 +29,29 @@ public class JoyCourseApplication {
     }
 
     @Bean
-    @Transactional
     CommandLineRunner insertTestData(AccountRepository accountRepository) {
-        return args -> {
-            User user1 = new User();
-            user1.setNickname("ykh");
-            user1.setEmail("ykh@email.com");
-            user1.setAgeRange(20);
-            user1.setGender(1);
-            user1.setCreateAt();
-            accountRepository.newUser(user1);
+        return new CommandLineRunner() {
+            @Override
+            @Transactional
+            public void run(String... args) {
+                User user1 = new User();
+                user1.setNickname("ykh");
+                user1.setEmail("ykh@email.com");
+                user1.setAgeRange(20);
+                user1.setGender(1);
+                user1.setCreateAt();
+                accountRepository.newUser(user1);
 
-            User user2 = new User();
-            user2.setNickname("hsh");
-            user2.setEmail("hsh@email.com");
-            user2.setAgeRange(20);
-            user2.setGender(1);
-            user2.setCreateAt();
-            accountRepository.newUser(user2);
+                User user2 = new User();
+                user2.setNickname("hsh");
+                user2.setEmail("hsh@email.com");
+                user2.setAgeRange(20);
+                user2.setGender(1);
+                user2.setCreateAt();
+                accountRepository.newUser(user2);
 
-            System.out.println("Test user(ykh, hsh) is created");
+                System.out.println("Test user(ykh, hsh) is created");
+            }
         };
     }
 }
