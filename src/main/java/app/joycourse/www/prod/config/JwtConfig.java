@@ -12,6 +12,13 @@ import org.springframework.context.annotation.Configuration;
 public class JwtConfig {
     private String type;
     private String algorithm;
-    private Long expiredTime;
     private String secretKey;
+    private Cookie cookie;
+
+    @Getter
+    @Setter
+    public static class Cookie {
+        private String name;
+        private Integer ttlMillis;
+    }
 }

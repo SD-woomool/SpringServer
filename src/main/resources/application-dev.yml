@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     url: jdbc:h2:tcp://localhost/~/joycourse-dev
@@ -8,8 +7,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+
 url:
   frontend: http://127.0.0.1:3000
+
 oauth2:
   providers:
     naver:
@@ -43,5 +44,3 @@ oauth2:
 
 api:
   kakao: ${KAKAKO_API_KEY}
-
-
