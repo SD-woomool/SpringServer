@@ -26,7 +26,7 @@ import java.util.Map;
 
 @Service
 public class JwtService{
-    private JwtConfig jwtConfig; // 이거 서비스 싱글톤이 상태를 가지는거 아닙?
+    private JwtConfig jwtConfig;
 
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     String secretKey = Constants.getJwtSecretKey();
