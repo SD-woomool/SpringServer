@@ -16,6 +16,16 @@ public class PlaceSearchResponseDto {
     private List<PlaceInfoDto> documents;
     private Meta meta;
 
+    @Override
+    public String toString() {
+
+        String placeInfoList = "";
+        
+        return "PlaceSearchResponseDto{" +
+                "documents=" + documents +
+                ", meta=" + meta +
+                '}';
+    }
 }
 
 @Getter

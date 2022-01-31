@@ -71,6 +71,7 @@ public class CourseController {
             @RequestParam(name = "size", defaultValue = "5") int size,
             @RequestParam(name = "query") String query
     ) throws UnsupportedEncodingException {
+        // 여기서 일단 db조회해서 찾아보고 없으면 검색
         PlaceSearchResponseDto places = placeService.getPlace(query, page, size);
 
         return new Response<PlaceSearchResponseDto>(places);

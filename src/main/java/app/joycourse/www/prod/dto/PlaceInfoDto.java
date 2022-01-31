@@ -34,4 +34,21 @@ public class PlaceInfoDto {
 
     private Float y;
 
+    @Override
+    public String toString() {
+        return "{" +
+                "addressName='" + addressName + '\'' +
+                ", categoryGroupCode='" + categoryGroupCode + '\'' +
+                ", categoryGroupName='" + categoryGroupName + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                ", distance=" + distance +
+                ", id=" + id +
+                ", phone='" + phone + '\'' +
+                ", placeName='" + placeName + '\'' +
+                ", placeUrl='" + placeUrl + '\'' +
+                ", roadAddressName='" + roadAddressName + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

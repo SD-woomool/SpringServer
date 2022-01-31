@@ -26,7 +26,6 @@ public class PlaceService {
     private final RestTemplate restTemplate;
     private final PlaceRepository placeRepository;
 
-
     public PlaceSearchResponseDto getPlace(String query, int page, int size) throws UnsupportedEncodingException {
         PlaceRequestConfig.RequestParameter requestParameter = placeRequestConfig.getRequestParameter();
         HttpHeaders headers = new HttpHeaders();
