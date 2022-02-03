@@ -3,6 +3,7 @@ package app.joycourse.www.prod.service;
 import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.MyCourseListDto;
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,14 @@ public class CourseService {
         }
         myCourseListDto.setCourseList(courseList);
         return myCourseListDto;
+    }
+
+    public void deleteCourse(User user, long courseId) {
+        Course deleteCourse = courseRepository.findById(courseId).orElse(null);
+        if (deleteCourse == null && deleteCourse.getUser() == user) {
+            throw new CustomException("WRONG_COURSE_ID", CustomException.CustomError.INVALID_PARAMETER);
+        }
+        courseRepository.deleteCourse(deleteCourse);
     }
 
 }

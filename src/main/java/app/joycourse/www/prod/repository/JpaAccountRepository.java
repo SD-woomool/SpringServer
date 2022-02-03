@@ -47,10 +47,7 @@ public class JpaAccountRepository implements AccountRepository {
 
     @Override
     public void deleteUser(User user) {
-        Long id = user.getId();
-        int deleteCount = em.createQuery("delete from User u where u.id = :id").
-                setParameter("id", id).executeUpdate();
-        System.out.println("삭제한 갯수: " + deleteCount);
+        em.remove(user);
     }
 
     @Override

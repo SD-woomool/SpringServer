@@ -13,23 +13,28 @@ import java.util.List;
 @Setter
 public class CourseDetail {
 
-    @ManyToMany(cascade = CascadeType.REMOVE,
+    @ManyToMany(
             fetch = FetchType.LAZY,
             mappedBy = "courseDetails"
     )
     List<Place> places;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_detail_id")
     private Long id;
+
     @Column
     @ColumnDefault("0")
     private Float price;
+
     @Column(nullable = true)
     private String photo;
+
     @Column(nullable = true)
     private String content;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     private Course course;
 

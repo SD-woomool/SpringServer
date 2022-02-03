@@ -2,7 +2,6 @@ package app.joycourse.www.prod.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -45,11 +44,11 @@ public class Course {
     @ColumnDefault("0")
     private Float totalPrice;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "course")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "course", fetch = FetchType.LAZY)
     @Column(nullable = false)
     private List<CourseDetail> courseDetail;
 
-    public void setTotalPrice(){   // 좀 허접해 다시 해
+    public void setTotalPrice() {   // 좀 허접해 다시 해
         double totalPrice = 0;
         totalPrice = this.courseDetail.stream().filter((detail) -> detail.getPrice() != null).
                 mapToDouble(CourseDetail::getPrice).sum();

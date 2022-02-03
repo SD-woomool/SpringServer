@@ -31,12 +31,14 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
     private final PlaceCacheRepository placeCacheRepository;
 
-    public PlaceSearchResponseDto getPlace(String query, int page, int size) throws UnsupportedEncodingException, IOException {
+    public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws UnsupportedEncodingException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             Optional<String> cachedResponse = findCachedPlaceResponse(query);
             String placeResponse = cachedResponse.get();
             PlaceSearchResponseDto cachePlaceSearchResponseDto = objectMapper.readValue(placeResponse, PlaceSearchResponseDto.class);
+
+
             return cachePlaceSearchResponseDto;
         } catch (Exception e) {
             System.out.println("no cached data");
@@ -48,7 +50,8 @@ public class PlaceService {
                     queryParam("page", page).
                     queryParam("size", size).
                     queryParam("analyze_type", "similar").
-                    queryParam("query", query).build();
+                    queryParam("query", query).
+                    queryParam("category_group_code", categoryGroupCode).build();
             PlaceSearchResponseDto placeSearchResponseDto = restTemplate.exchange(uri.toUri(), HttpMethod.GET, httpEntity, PlaceSearchResponseDto.class).getBody();
             assert placeSearchResponseDto != null;
             placeSearchResponseDto.getDocuments().stream().filter(Objects::nonNull).forEach((placeInfo) -> {

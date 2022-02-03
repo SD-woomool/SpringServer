@@ -18,6 +18,11 @@ public class JpaCourseRepository implements CourseRepository {
     }
 
     @Override
+    public void deleteCourse(Course deleteCourse) {
+        em.remove(deleteCourse);
+    }
+
+    @Override
     public Course saveCourse(Course course) {
         em.persist(course);
         return course;
@@ -33,4 +38,11 @@ public class JpaCourseRepository implements CourseRepository {
         System.out.println("this is result: " + result);
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Optional<Course> findById(Long courseId) {
+        return Optional.ofNullable(em.find(Course.class, courseId));
+    }
+
+
 }

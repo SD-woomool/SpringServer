@@ -2,10 +2,7 @@ package app.joycourse.www.prod.controller;
 
 import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.User;
-import app.joycourse.www.prod.dto.CourseSaveDto;
-import app.joycourse.www.prod.dto.MyCourseListDto;
-import app.joycourse.www.prod.dto.PlaceSearchResponseDto;
-import app.joycourse.www.prod.dto.Response;
+import app.joycourse.www.prod.dto.*;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CourseService;
 import app.joycourse.www.prod.service.PlaceService;
@@ -65,18 +62,31 @@ public class CourseController {
         return new Response<MyCourseListDto>(courseService.pagingMyCourse(user, pageLength, page));
     }
 
+    @DeleteMapping("/")
+    @ResponseBody
+    public Response<DeleteCourseDto> deleteCourse(
+            @RequestParam(name = "course_id") long id,
+            HttpServletRequest request
+    ) {
+        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
+                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
+        courseService.deleteCourse(user, id);
+
+        return new Response<DeleteCourseDto>(new DeleteCourseDto(true, id));
+    }
+
     @GetMapping("/place")
     @ResponseBody
     public Response<PlaceSearchResponseDto> getPlace(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "15") int size,
-            @RequestParam(name = "query") String query
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "category_group_code") String categoryGroupCode  // 태그를 어떻게 처리하지?
     ) throws UnsupportedEncodingException, IOException {
         // 여기서 일단 db조회해서 찾아보고 없으면 검색
-        PlaceSearchResponseDto places = placeService.getPlace(query, page, size);
+        PlaceSearchResponseDto places = placeService.getPlace(query, page, size, categoryGroupCode);
 
         return new Response<PlaceSearchResponseDto>(places);
     }
-
 
 }
