@@ -1,9 +1,13 @@
 package app.joycourse.www.prod.repository;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+
+@Repository
 public class MemoryPlaceCacheRepository implements PlaceCacheRepository {
 
     private static Map<String, String> store = new HashMap<>();

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
@@ -68,9 +69,9 @@ public class CourseController {
     @ResponseBody
     public Response<PlaceSearchResponseDto> getPlace(
             @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "size", defaultValue = "15") int size,
             @RequestParam(name = "query") String query
-    ) throws UnsupportedEncodingException {
+    ) throws UnsupportedEncodingException, IOException {
         // 여기서 일단 db조회해서 찾아보고 없으면 검색
         PlaceSearchResponseDto places = placeService.getPlace(query, page, size);
 
