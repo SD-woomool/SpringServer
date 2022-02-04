@@ -2,7 +2,7 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.User;
-import app.joycourse.www.prod.dto.MyCourseListDto;
+import app.joycourse.www.prod.dto.CourseListDto;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
@@ -33,8 +33,8 @@ public class CourseService {
         return courseRepository.saveCourse(course);
     }
 
-    public MyCourseListDto pagingMyCourse(User user, int pageLength, int page) { // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
-        MyCourseListDto myCourseListDto = new MyCourseListDto(false, pageLength, page);
+    public CourseListDto pagingMyCourse(User user, int pageLength, int page) { // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
+        CourseListDto myCourseListDto = new CourseListDto(false, pageLength, page);
         List<Course> courseList = courseRepository.findByUser(user, pageLength, page).orElse(null);
         System.out.println("this is courseList" + courseList);
         if (courseList == null || courseList.size() < pageLength) {
@@ -50,6 +50,11 @@ public class CourseService {
             throw new CustomException("WRONG_COURSE_ID", CustomException.CustomError.INVALID_PARAMETER);
         }
         courseRepository.deleteCourse(deleteCourse);
+    }
+
+    public Course getCourse(Long courseId) throws CustomException {
+        return courseRepository.findById(courseId).orElseThrow(() ->
+                new CustomException("INVALID COURSE_ID", CustomException.CustomError.INVALID_PARAMETER));
     }
 
 }

@@ -23,6 +23,41 @@ public class CourseController {
     private final CourseService courseService;
     private final PlaceService placeService;
 
+
+    @GetMapping("/{course-id}/")
+    @ResponseBody
+    public Response<CourseInfoDto> getCourse(
+            @PathVariable("course-id") Long courseId
+    ) {
+        Course findCourse = courseService.getCourse(courseId);
+        return new Response<CourseInfoDto>(new CourseInfoDto(
+                findCourse.getId(),
+                findCourse.getUser().getNickname(),
+                findCourse.getTitle(),
+                findCourse.getContent(),
+                findCourse.getLocation(),
+                findCourse.getThumbnailUrl(),
+                findCourse.getLikeCnt(),
+                findCourse.getTotalPrice(),
+                findCourse.getMemo(),
+                findCourse.getCourseDetail()
+        ));
+    }
+
+
+    /*
+     * 제일 높은 pk를 알아내서 페이징
+     */
+    @GetMapping("/")
+    @ResponseBody
+    public Response<CourseListDto> getCourseList(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "page-length", defaultValue = "5") int pageLength
+    ) {
+        return null;
+    }
+
+
     @PostMapping("/")
     @ResponseBody
     public Response<CourseSaveDto> saveCourse(
@@ -33,12 +68,22 @@ public class CourseController {
         User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
         Course newCourse = courseService.saveCourse(user, course);
+        CourseInfoDto courseInfoDto = new CourseInfoDto(
+                newCourse.getId(),
+                newCourse.getUser().getNickname(),
+                newCourse.getTitle(),
+                newCourse.getContent(),
+                newCourse.getLocation(),
+                newCourse.getThumbnailUrl(),
+                newCourse.getLikeCnt(),
+                newCourse.getTotalPrice(),
+                newCourse.getMemo(),
+                newCourse.getCourseDetail()
+        );
 
-        CourseSaveDto courseSaveDto = new CourseSaveDto(true, newCourse.getTitle(), newCourse.getContent(),
-                newCourse.getLikeCnt(), newCourse.getTotalPrice(), newCourse.getCourseDetail());
+        CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
         return new Response<CourseSaveDto>(courseSaveDto);
     }
-
 
     /*
      * 일단 유저확인 o
@@ -50,16 +95,16 @@ public class CourseController {
 
     @GetMapping("/my-course")
     @ResponseBody
-    public Response<MyCourseListDto> getMyCourse(  // page, pageLength 없는경우 아직 해결 안됌
-                                                   @RequestParam(name = "page", defaultValue = "1") int page,
-                                                   @RequestParam(name = "page-length", defaultValue = "5") int pageLength,
-                                                   HttpServletRequest request
+    public Response<CourseListDto> getMyCourseList(  // page, pageLength 없는경우 아직 해결 안됌
+                                                     @RequestParam(name = "page", defaultValue = "1") int page,
+                                                     @RequestParam(name = "page-length", defaultValue = "5") int pageLength,
+                                                     HttpServletRequest request
     ) {
         User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
                 new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
         page = page < 1 ? 1 : page;
         pageLength = pageLength < 1 ? 5 : pageLength;
-        return new Response<MyCourseListDto>(courseService.pagingMyCourse(user, pageLength, page));
+        return new Response<CourseListDto>(courseService.pagingMyCourse(user, pageLength, page));
     }
 
     @DeleteMapping("/")
@@ -73,6 +118,19 @@ public class CourseController {
         courseService.deleteCourse(user, id);
 
         return new Response<DeleteCourseDto>(new DeleteCourseDto(true, id));
+    }
+
+    @PutMapping("/")
+    @ResponseBody
+    public Response editCourse(
+            @RequestBody Course course,
+            HttpServletRequest request
+    ) {
+        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
+                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
+
+
+        return null;
     }
 
     @GetMapping("/place")
