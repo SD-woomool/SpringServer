@@ -37,6 +37,7 @@ public class PlaceService {
             Optional<String> cachedResponse = findCachedPlaceResponse(query);
             String placeResponse = cachedResponse.get();
             PlaceSearchResponseDto cachePlaceSearchResponseDto = objectMapper.readValue(placeResponse, PlaceSearchResponseDto.class);
+            System.out.println("response cached data");
             return cachePlaceSearchResponseDto;
         } catch (Exception e) {
             System.out.println("no cached data");
