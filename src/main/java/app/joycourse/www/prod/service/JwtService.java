@@ -25,8 +25,10 @@ import java.util.Map;
 public class JwtService {
     private final JwtConfig jwtConfig;
 
+
     @Resource
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
 
     private SignatureAlgorithm getAlgorithm() {
         return SignatureAlgorithm.forName(jwtConfig.getAlgorithm());

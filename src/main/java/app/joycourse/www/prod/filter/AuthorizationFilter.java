@@ -4,7 +4,6 @@ package app.joycourse.www.prod.filter;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.repository.AccountRepository;
 import app.joycourse.www.prod.service.JwtService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,10 +19,14 @@ import java.util.Optional;
 
 @WebFilter({"/accounts/logout/", "/accounts/", "/course/", "/course/my-course"})
 @Order(1)
-@RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
-    private final AccountRepository accountRepository;
     private final JwtService jwtService;
+    private final AccountRepository accountRepository;
+
+    public AuthorizationFilter(AccountRepository accountRepository, JwtService jwtService) {
+        this.accountRepository = accountRepository;
+        this.jwtService = jwtService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, RuntimeException {

@@ -1,23 +1,23 @@
 package app.joycourse.www.prod.repository;
 
 import app.joycourse.www.prod.domain.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
+@RequiredArgsConstructor
 public class JpaAccountRepository implements AccountRepository {
     private final EntityManager em;
 
-    public JpaAccountRepository(EntityManager em) {
-        this.em = em;
-    }
+    //public JpaAccountRepository(EntityManager em) {
+    //    this.em = em;
+    //}
 
-    public EntityManager getEm() {
-        return this.em;
-    }
 
     @Override
     public Optional<User> findByEmail(String email) {

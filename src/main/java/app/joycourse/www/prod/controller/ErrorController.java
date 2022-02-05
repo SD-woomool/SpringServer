@@ -1,8 +1,8 @@
 package app.joycourse.www.prod.controller;
 
 
-import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.dto.Response;
+import app.joycourse.www.prod.exception.CustomException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,44 +23,54 @@ public class ErrorController {
     String errorDescription;
 
     @ExceptionHandler({CustomException.class})
-    public Response<Map<String, Integer>> customExceptionHandler(CustomException e){
+    public Response<Map<String, Integer>> customExceptionHandler(CustomException e) {
         this.errorDescription = e.getMessage();
         this.error = e.getCustomError().getError();
-        Map<String ,Integer> status = new HashMap<>();
+        Map<String, Integer> status = new HashMap<>();
         status.put("status", e.getCustomError().getStatus());
 
-        if(e.getMessage().equals("")){
+        if (e.getMessage().equals("")) {
             this.errorDescription = null;
         }
+
+        e.printStackTrace();
+
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 
     @ExceptionHandler({RuntimeException.class})
-    public Response<Map<String, Integer>> RuntimeException(Exception e){
+    public Response<Map<String, Integer>> RuntimeException(Exception e) {
         this.errorDescription = e.getMessage();
         this.error = "SERVER_ERROR";
         Map<String, Integer> status = new HashMap<>();
         status.put("status", 500);
+
+        e.printStackTrace();
+
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 
     @ExceptionHandler({NoHandlerFoundException.class})
-    public Response<Map<String, Integer>> noHandlerFoundException(Exception e){
+    public Response<Map<String, Integer>> noHandlerFoundException(Exception e) {
         CustomException customException = new CustomException("PAGE_NOT_FOUND", CustomException.CustomError.PAGE_NOT_FOUND);
         this.errorDescription = customException.getMessage();
         this.error = customException.getCustomError().getError();
         Map<String, Integer> status = new HashMap<>();
         status.put("status", customException.getCustomError().getStatus());
 
+        e.printStackTrace();
+
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
 
     @ExceptionHandler({Exception.class})
-    public Response<Map<String, Integer>> exceptionHandler(Exception e){
+    public Response<Map<String, Integer>> exceptionHandler(Exception e) {
         this.error = "SERVER_ERROR";
         this.errorDescription = "IOException";//e.getMessage();
         Map<String, Integer> status = new HashMap<>();
         status.put("status", 500);
+
+        e.printStackTrace();
 
         return new Response<Map<String, Integer>>(this.error, this.errorDescription, status);
     }
