@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.dto;
 
+import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.CourseDetail;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -51,6 +52,23 @@ public class CourseInfoDto {
             this.courseDetail.add(new CourseDetailDto(detail.getPrice(), detail.getContent(), detail.getPhoto()));
         });
 
+    }
+
+    public CourseInfoDto(Course course) {
+        this.id = course.getId();
+        this.userNickname = course.getUser().getNickname();
+        this.title = course.getTitle();
+        this.content = course.getContent();
+        this.thumbnailUrl = course.getThumbnailUrl();
+        this.location = course.getLocation();
+        this.totalPrice = course.getTotalPrice();
+        this.memo = course.getMemo();
+        this.likeCnt = course.getLikeCnt();
+        this.courseDetail = new ArrayList<>();
+        course.getCourseDetail().forEach((detail) -> {
+            if (detail.getPrice() == null) detail.setPrice((float) 0);
+            this.courseDetail.add(new CourseDetailDto(detail.getPrice(), detail.getContent(), detail.getPhoto()));
+        });
     }
 
 

@@ -11,7 +11,11 @@ public interface CourseRepository {
 
     Course saveCourse(Course course);
 
-    Optional<List<Course>> findByUser(User user, int pageLength, int page);
+    Optional<List<Course>> pagingByUser(User user, int pageLength, int page);
+
+    Optional<List<Course>> pagingById(int pageLength, int page);
 
     Optional<Course> findById(Long courseId);
+
+    void mergeCourse(Course courseInfo);
 }

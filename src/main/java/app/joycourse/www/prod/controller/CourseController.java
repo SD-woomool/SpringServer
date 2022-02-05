@@ -54,7 +54,9 @@ public class CourseController {
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "page-length", defaultValue = "5") int pageLength
     ) {
-        return null;
+        page = page < 1 ? 1 : page;
+        pageLength = pageLength < 1 ? 5 : pageLength;
+        return new Response<CourseListDto>(courseService.pagingCourse(pageLength, page));
     }
 
 
@@ -122,15 +124,20 @@ public class CourseController {
 
     @PutMapping("/")
     @ResponseBody
-    public Response editCourse(
-            @RequestBody Course course,
+    public Response<CourseInfoDto> editCourse(
+            @RequestBody Course courseInfo,
             HttpServletRequest request
     ) {
         User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
                 new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
+        Course course = courseService.getCourse(courseInfo.getId());
+        if (course.equals(courseInfo)) {// || !(course.getUser().equals(user))) {
+            throw new CustomException("INVALID_COURSE_INFO", CustomException.CustomError.INVALID_PARAMETER);
+        }
+        courseService.updateCourse(course, courseInfo);
 
-        return null;
+        return new Response<CourseInfoDto>(new CourseInfoDto(course));
     }
 
     @GetMapping("/place")

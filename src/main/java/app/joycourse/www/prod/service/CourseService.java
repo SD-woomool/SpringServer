@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -33,9 +34,19 @@ public class CourseService {
         return courseRepository.saveCourse(course);
     }
 
+    public CourseListDto pagingCourse(int pageLength, int page) {
+        CourseListDto courseListDto = new CourseListDto(false, pageLength, page);
+        List<Course> courseList = courseRepository.pagingById(pageLength, page).orElse(null);
+        if (courseList == null || courseList.size() < pageLength) {
+            courseListDto.setIsEnd(true);
+        }
+        courseListDto.setCourseList(courseList);
+        return courseListDto;
+    }
+
     public CourseListDto pagingMyCourse(User user, int pageLength, int page) { // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
         CourseListDto myCourseListDto = new CourseListDto(false, pageLength, page);
-        List<Course> courseList = courseRepository.findByUser(user, pageLength, page).orElse(null);
+        List<Course> courseList = courseRepository.pagingByUser(user, pageLength, page).orElse(null);
         System.out.println("this is courseList" + courseList);
         if (courseList == null || courseList.size() < pageLength) {
             myCourseListDto.setIsEnd(true);
@@ -55,6 +66,25 @@ public class CourseService {
     public Course getCourse(Long courseId) throws CustomException {
         return courseRepository.findById(courseId).orElseThrow(() ->
                 new CustomException("INVALID COURSE_ID", CustomException.CustomError.INVALID_PARAMETER));
+    }
+
+    public void updateCourse(Course course, Course newCourseInfo) {
+        newCourseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detail) -> {
+            detail.setCourse(course);
+        });
+        course.setTitle(newCourseInfo.getTitle());
+        course.setContent(newCourseInfo.getContent());
+        course.setLocation(newCourseInfo.getLocation());
+        course.setThumbnailUrl(newCourseInfo.getThumbnailUrl());
+        course.setMemo(newCourseInfo.getMemo());
+        course.setCourseDetail(newCourseInfo.getCourseDetail());
+        /*if (!(course.getId().equals(newCourseInfo.getId()))) {
+            throw new CustomException("INVALID_COURSE_INFO", CustomException.CustomError.INVALID_PARAMETER);
+        }
+        newCourseInfo.setUser(course.getUser());
+        newCourseInfo.setLikeCnt(course.getLikeCnt());
+        courseRepository.mergeCourse(newCourseInfo);*/
+
     }
 
 }
