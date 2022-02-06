@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/joycourse-dev
-    driver-class-name: org.h2.Driver
-    username: sa
+    url: jdbc:mysql://localhost:3306/joycourse?characterEncoding=utf8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: joycourse
   jpa:
     show-sql: true
     hibernate:
