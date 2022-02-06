@@ -132,7 +132,7 @@ public class CourseController {
                 new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
         Course course = courseService.getCourse(courseInfo.getId());
-        if (course.equals(courseInfo)) {// || !(course.getUser().equals(user))) {
+        if (course.equals(courseInfo) || !course.getUser().getId().equals(user.getId())) {
             throw new CustomException("INVALID_COURSE_INFO", CustomException.CustomError.INVALID_PARAMETER);
         }
         courseService.updateCourse(course, courseInfo);

@@ -72,18 +72,12 @@ public class CourseService {
         newCourseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detail) -> {
             detail.setCourse(course);
         });
-        course.setTitle(newCourseInfo.getTitle());
-        course.setContent(newCourseInfo.getContent());
-        course.setLocation(newCourseInfo.getLocation());
-        course.setThumbnailUrl(newCourseInfo.getThumbnailUrl());
-        course.setMemo(newCourseInfo.getMemo());
-        course.setCourseDetail(newCourseInfo.getCourseDetail());
-        /*if (!(course.getId().equals(newCourseInfo.getId()))) {
+        if (!(course.getId().equals(newCourseInfo.getId()))) {
             throw new CustomException("INVALID_COURSE_INFO", CustomException.CustomError.INVALID_PARAMETER);
         }
         newCourseInfo.setUser(course.getUser());
         newCourseInfo.setLikeCnt(course.getLikeCnt());
-        courseRepository.mergeCourse(newCourseInfo);*/
+        courseRepository.mergeCourse(newCourseInfo);
 
     }
 

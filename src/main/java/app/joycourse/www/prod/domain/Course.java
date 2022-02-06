@@ -45,7 +45,7 @@ public class Course {
     @ColumnDefault("0")
     private Float totalPrice;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+    @OneToMany(cascade = CascadeType.ALL,//{CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
             mappedBy = "course",
             fetch = FetchType.LAZY,
             orphanRemoval = true
