@@ -1,12 +1,36 @@
 package app.joycourse.www.prod.exception;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 public class CustomException extends RuntimeException {
+    CustomError customError;
+
+    public CustomException() {
+        super("SERVER_ERROR");
+    }
+
+    public CustomException(String message) {
+        super(message);
+    }
+
+    public CustomException(String message, CustomError customError) {
+        super(message);
+        this.customError = customError;
+    }
+
+    public CustomException(CustomError customError) {
+        super("SERVER_ERROR");
+        this.customError = customError;
+    }
+
+    public CustomError getCustomError() {
+        return this.customError;
+    }
+
     @AllArgsConstructor
-    public enum CustomError{
+    public enum CustomError {
         INVALID_PROVIDER(400, "BAD_REQUEST"),
+        INVALID_PARAMETER(400, "INVALID_PARAMETER"),
         GET_TOKEN_ERROR(500, "SERVER_ERROR"),
         PAGE_NOT_FOUND(404, "PAGE_NOT_FOUND"),
         UNAUTHORIZED(401, "UNAUTHORIZED"),
@@ -17,32 +41,12 @@ public class CustomException extends RuntimeException {
         private int status;
         private String error;
 
-        public int getStatus(){
+        public int getStatus() {
             return this.status;
         }
-        public String getError(){
+
+        public String getError() {
             return this.error;
         }
-    }
-
-    CustomError customError;
-
-    public CustomException(){
-        super("SERVER_ERROR");
-    }
-    public CustomException(String message){
-        super(message);
-    }
-    public CustomException(String message, CustomError customError){
-        super(message);
-        this.customError = customError;
-    }
-    public CustomException(CustomError customError){
-        super("SERVER_ERROR");
-        this.customError = customError;
-    }
-
-    public CustomError getCustomError(){
-        return this.customError;
     }
 }

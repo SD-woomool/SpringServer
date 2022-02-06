@@ -18,19 +18,45 @@ public class JpaCourseRepository implements CourseRepository {
     }
 
     @Override
+    public void deleteCourse(Course deleteCourse) {
+        em.remove(deleteCourse);
+    }
+
+    @Override
     public Course saveCourse(Course course) {
         em.persist(course);
         return course;
     }
 
     @Override
-    public Optional<List<Course>> findByUser(User user, int pageLength, int page) { // 이름 바꿔야할듯?
+    public Optional<List<Course>> pagingByUser(User user, int pageLength, int page) { // 이름 바꿔야할듯?
         List<Course> result = em.createQuery("select c from Course c where c.user = :user", Course.class).
                 setParameter("user", user).
                 setMaxResults(pageLength).
                 setFirstResult((page - 1) * pageLength).
                 getResultList();
-        System.out.println("this is result: " + result);
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Optional<List<Course>> pagingById(int pageLength, int page) {
+        List<Course> result = em.createQuery("select c from Course c", Course.class)
+                .setMaxResults(pageLength)
+                .setFirstResult((page - 1) * pageLength)
+                .getResultList();
+        return Optional.ofNullable(result);
+    }
+
+
+    @Override
+    public Optional<Course> findById(Long courseId) {
+        return Optional.ofNullable(em.find(Course.class, courseId));
+    }
+
+    @Override
+    public void mergeCourse(Course courseInfo) {
+        em.merge(courseInfo);
+    }
+
+
 }

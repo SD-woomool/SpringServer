@@ -2,10 +2,10 @@ package app.joycourse.www.prod.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,11 +45,24 @@ public class Course {
     @ColumnDefault("0")
     private Float totalPrice;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "course")
+    @OneToMany(cascade = CascadeType.ALL,//{CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
+            mappedBy = "course",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
     @Column(nullable = false)
     private List<CourseDetail> courseDetail;
 
-    public void setTotalPrice(){   // 좀 허접해 다시 해
+    public void setCourseDetail(List<CourseDetail> newCourseDetail) {
+        if (this.courseDetail == null) {
+            this.courseDetail = new ArrayList<>();
+        } else {
+            this.courseDetail.clear();
+        }
+        this.courseDetail.addAll(newCourseDetail);
+    }
+
+    public void setTotalPrice() {   // 좀 허접해 다시 해
         double totalPrice = 0;
         totalPrice = this.courseDetail.stream().filter((detail) -> detail.getPrice() != null).
                 mapToDouble(CourseDetail::getPrice).sum();
