@@ -53,6 +53,12 @@ public class Course {
     @Column(nullable = false)
     private List<CourseDetail> courseDetail;
 
+    @OneToMany(cascade = CascadeType.REMOVE,
+            mappedBy = "course",
+            fetch = FetchType.LAZY
+    )
+    private List<Comment> comments;
+
     public void setCourseDetail(List<CourseDetail> newCourseDetail) {
         if (this.courseDetail == null) {
             this.courseDetail = new ArrayList<>();

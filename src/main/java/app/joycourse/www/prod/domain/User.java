@@ -5,10 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
-
-
-import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Entity
@@ -39,7 +35,10 @@ public class User {
     private String createdAt;
 
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Course> course; // manytomany 나 onetomany는 이렇게 해야함?
+    private List<Course> course;
+
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Comment> comments;
 
 
     public Long getId() {
@@ -99,6 +98,7 @@ public class User {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.createdAt = format.format(millis);
     }
+
 
 }
 

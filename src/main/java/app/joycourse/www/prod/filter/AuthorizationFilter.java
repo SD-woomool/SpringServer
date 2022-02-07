@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-@WebFilter({"/accounts/logout/", "/accounts/", "/course/", "/course/my-course"})
+@WebFilter({"/accounts/logout/", "/accounts/", "/course/", "/course/my-course", "/comments/"})
 @Order(1)
 public class AuthorizationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
