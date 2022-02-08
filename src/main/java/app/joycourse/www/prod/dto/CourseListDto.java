@@ -22,6 +22,18 @@ public class CourseListDto {
     public CourseListDto(
             Boolean isEnd,
             Integer pageLength,
+            Integer page,
+            List<CourseInfoDto> courseList
+    ) {
+        this.isEnd = isEnd;
+        this.pageLength = pageLength;
+        this.page = page;
+        this.courseList = courseList;
+    }
+
+    public CourseListDto(
+            Boolean isEnd,
+            Integer pageLength,
             Integer page
     ) {
         this.isEnd = isEnd;
@@ -31,7 +43,6 @@ public class CourseListDto {
 
     public void setCourseList(List<Course> courseList) {
         if (courseList == null) {
-            System.out.println("****** no course***********");
             this.courseList = null;
             return;
         }

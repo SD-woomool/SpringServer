@@ -4,22 +4,16 @@ package app.joycourse.www.prod.controller;
 import app.joycourse.www.prod.domain.Comment;
 import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.User;
-import app.joycourse.www.prod.dto.CommentInfoDto;
-import app.joycourse.www.prod.dto.CommentSaveDto;
-import app.joycourse.www.prod.dto.CommentSaveRequestBodyDto;
-import app.joycourse.www.prod.dto.Response;
+import app.joycourse.www.prod.dto.*;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CommentService;
 import app.joycourse.www.prod.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/comments")
@@ -41,6 +35,30 @@ public class CommentController {
         Course course = courseService.getCourse(commentInfo.getCourseId());
         Comment savedComment = commentService.saveComment(commentInfo.getComment(), user, course);
         return new Response<CommentSaveDto>(new CommentSaveDto(true, new CommentInfoDto(savedComment)));
+    }
+
+    @GetMapping("/")
+    @ResponseBody
+    public Response<CommentListDto> getCommentList(
+            @RequestParam(name = "course_id") Long courseId,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "page_length", defaultValue = "10") int pageLength
+    ) {
+        Course course = courseService.getCourse(courseId);
+        page = page <= 0 ? 1 : page;
+        pageLength = pageLength <= 0 ? 10 : pageLength;
+        List<CommentInfoDto> commentList = new ArrayList<>();
+        commentService.pagingComment(course, page, pageLength).stream().flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .forEach((comment) -> {
+                    commentList.add(new CommentInfoDto(comment));
+                });
+        return new Response<CommentListDto>(new CommentListDto(
+                commentList.size() < pageLength,
+                page,
+                pageLength,
+                commentList
+        ));
     }
 
 }

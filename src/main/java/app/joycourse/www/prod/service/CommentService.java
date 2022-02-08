@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -19,5 +22,10 @@ public class CommentService {
         comment.setCourse(course);
         comment.setCreateAt();
         return commentRepository.saveComment(comment);
+    }
+
+    public Optional<List<Comment>> pagingComment(Course course, int page, int pageLength) {
+
+        return commentRepository.pagingByCourse(course, page, pageLength);
     }
 }
