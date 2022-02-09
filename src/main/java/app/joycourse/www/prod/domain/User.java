@@ -16,10 +16,10 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, name = "nickname")
     private String nickname;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, name = "email")
     private String email;
 
     @Column

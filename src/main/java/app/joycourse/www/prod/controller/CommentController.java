@@ -9,13 +9,12 @@ import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CommentService;
 import app.joycourse.www.prod.service.CourseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
-@Controller
+@RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
@@ -33,9 +32,11 @@ public class CommentController {
                 new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
         Course course = courseService.getCourse(commentInfo.getCourseId());
-        Comment savedComment = commentService.saveComment(commentInfo.getComment(), user, course);
+        Comment comment = new Comment(commentInfo.getCommentInfo());
+        Comment savedComment = commentService.saveComment(comment, user, course);
         return new Response<CommentSaveDto>(new CommentSaveDto(true, new CommentInfoDto(savedComment)));
     }
+
 
     @GetMapping("/")
     @ResponseBody
@@ -59,6 +60,18 @@ public class CommentController {
                 pageLength,
                 commentList
         ));
+    }
+
+    /*
+     *자식 댓글이 있는경우 모두 삭제해야해
+     */
+    @DeleteMapping("/")
+    @ResponseBody
+    public Response deleteComment(
+            @RequestParam(name = "comment_id") Long commentId,
+            HttpServletRequest request
+    ) {
+        return null;
     }
 
 }
