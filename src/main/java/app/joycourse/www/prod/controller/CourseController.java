@@ -1,18 +1,15 @@
 package app.joycourse.www.prod.controller;
 
-import app.joycourse.www.prod.domain.Course;
-import app.joycourse.www.prod.domain.CourseDetail;
-import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.CourseSaveDto;
 import app.joycourse.www.prod.dto.MyCourseListDto;
 import app.joycourse.www.prod.dto.Response;
+import app.joycourse.www.prod.entity.Course;
+import app.joycourse.www.prod.entity.User;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CourseService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 

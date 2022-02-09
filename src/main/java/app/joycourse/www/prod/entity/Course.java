@@ -1,8 +1,7 @@
-package app.joycourse.www.prod.domain;
+package app.joycourse.www.prod.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;

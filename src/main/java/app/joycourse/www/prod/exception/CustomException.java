@@ -5,6 +5,7 @@ import lombok.Getter;
 
 public class CustomException extends RuntimeException {
     @AllArgsConstructor
+    @Getter
     public enum CustomError{
         INVALID_PROVIDER(400, "BAD_REQUEST"),
         GET_TOKEN_ERROR(500, "SERVER_ERROR"),
@@ -16,29 +17,24 @@ public class CustomException extends RuntimeException {
 
         private int status;
         private String error;
-
-        public int getStatus(){
-            return this.status;
-        }
-        public String getError(){
-            return this.error;
-        }
     }
 
-    CustomError customError;
+    private final CustomError customError;
 
     public CustomException(){
         super("SERVER_ERROR");
+        this.customError = CustomError.SERVER_ERROR;
     }
     public CustomException(String message){
         super(message);
+        this.customError = CustomError.SERVER_ERROR;
     }
     public CustomException(String message, CustomError customError){
         super(message);
         this.customError = customError;
     }
     public CustomException(CustomError customError){
-        super("SERVER_ERROR");
+        super(customError.error);
         this.customError = customError;
     }
 

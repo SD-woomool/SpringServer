@@ -1,7 +1,6 @@
 package app.joycourse.www.prod.repository;
 
-import app.joycourse.www.prod.domain.User;
-import lombok.extern.slf4j.Slf4j;
+import app.joycourse.www.prod.entity.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,9 @@ import java.util.Optional;
 
 @SpringBootTest(properties = {"nickname=nickname", "email=email@email.com", "ageRange=0", "gender=0"})
 @Transactional
-public class JpaAccountRepositoryTests {
+public class JpaUserRepositoryTests {
     @Autowired
-    private AccountRepository repository;
+    private UserRepository repository;
 
     @Value("${nickname}")
     private String nickname;

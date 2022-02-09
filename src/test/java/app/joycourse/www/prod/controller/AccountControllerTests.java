@@ -1,30 +1,9 @@
 package app.joycourse.www.prod.controller;
 
-import app.joycourse.www.prod.config.OauthConfig;
-import app.joycourse.www.prod.constants.Constants;
-import app.joycourse.www.prod.domain.User;
-import app.joycourse.www.prod.dto.Response;
-import app.joycourse.www.prod.dto.UserInfo;
-import app.joycourse.www.prod.exception.CustomException;
-import app.joycourse.www.prod.exception.CustomExceptionH;
-import app.joycourse.www.prod.service.AccountService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
-
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(properties = {"provider=naver", "code=cPFGokPnRVbHfWgd4J"})
 @AutoConfigureMockMvc

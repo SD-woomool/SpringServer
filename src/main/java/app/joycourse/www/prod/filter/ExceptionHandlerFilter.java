@@ -1,23 +1,21 @@
 package app.joycourse.www.prod.filter;
 
-import app.joycourse.www.prod.controller.ErrorController;
 import app.joycourse.www.prod.dto.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@Component
+//@Component
 //@WebFilter("/*")
-@Order(0)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     public ExceptionHandlerFilter(){

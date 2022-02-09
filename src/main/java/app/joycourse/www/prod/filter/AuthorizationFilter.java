@@ -1,8 +1,8 @@
 package app.joycourse.www.prod.filter;
 
 
-import app.joycourse.www.prod.domain.User;
-import app.joycourse.www.prod.repository.AccountRepository;
+import app.joycourse.www.prod.entity.User;
+import app.joycourse.www.prod.repository.UserRepository;
 import app.joycourse.www.prod.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
@@ -10,7 +10,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,32 +17,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-@WebFilter({"/accounts/logout/", "/accounts/", "/course/", "/course/my-course"})
+//@WebFilter({"/accounts/logout/", "/accounts/", "/course/", "/course/my-course"})
 @Order(1)
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
-    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
     private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, RuntimeException {
         System.out.println("authorizationFilter is running!!!");
-
-        /*
-         * WARNING: ONLY dev
-         * test user
-         */
-        if (request.getHeader("Authorization").equals("ykh") || request.getHeader("Authorization").equals("hsh")) {
-            Optional<User> user;
-            if (request.getHeader("Authorization").equals("ykh")) {
-                user = accountRepository.findById(1L);
-            } else {
-                user = accountRepository.findById(2L);
-            }
-            System.out.println("Dev User: " + user.orElse(null));
-            request.setAttribute("user", user.orElse(null));
-        }
-
 
         if (request.getMethod().equalsIgnoreCase("POST") && request.getRequestURI().equals("/accounts/")) {
             filterChain.doFilter(request, response);
@@ -63,7 +46,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                     String jwt = cookie.getValue();
                     Map<String, Object> payloadData = jwtService.getPayload(jwt);
                     System.out.println("#########" + payloadData.get("id") + "##########");
-                    Optional<User> user = accountRepository.findById(Long.valueOf(String.valueOf(payloadData.get("id"))));
+                    Optional<User> user = userRepository.findBySeq(Long.valueOf(String.valueOf(payloadData.get("id"))));
                     if (user.isPresent()) {
                         request.setAttribute("user", user.orElse(null));
                         filterChain.doFilter(request, response);

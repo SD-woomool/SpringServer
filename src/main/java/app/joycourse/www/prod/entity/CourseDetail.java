@@ -1,6 +1,5 @@
-package app.joycourse.www.prod.domain;
+package app.joycourse.www.prod.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
