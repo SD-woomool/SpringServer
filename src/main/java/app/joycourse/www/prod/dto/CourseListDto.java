@@ -2,8 +2,6 @@ package app.joycourse.www.prod.dto;
 
 
 import app.joycourse.www.prod.domain.Course;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,12 +10,23 @@ import java.util.List;
 
 @Getter
 @Setter
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CourseListDto {
     Boolean isEnd;
     Integer pageLength;
     Integer page;
     List<CourseInfoDto> courseList;
+
+    public CourseListDto(
+            Boolean isEnd,
+            Integer pageLength,
+            Integer page,
+            List<CourseInfoDto> courseList
+    ) {
+        this.isEnd = isEnd;
+        this.pageLength = pageLength;
+        this.page = page;
+        this.courseList = courseList;
+    }
 
     public CourseListDto(
             Boolean isEnd,
@@ -31,7 +40,6 @@ public class CourseListDto {
 
     public void setCourseList(List<Course> courseList) {
         if (courseList == null) {
-            System.out.println("****** no course***********");
             this.courseList = null;
             return;
         }

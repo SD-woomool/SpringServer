@@ -2,6 +2,7 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.dto.CourseInfoDto;
 import app.joycourse.www.prod.dto.CourseListDto;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.CourseDetailRepository;
@@ -9,6 +10,8 @@ import app.joycourse.www.prod.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,24 +38,31 @@ public class CourseService {
     }
 
     public CourseListDto pagingCourse(int pageLength, int page) {
-        CourseListDto courseListDto = new CourseListDto(false, pageLength, page);
-        List<Course> courseList = courseRepository.pagingById(pageLength, page).orElse(null);
-        if (courseList == null || courseList.size() < pageLength) {
-            courseListDto.setIsEnd(true);
-        }
-        courseListDto.setCourseList(courseList);
-        return courseListDto;
+        List<CourseInfoDto> courseInfoList = new ArrayList<>();
+        courseRepository.pagingById(pageLength, page).stream().flatMap(Collection::stream)
+                .forEach((course) -> {
+                    courseInfoList.add(new CourseInfoDto(course));
+                });
+        return new CourseListDto(
+                courseInfoList.size() < pageLength,
+                pageLength,
+                page,
+                courseInfoList
+        );
     }
 
     public CourseListDto pagingMyCourse(User user, int pageLength, int page) { // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
-        CourseListDto myCourseListDto = new CourseListDto(false, pageLength, page);
-        List<Course> courseList = courseRepository.pagingByUser(user, pageLength, page).orElse(null);
-        System.out.println("this is courseList" + courseList);
-        if (courseList == null || courseList.size() < pageLength) {
-            myCourseListDto.setIsEnd(true);
-        }
-        myCourseListDto.setCourseList(courseList);
-        return myCourseListDto;
+        List<CourseInfoDto> courseInfoList = new ArrayList<>();
+        courseRepository.pagingByUser(user, pageLength, page).stream().flatMap(Collection::stream)
+                .forEach((course) -> {
+                    courseInfoList.add(new CourseInfoDto(course));
+                });
+        return new CourseListDto(
+                courseInfoList.size() < pageLength,
+                pageLength,
+                page,
+                courseInfoList
+        );
     }
 
     public void deleteCourse(User user, long courseId) {

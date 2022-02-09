@@ -1,20 +1,11 @@
 package app.joycourse.www.prod.repository;
 
-import app.joycourse.www.prod.domain.User;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-
 import javax.transaction.Transactional;
-import java.util.Optional;
 
-@SpringBootTest(properties = {"nickname=nickname", "email=email@email.com", "ageRange=0", "gender=0"})
+//@SpringBootTest(properties = {"nickname=nickname", "email=email@email.com", "ageRange=0", "gender=0"})
 @Transactional
 public class JpaAccountRepositoryTests {
+    /*
     @Autowired
     private AccountRepository repository;
 
@@ -78,6 +69,6 @@ public class JpaAccountRepositoryTests {
         Assertions.assertThatThrownBy(() -> {
             repository.newUser(duplicatedUser);
         }).isInstanceOf(DataIntegrityViolationException.class);
-    }
+    }*/
 
 }

@@ -1,22 +1,9 @@
 package app.joycourse.www.prod.service;
 
 
-import app.joycourse.www.prod.domain.User;
-import app.joycourse.www.prod.exception.CustomException;
-import app.joycourse.www.prod.repository.AccountRepository;
-import app.joycourse.www.prod.repository.JpaAccountRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-@SpringBootTest(properties = {"nickname=ykh", "email=ykh8383633@naver.com", "gender=0", "ageRange=1"})
+//@SpringBootTest(properties = {"nickname=ykh", "email=ykh8383633@naver.com", "gender=0", "ageRange=1"})
 @Transactional
 public class AccountServiceTest {
 /*

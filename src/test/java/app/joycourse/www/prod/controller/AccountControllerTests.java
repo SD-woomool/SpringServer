@@ -1,12 +1,9 @@
 package app.joycourse.www.prod.controller;
 
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import javax.transaction.Transactional;
 
-@SpringBootTest(properties = {"provider=naver", "code=cPFGokPnRVbHfWgd4J"})
-@AutoConfigureMockMvc
+//@SpringBootTest(properties = {"provider=naver", "code=cPFGokPnRVbHfWgd4J"})
+//@AutoConfigureMockMvc
 @Transactional
 public class AccountControllerTests {
     /*
