@@ -19,4 +19,6 @@ public interface CommentRepository {
     Optional<Comment> findById(Long commentId);
 
     Optional<List<Comment>> findByParentId(Long parentId);
+
+    Optional<Comment> mergeComment(Comment newComment);
 }

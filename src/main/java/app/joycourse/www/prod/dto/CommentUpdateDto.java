@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,10 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CourseDetailDto {
+public class CommentUpdateDto {
 
-    private Long courseId;
-    private float price;
-    private String content;
-    private String photo;
+    Boolean update;
+    CommentInfoDto commentInfo;
 }

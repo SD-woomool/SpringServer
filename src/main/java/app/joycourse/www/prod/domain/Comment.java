@@ -45,11 +45,16 @@ public class Comment {
         this.content = commentInfo.getContent();
         this.likeCnt = commentInfo.getLikeCnt();
         this.parentComment = commentInfo.getParentComment();
+        this.createdAt = commentInfo.getCreatedAt();
     }
 
     public void setCreateAt() {
         long millis = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.createdAt = format.format(millis);
+    }
+
+    public void setCreateAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

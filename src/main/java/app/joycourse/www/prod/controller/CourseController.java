@@ -125,7 +125,7 @@ public class CourseController {
     @PutMapping("/")
     @ResponseBody
     public Response<CourseInfoDto> editCourse(
-            @RequestBody Course courseInfo,
+            @RequestBody Course courseInfo, // 여기 dto로 바꾸자
             HttpServletRequest request
     ) {
         User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->

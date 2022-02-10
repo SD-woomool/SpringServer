@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CommentSaveRequestBodyDto {
+public class CommentRequestBodyDto {
 
     private CommentInfoDto commentInfo;
     private Long courseId;

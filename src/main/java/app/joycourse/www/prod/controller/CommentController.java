@@ -25,7 +25,7 @@ public class CommentController {
     @PostMapping("/")
     @ResponseBody
     public Response<CommentSaveDto> saveComment(
-            @RequestBody CommentSaveRequestBodyDto commentInfo,
+            @RequestBody CommentRequestBodyDto commentInfo,
             HttpServletRequest request
     ) {
         User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
@@ -74,6 +74,9 @@ public class CommentController {
             @RequestParam(name = "comment_id") Long commentId,
             HttpServletRequest request
     ) {
+        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
+                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
+
         Comment targetComment = commentService.findComment(commentId);
         int deleteCnt = commentService.deleteCommentsByParentId(targetComment.getId());
         commentService.deleteComments(targetComment);
@@ -84,10 +87,17 @@ public class CommentController {
 
     @PutMapping("/")
     @ResponseBody
-    public Response editComment(
+    public Response<CommentUpdateDto> editComment(
+            @RequestBody CommentRequestBodyDto commentInfo,
             HttpServletRequest request
     ) {
-        return null;
+        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
+                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
+
+        Comment comment = commentService.findComment(commentInfo.getCommentInfo().getId());
+        Comment newComment = new Comment(commentInfo.getCommentInfo());
+        Comment updatedComment = commentService.updateComment(comment, newComment, user);
+        return new Response<CommentUpdateDto>(new CommentUpdateDto(true, new CommentInfoDto(updatedComment)));
     }
 
 }

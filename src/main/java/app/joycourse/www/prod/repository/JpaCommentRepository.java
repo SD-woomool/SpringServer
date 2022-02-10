@@ -56,4 +56,9 @@ public class JpaCommentRepository implements CommentRepository {
                         .getResultList()
         );
     }
+
+    @Override
+    public Optional<Comment> mergeComment(Comment newComment) {
+        return Optional.ofNullable(em.merge(newComment));
+    }
 }

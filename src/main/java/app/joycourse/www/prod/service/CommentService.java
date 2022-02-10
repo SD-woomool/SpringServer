@@ -48,4 +48,16 @@ public class CommentService {
     public void deleteComments(Comment comment) {
         commentRepository.deleteComment(comment);
     }
+
+    public Comment updateComment(Comment comment, Comment newComment, User user) {
+        if (!comment.getUser().getId().equals(user.getId())) {
+            throw new CustomException("INVALID_REQUEST", CustomException.CustomError.BAD_REQUEST);
+        }
+        newComment.setId(comment.getId());
+        newComment.setUser(user);
+        newComment.setCreateAt(comment.getCreatedAt());
+        newComment.setCourse(comment.getCourse());
+        return commentRepository.mergeComment(newComment).orElseThrow(() ->
+                new CustomException("UPDATE_FAIL", CustomException.CustomError.INVALID_PARAMETER));
+    }
 }

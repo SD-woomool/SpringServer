@@ -23,6 +23,10 @@ public class CourseInfoDto {
     private String memo;
     private List<CourseDetailDto> courseDetail;
 
+    public CourseInfoDto() {
+
+    }
+
     public CourseInfoDto(
             Long id,
             String userNickname,
@@ -46,7 +50,7 @@ public class CourseInfoDto {
         this.likeCnt = likeCnt;
         this.courseDetail = new ArrayList<>();
         courseDetailList.forEach((detail) -> {
-            this.courseDetail.add(new CourseDetailDto(detail.getPrice(), detail.getContent(), detail.getPhoto()));
+            this.courseDetail.add(new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()));
         });
 
     }
@@ -64,7 +68,7 @@ public class CourseInfoDto {
         this.courseDetail = new ArrayList<>();
         course.getCourseDetail().forEach((detail) -> {
             if (detail.getPrice() == null) detail.setPrice((float) 0);
-            this.courseDetail.add(new CourseDetailDto(detail.getPrice(), detail.getContent(), detail.getPhoto()));
+            this.courseDetail.add(new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()));
         });
     }
 
