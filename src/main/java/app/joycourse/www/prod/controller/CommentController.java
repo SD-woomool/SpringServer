@@ -64,11 +64,27 @@ public class CommentController {
 
     /*
      *자식 댓글이 있는경우 모두 삭제해야해
+     * em은 bulk delete 지원 안함
+     * 그냥 부모 댓글로 지우는 쿼리를 만들어서 지워야해
+     * 지금은 레포에서 getresultlist를 지원 안하는듯 지울때는.... 다시해
      */
     @DeleteMapping("/")
     @ResponseBody
-    public Response deleteComment(
+    public Response<CommentDeleteDto> deleteComment(
             @RequestParam(name = "comment_id") Long commentId,
+            HttpServletRequest request
+    ) {
+        Comment targetComment = commentService.findComment(commentId);
+        int deleteCnt = commentService.deleteCommentsByParentId(targetComment.getId());
+        commentService.deleteComments(targetComment);
+        deleteCnt++;
+
+        return new Response<CommentDeleteDto>(new CommentDeleteDto(true, deleteCnt));
+    }
+
+    @PutMapping("/")
+    @ResponseBody
+    public Response editComment(
             HttpServletRequest request
     ) {
         return null;

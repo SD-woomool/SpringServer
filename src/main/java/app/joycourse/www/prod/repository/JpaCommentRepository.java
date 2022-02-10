@@ -34,4 +34,26 @@ public class JpaCommentRepository implements CommentRepository {
     public void deleteComment(Comment comment) {
         em.remove(comment);
     }
+
+    @Override
+    public int deleteCommentByParentId(Long parentId) {
+        return em.createQuery("delete from Comment c where c.parentComment = :parentComment")
+                .setParameter("parentComment", parentId)
+                .executeUpdate();
+    }
+
+
+    @Override
+    public Optional<Comment> findById(Long commentId) {
+        return Optional.ofNullable(em.find(Comment.class, commentId));
+    }
+
+    @Override
+    public Optional<List<Comment>> findByParentId(Long parentId) {
+        return Optional.ofNullable(
+                em.createQuery("select from Comment c where c.parentId = :parentId", Comment.class)
+                        .setParameter("parentId", parentId)
+                        .getResultList()
+        );
+    }
 }
