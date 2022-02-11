@@ -12,4 +12,13 @@ public interface CommentRepository {
     Optional<List<Comment>> pagingByCourse(Course course, int page, int pageLength);
 
     void deleteComment(Comment comment);
+
+    int deleteCommentByParentId(Long parentId);
+
+
+    Optional<Comment> findById(Long commentId);
+
+    Optional<List<Comment>> findByParentId(Long parentId);
+
+    Optional<Comment> mergeComment(Comment newComment);
 }
