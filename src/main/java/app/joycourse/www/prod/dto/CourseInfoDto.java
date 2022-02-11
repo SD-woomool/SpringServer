@@ -5,8 +5,10 @@ import app.joycourse.www.prod.domain.CourseDetail;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -48,10 +50,13 @@ public class CourseInfoDto {
         this.totalPrice = totalPrice;
         this.memo = memo;
         this.likeCnt = likeCnt;
-        this.courseDetail = new ArrayList<>();
+        this.courseDetail = Optional.ofNullable(courseDetailList).stream().flatMap(Collection::stream)
+                .map((detail) -> new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()))
+                .collect(Collectors.toList());
+        /*this.courseDetail = new ArrayList<>();
         courseDetailList.forEach((detail) -> {
             this.courseDetail.add(new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()));
-        });
+        });*/
 
     }
 
@@ -65,11 +70,14 @@ public class CourseInfoDto {
         this.totalPrice = course.getTotalPrice();
         this.memo = course.getMemo();
         this.likeCnt = course.getLikeCnt();
-        this.courseDetail = new ArrayList<>();
+        this.courseDetail = Optional.ofNullable(course.getCourseDetail()).stream().flatMap(Collection::stream)
+                .map((detail) -> new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()))
+                .collect(Collectors.toList());
+        /*this.courseDetail = new ArrayList<>();
         course.getCourseDetail().forEach((detail) -> {
             if (detail.getPrice() == null) detail.setPrice((float) 0);
             this.courseDetail.add(new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()));
-        });
+        });*/
     }
 
 
