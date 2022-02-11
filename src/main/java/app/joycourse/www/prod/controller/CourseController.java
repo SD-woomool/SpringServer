@@ -4,6 +4,7 @@ import app.joycourse.www.prod.domain.Course;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.*;
 import app.joycourse.www.prod.exception.CustomException;
+import app.joycourse.www.prod.service.AccountService;
 import app.joycourse.www.prod.service.CourseService;
 import app.joycourse.www.prod.service.PlaceService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class CourseController {
 
     private final CourseService courseService;
+    private final AccountService accountService;
     private final PlaceService placeService;
 
 
@@ -63,12 +65,14 @@ public class CourseController {
     @PostMapping("/")
     @ResponseBody
     public Response<CourseSaveDto> saveCourse(
-            @RequestBody Course course,
+            @RequestBody CourseInfoDto courseInfo,
             HttpServletRequest request
     ) {  // 예외처리를 하나도 안함.
         Optional<User> optionalUser = Optional.ofNullable((User) request.getAttribute("user"));
         User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
+
+        Course course = new Course(courseInfo);
         Course newCourse = courseService.saveCourse(user, course);
         CourseInfoDto courseInfoDto = new CourseInfoDto(
                 newCourse.getId(),
@@ -125,17 +129,18 @@ public class CourseController {
     @PutMapping("/")
     @ResponseBody
     public Response<CourseInfoDto> editCourse(
-            @RequestBody Course courseInfo, // 여기 dto로 바꾸자
+            @RequestBody CourseInfoDto courseInfo, // 여기 dto로 바꾸자
             HttpServletRequest request
     ) {
         User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
                 new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
+        Course newCourse = new Course(courseInfo);
         Course course = courseService.getCourse(courseInfo.getId());
-        if (course.equals(courseInfo) || !course.getUser().getId().equals(user.getId())) {
+        if (course.equals(newCourse) || !course.getUser().getId().equals(user.getId())) {
             throw new CustomException("INVALID_COURSE_INFO", CustomException.CustomError.INVALID_PARAMETER);
         }
-        courseService.updateCourse(course, courseInfo);
+        courseService.updateCourse(course, newCourse);
 
         return new Response<CourseInfoDto>(new CourseInfoDto(course));
     }

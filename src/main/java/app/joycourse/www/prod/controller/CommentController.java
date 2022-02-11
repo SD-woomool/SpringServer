@@ -99,5 +99,4 @@ public class CommentController {
         Comment updatedComment = commentService.updateComment(comment, newComment, user);
         return new Response<CommentUpdateDto>(new CommentUpdateDto(true, new CommentInfoDto(updatedComment)));
     }
-
 }

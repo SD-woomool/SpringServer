@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.dto;
 
+import app.joycourse.www.prod.domain.CourseDetail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,4 +14,12 @@ public class CourseDetailDto {
     private float price;
     private String content;
     private String photo;
+
+    public CourseDetailDto() {
+    }
+
+    public CourseDetail convertToEntity() {
+        return new CourseDetail(this);
+    }
+
 }

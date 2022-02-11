@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.domain;
 
+import app.joycourse.www.prod.dto.CourseDetailDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -37,5 +38,15 @@ public class CourseDetail {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     private Course course;
+
+    public CourseDetail() {
+
+    }
+
+    public CourseDetail(CourseDetailDto courseDetailDto) {
+        this.price = courseDetailDto.getPrice();
+        this.photo = courseDetailDto.getPhoto();
+        this.content = courseDetailDto.getContent();
+    }
 
 }

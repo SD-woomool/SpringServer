@@ -71,6 +71,10 @@ public class AccountService {
         return accountRepository.findByEmail(email);
     }
 
+    public User getUserByNickname(String nickname) {
+        return accountRepository.findByNickname(nickname).orElseThrow(() -> new CustomException("INVALID_NICKNAME", CustomException.CustomError.INVALID_PARAMETER));
+    }
+
 
     public User saveUser(User userInfo) {
         String email = userInfo.getEmail();
