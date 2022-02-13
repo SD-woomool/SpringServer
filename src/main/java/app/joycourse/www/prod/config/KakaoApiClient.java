@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.net.URI;
-
 @FeignClient(
         name = "kakao-api-client",
-        url = "https://dapi.kakao.com") // 이거 바꿔
+        url = "${place-api.request-parameter.request-uri}"
+)
 public interface KakaoApiClient {
     @RequestMapping(
             method = RequestMethod.GET,
@@ -19,7 +18,6 @@ public interface KakaoApiClient {
             produces = "application/json"
     )
     PlaceSearchResponseDto requestPlace(
-            URI requestUri,
             @RequestHeader("Authorization") String apiKey,
             @RequestParam(name = "query") String query,
             @RequestParam(name = "page") int page,

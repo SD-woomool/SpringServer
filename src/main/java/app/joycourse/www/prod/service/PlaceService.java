@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
@@ -75,7 +74,6 @@ public class PlaceService {
 
     public PlaceSearchResponseDto getPlaceByFeign(String query, int page, int size, String categoryGroupCode) throws URISyntaxException {
         return kakaoApiClient.requestPlace(
-                new URI(placeRequestConfig.getRequestParameter().getRequestUri()),
                 "KakaoAK " + placeRequestConfig.getRequestParameter().getRestApiKey(),
                 query, page, size, "similar", categoryGroupCode
         );
