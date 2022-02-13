@@ -51,7 +51,7 @@ public class CourseService {
         );
     }
 
-    public CourseListDto pagingMyCourse(User user, int pageLength, int page) { // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
+    public CourseListDto pagingMyCourse(User user, int pageLength, int page) {
         List<CourseInfoDto> courseInfoList = new ArrayList<>();
         courseRepository.pagingByUser(user, pageLength, page).stream().flatMap(Collection::stream)
                 .forEach((course) -> {
@@ -88,7 +88,6 @@ public class CourseService {
         newCourseInfo.setUser(course.getUser());
         newCourseInfo.setLikeCnt(course.getLikeCnt());
         courseRepository.mergeCourse(newCourseInfo);
-
     }
 
 }
