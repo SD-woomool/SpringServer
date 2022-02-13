@@ -16,8 +16,8 @@ public class PlaceRequestConfig {
     @Getter
     @Setter
     public static class RequestParameter {
-        private String requestUri;
         private String restApiKey;
+        private String requestUri;
     }
 
 }

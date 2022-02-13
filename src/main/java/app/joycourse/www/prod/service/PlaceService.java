@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.service;
 
+import app.joycourse.www.prod.config.KakaoApiClient;
 import app.joycourse.www.prod.config.PlaceRequestConfig;
 import app.joycourse.www.prod.domain.CourseDetail;
 import app.joycourse.www.prod.domain.Place;
@@ -19,6 +20,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,6 +33,7 @@ public class PlaceService {
     private final RestTemplate restTemplate;
     private final PlaceRepository placeRepository;
     private final PlaceCacheRepository placeCacheRepository;
+    private final KakaoApiClient kakaoApiClient;
 
     public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws UnsupportedEncodingException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -67,6 +71,14 @@ public class PlaceService {
             savePlaceCache(query, objectMapper.writeValueAsString(placeSearchResponseDto));
             return placeSearchResponseDto;
         }
+    }
+
+    public PlaceSearchResponseDto getPlaceByFeign(String query, int page, int size, String categoryGroupCode) throws URISyntaxException {
+        return kakaoApiClient.requestPlace(
+                new URI(placeRequestConfig.getRequestParameter().getRequestUri()),
+                "KakaoAK " + placeRequestConfig.getRequestParameter().getRestApiKey(),
+                query, page, size, "similar", categoryGroupCode
+        );
     }
 
     public void savePlace(Place place, CourseDetail courseDetail) {

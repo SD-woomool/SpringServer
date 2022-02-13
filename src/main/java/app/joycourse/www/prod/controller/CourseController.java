@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 
@@ -151,10 +152,10 @@ public class CourseController {
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "15") int size,
             @RequestParam(name = "query") String query,
-            @RequestParam(name = "category_group_code") String categoryGroupCode  // 태그를 어떻게 처리하지?
-    ) throws UnsupportedEncodingException, IOException {
+            @RequestParam(name = "category_group_code", defaultValue = "") String categoryGroupCode  // 태그를 어떻게 처리하지?
+    ) throws UnsupportedEncodingException, IOException, URISyntaxException {
         // 여기서 일단 db조회해서 찾아보고 없으면 검색
-        PlaceSearchResponseDto places = placeService.getPlace(query, page, size, categoryGroupCode);
+        PlaceSearchResponseDto places = placeService.getPlaceByFeign(query, page, size, categoryGroupCode);
 
 
         return new Response<PlaceSearchResponseDto>(places);
