@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Optional;
 
 
@@ -162,11 +161,12 @@ public class CourseController {
                 .orElseGet(() -> {
                     try {
                         return placeService.getPlaceByFeign(query, page, size, categoryGroupCode).orElseThrow();
-                    } catch (URISyntaxException | JsonProcessingException e) {
+                    } catch (URISyntaxException e) {
                         e.printStackTrace();
-                        PlaceSearchResponseDto responseDto = new PlaceSearchResponseDto();
-                        responseDto.setDocuments(new ArrayList<>());
-                        return responseDto;
+                        throw new CustomException("INVALID_API_URI", CustomException.CustomError.SERVER_ERROR);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        throw new CustomException(CustomException.CustomError.SERVER_ERROR);
                     }
                 });
         return new Response<PlaceSearchResponseDto>(places);

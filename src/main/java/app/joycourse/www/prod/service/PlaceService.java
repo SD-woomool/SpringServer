@@ -89,6 +89,7 @@ public class PlaceService {
     }
 
     public Optional<PlaceSearchResponseDto> getPlaceByFeign(String query, int page, int size, String categoryGroupCode) throws URISyntaxException, JsonProcessingException {
+
         PlaceSearchResponseDto placeResponse = kakaoApiClient.requestPlace(
                 "KakaoAK " + placeRequestConfig.getRequestParameter().getRestApiKey(),
                 query, page, size, "similar", categoryGroupCode
