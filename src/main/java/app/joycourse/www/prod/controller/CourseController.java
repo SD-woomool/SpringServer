@@ -160,6 +160,7 @@ public class CourseController {
         PlaceSearchResponseDto places = placeService.getPlaceByCache(query, page, size, categoryGroupCode)
                 .orElseGet(() -> {
                     try {
+                        System.out.println("response kakao api data");
                         return placeService.getPlaceByFeign(query, page, size, categoryGroupCode).orElseThrow();
                     } catch (URISyntaxException e) {
                         e.printStackTrace();

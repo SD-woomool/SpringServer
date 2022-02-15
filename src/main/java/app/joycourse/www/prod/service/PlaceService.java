@@ -10,6 +10,8 @@ import app.joycourse.www.prod.repository.PlaceRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +37,7 @@ public class PlaceService {
     private final PlaceCacheRepository placeCacheRepository;
     private final KakaoApiClient kakaoApiClient;
     private final ObjectMapper objectMapper;
+    private final StringRedisTemplate redisTemplate;
 
     public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws UnsupportedEncodingException, IOException {
         try {
@@ -76,7 +79,8 @@ public class PlaceService {
     public Optional<PlaceSearchResponseDto> getPlaceByCache(String query, int page, int size, String categoryGroupCode) throws JsonProcessingException {
         String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
         try {
-            String placeResponse = placeCacheRepository.findByKeyword(key).orElse(null);
+            ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+            String placeResponse = stringValueOperations.get(key);
             PlaceSearchResponseDto cachePlaceSearchResponse = objectMapper.readValue(placeResponse, PlaceSearchResponseDto.class);
             System.out.println("response cached data");
             return Optional.ofNullable(cachePlaceSearchResponse);
@@ -95,7 +99,8 @@ public class PlaceService {
         );
         assert placeResponse != null;
         String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
-        savePlaceCache(key, objectMapper.writeValueAsString(placeResponse));
+        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        stringValueOperations.set(key, objectMapper.writeValueAsString(placeResponse));
         return Optional.of(placeResponse);
     }
 
