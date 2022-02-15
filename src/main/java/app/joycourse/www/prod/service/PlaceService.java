@@ -37,7 +37,6 @@ public class PlaceService {
     private final ObjectMapper objectMapper;
 
     public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws UnsupportedEncodingException, IOException {
-        //ObjectMapper objectMapper = new ObjectMapper();
         try {
             Optional<String> cachedResponse = findCachedPlaceResponse(query);
             String placeResponse = cachedResponse.get();
