@@ -39,6 +39,9 @@ public class PlaceService {
     private final ObjectMapper objectMapper;
     private final StringRedisTemplate redisTemplate;
 
+    /*
+     * 사용안함
+     */
     public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws UnsupportedEncodingException, IOException {
         try {
             Optional<String> cachedResponse = findCachedPlaceResponse(query);
@@ -76,8 +79,7 @@ public class PlaceService {
         }
     }
 
-    public Optional<PlaceSearchResponseDto> getPlaceByCache(String query, int page, int size, String categoryGroupCode) throws JsonProcessingException {
-        String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
+    public Optional<PlaceSearchResponseDto> getPlaceByCache(String key) throws JsonProcessingException {
         try {
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
             String placeResponse = stringValueOperations.get(key);
@@ -97,11 +99,12 @@ public class PlaceService {
                 "KakaoAK " + placeRequestConfig.getRequestParameter().getRestApiKey(),
                 query, page, size, "similar", categoryGroupCode
         );
-        assert placeResponse != null;
-        String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
+        return Optional.ofNullable(placeResponse);
+    }
+
+    public void cachePlace(String key, PlaceSearchResponseDto placeInfo) throws JsonProcessingException {
         ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        stringValueOperations.set(key, objectMapper.writeValueAsString(placeResponse));
-        return Optional.of(placeResponse);
+        stringValueOperations.set(key, objectMapper.writeValueAsString(placeInfo));
     }
 
     public void savePlace(Place place, CourseDetail courseDetail) {

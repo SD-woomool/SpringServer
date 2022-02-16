@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
@@ -152,24 +151,32 @@ public class CourseController {
     public Response<PlaceSearchResponseDto> getPlace(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "15") int size,
-            @RequestParam(name = "query") String query,
+            @RequestParam(name = "query", defaultValue = "") String query,
             @RequestParam(name = "category_group_code", defaultValue = "") String categoryGroupCode  // 태그를 어떻게 처리하지?
-    ) throws UnsupportedEncodingException, IOException, URISyntaxException, JsonProcessingException {
-
-        // 여기서 일단 db조회해서 찾아보고 없으면 검색
-        PlaceSearchResponseDto places = placeService.getPlaceByCache(query, page, size, categoryGroupCode)
-                .orElseGet(() -> {
-                    try {
-                        System.out.println("response kakao api data");
-                        return placeService.getPlaceByFeign(query, page, size, categoryGroupCode).orElseThrow();
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                        throw new CustomException("INVALID_API_URI", CustomException.CustomError.SERVER_ERROR);
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                        throw new CustomException(CustomException.CustomError.SERVER_ERROR);
-                    }
-                });
+    ) throws IOException, URISyntaxException, JsonProcessingException {
+        if (query == null || query.length() == 0) {
+            throw new CustomException("QUERY REQUIRED", CustomException.CustomError.MISSING_PARAMETERS);
+        }
+        String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
+        PlaceSearchResponseDto places = placeService.getPlaceByCache(key).orElseGet(() -> {
+            try {
+                System.out.println("response kakao api data");
+                PlaceSearchResponseDto placeSearchResponse = placeService.getPlaceByFeign(
+                        query,
+                        page,
+                        size,
+                        categoryGroupCode
+                ).orElseThrow();
+                placeService.cachePlace(key, placeSearchResponse);
+                return placeSearchResponse;
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                throw new CustomException("INVALID_API_URI", CustomException.CustomError.SERVER_ERROR);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                throw new CustomException(CustomException.CustomError.SERVER_ERROR);
+            }
+        });
         return new Response<PlaceSearchResponseDto>(places);
     }
 
