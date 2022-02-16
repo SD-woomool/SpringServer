@@ -45,5 +45,5 @@ oauth2:
 
 place-api:
   request-parameter:
-    request-uri: https://dapi.kakao.com/v2/local/search/keyword.json
+    request-uri: https://dapi.kakao.com
     rest-api-key: ${KAKAO_API_KEY}

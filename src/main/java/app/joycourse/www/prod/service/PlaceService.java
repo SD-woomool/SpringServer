@@ -1,11 +1,13 @@
 package app.joycourse.www.prod.service;
 
+import app.joycourse.www.prod.config.KakaoApiClient;
 import app.joycourse.www.prod.config.PlaceRequestConfig;
 import app.joycourse.www.prod.domain.CourseDetail;
 import app.joycourse.www.prod.domain.Place;
 import app.joycourse.www.prod.dto.PlaceSearchResponseDto;
 import app.joycourse.www.prod.repository.PlaceCacheRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -19,6 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,9 +33,10 @@ public class PlaceService {
     private final RestTemplate restTemplate;
     private final PlaceRepository placeRepository;
     private final PlaceCacheRepository placeCacheRepository;
+    private final KakaoApiClient kakaoApiClient;
+    private final ObjectMapper objectMapper;
 
     public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws UnsupportedEncodingException, IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             Optional<String> cachedResponse = findCachedPlaceResponse(query);
             String placeResponse = cachedResponse.get();
@@ -67,6 +71,32 @@ public class PlaceService {
             savePlaceCache(query, objectMapper.writeValueAsString(placeSearchResponseDto));
             return placeSearchResponseDto;
         }
+    }
+
+    public Optional<PlaceSearchResponseDto> getPlaceByCache(String query, int page, int size, String categoryGroupCode) throws JsonProcessingException {
+        String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
+        try {
+            String placeResponse = placeCacheRepository.findByKeyword(key).orElse(null);
+            PlaceSearchResponseDto cachePlaceSearchResponse = objectMapper.readValue(placeResponse, PlaceSearchResponseDto.class);
+            System.out.println("response cached data");
+            return Optional.ofNullable(cachePlaceSearchResponse);
+        } catch (JsonProcessingException | IllegalArgumentException e) {
+            return Optional.empty();
+        }
+
+
+    }
+
+    public Optional<PlaceSearchResponseDto> getPlaceByFeign(String query, int page, int size, String categoryGroupCode) throws URISyntaxException, JsonProcessingException {
+
+        PlaceSearchResponseDto placeResponse = kakaoApiClient.requestPlace(
+                "KakaoAK " + placeRequestConfig.getRequestParameter().getRestApiKey(),
+                query, page, size, "similar", categoryGroupCode
+        );
+        assert placeResponse != null;
+        String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
+        savePlaceCache(key, objectMapper.writeValueAsString(placeResponse));
+        return Optional.of(placeResponse);
     }
 
     public void savePlace(Place place, CourseDetail courseDetail) {
