@@ -1,6 +1,7 @@
 package app.joycourse.www.prod.controller;
 
 import app.joycourse.www.prod.domain.Course;
+import app.joycourse.www.prod.domain.Place;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.*;
 import app.joycourse.www.prod.exception.CustomException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -72,9 +74,8 @@ public class CourseController {
         Optional<User> optionalUser = Optional.ofNullable((User) request.getAttribute("user"));
         User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
 
-
-        Course course = new Course(courseInfo);
-        Course newCourse = courseService.saveCourse(user, course);
+        //Course course = new Course(courseInfo);
+        Course newCourse = courseService.saveCourse(user, courseInfo);
         CourseInfoDto courseInfoDto = new CourseInfoDto(
                 newCourse.getId(),
                 newCourse.getUser().getNickname(),
@@ -167,6 +168,16 @@ public class CourseController {
                         size,
                         categoryGroupCode
                 ).orElseThrow();
+                placeSearchResponse.getDocuments().stream().filter(Objects::nonNull).forEach((placeInfo) -> {
+                    Place place = new Place(
+                            null, placeInfo.getX(), placeInfo.getY(), placeInfo.getPlaceName(),
+                            placeInfo.getCategoryName(), placeInfo.getCategoryGroupCode(), placeInfo.getCategoryGroupName(),
+                            placeInfo.getPhone(), placeInfo.getAddressName(), placeInfo.getRoadAddressName(), placeInfo.getPlaceUrl(),
+                            placeInfo.getDistance(), null
+                    );
+                    placeService.savePlace(place, null);
+                    placeInfo.setId(place.getId());
+                });
                 placeService.cachePlace(key, placeSearchResponse);
                 return placeSearchResponse;
             } catch (URISyntaxException e) {

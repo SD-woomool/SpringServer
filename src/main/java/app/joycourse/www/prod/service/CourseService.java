@@ -1,12 +1,16 @@
 package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.domain.Course;
+import app.joycourse.www.prod.domain.CourseDetail;
+import app.joycourse.www.prod.domain.Place;
 import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.CourseInfoDto;
 import app.joycourse.www.prod.dto.CourseListDto;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
+import app.joycourse.www.prod.repository.PlaceRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,23 +21,36 @@ import java.util.Objects;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseDetailRepository courseDetailRepository;
+    private final PlaceRepository placeRepository;
 
-    public CourseService(CourseRepository jpaCourseRepository, CourseDetailRepository jpaCourseDetailRepository) {
-        this.courseRepository = jpaCourseRepository;
-        this.courseDetailRepository = jpaCourseDetailRepository;
-    }
 
-    public Course saveCourse(User user, Course course) {
+    public Course saveCourse(User user, CourseInfoDto courseInfo) {
+        Course course = new Course(courseInfo);
         course.setUser(user);
+        courseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detailDto) -> {
+            // 이부분 course_detail에 place자체가 없는건 에러가 아니지 않나??
+            Place place = detailDto.getPlace() == null ? null : placeRepository.findById(detailDto.getPlace().getId()).orElseThrow(() -> new CustomException("INVALID_PLACE_ID", CustomException.CustomError.INVALID_PARAMETER));
+            CourseDetail courseDetail = detailDto.convertToEntity();
+            courseDetail.setCourse(course);
+            courseDetail.setPlace(place);
+            courseDetailRepository.saveCourseDetail(courseDetail);
+            course.addCourseDetail(courseDetail);
+            if (place != null) {
+                place.setCourseDetails(courseDetail);
+            }
+        });
         course.setTotalPrice();
-        course.getCourseDetail().forEach((detail) -> {
+        /*course.getCourseDetail().forEach((detail) -> {
             detail.setCourse(course);
             courseDetailRepository.saveCourseDetail(detail);
-        });
+            Place place = placeRepository.findById(detail.getPlace().getId()).orElseThrow(() -> new CustomException("INVALID_PLACE_ID"));
+            place.setCourseDetails(detail);
+        });*/
         return courseRepository.saveCourse(course);
     }
 

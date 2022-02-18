@@ -41,10 +41,17 @@ public class Place {
     private String placeUrl;
     @Column
     private Float distance;
-    @ManyToMany
-    @JoinColumn(name = "course_detail_id")
+
+    @OneToMany(cascade = CascadeType.REMOVE,//{CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE},
+            mappedBy = "place",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    @Column(name = "course_detail_id")
     private List<CourseDetail> courseDetails;
 
+    public Place() {
+    }
 
     public void setCourseDetails(CourseDetail courseDetail) {
         if (this.courseDetails == null) {

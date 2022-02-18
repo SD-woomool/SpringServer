@@ -1,6 +1,5 @@
 package app.joycourse.www.prod.domain;
 
-import app.joycourse.www.prod.dto.CourseDetailDto;
 import app.joycourse.www.prod.dto.CourseInfoDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -76,17 +72,22 @@ public class Course {
         this.thumbnailUrl = courseInfo.getThumbnailUrl();
         this.memo = courseInfo.getMemo();
         this.totalPrice = courseInfo.getTotalPrice();
-        this.courseDetail = Optional.ofNullable(courseInfo.getCourseDetail()).stream().flatMap(Collection::stream)
-                .map(CourseDetailDto::convertToEntity).collect(Collectors.toList());  // 원래 add 하는거 보다 이게 더 나은듯
+        //this.courseDetail = Optional.ofNullable(courseInfo.getCourseDetail()).stream().flatMap(Collection::stream)
+        //        .map(CourseDetailDto::convertToEntity).collect(Collectors.toList());  // 원래 add 하는거 보다 이게 더 나은듯
     }
 
     public void setCourseDetail(List<CourseDetail> newCourseDetail) {
-        if (this.courseDetail == null) {
-            this.courseDetail = new ArrayList<>();
-        } else {
+        if (this.courseDetail != null) {
             this.courseDetail.clear();
         }
-        this.courseDetail.addAll(newCourseDetail);
+        this.courseDetail = newCourseDetail;
+    }
+
+    public void addCourseDetail(CourseDetail courseDetail) {
+        if (this.courseDetail == null) {
+            this.courseDetail = new ArrayList<>();
+        }
+        this.courseDetail.add(courseDetail);
     }
 
     public void setTotalPrice() {   // 좀 허접해 다시 해
