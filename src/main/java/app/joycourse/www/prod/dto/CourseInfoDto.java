@@ -51,13 +51,9 @@ public class CourseInfoDto {
         this.memo = memo;
         this.likeCnt = likeCnt;
         this.courseDetail = Optional.ofNullable(courseDetailList).stream().flatMap(Collection::stream)
-                .map((detail) -> new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()))
+                .map((detail) ->
+                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto(), new PlaceInfoDto(detail.getPlace())))
                 .collect(Collectors.toList());
-        /*this.courseDetail = new ArrayList<>();
-        courseDetailList.forEach((detail) -> {
-            this.courseDetail.add(new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()));
-        });*/
-
     }
 
     public CourseInfoDto(Course course) {
@@ -71,13 +67,9 @@ public class CourseInfoDto {
         this.memo = course.getMemo();
         this.likeCnt = course.getLikeCnt();
         this.courseDetail = Optional.ofNullable(course.getCourseDetail()).stream().flatMap(Collection::stream)
-                .map((detail) -> new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()))
+                .map((detail) ->
+                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto(), new PlaceInfoDto(detail.getPlace())))
                 .collect(Collectors.toList());
-        /*this.courseDetail = new ArrayList<>();
-        course.getCourseDetail().forEach((detail) -> {
-            if (detail.getPrice() == null) detail.setPrice((float) 0);
-            this.courseDetail.add(new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto()));
-        });*/
     }
 
 

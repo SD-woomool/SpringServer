@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
-import java.util.List;
 
 
 @Entity
@@ -14,11 +13,9 @@ import java.util.List;
 @Setter
 public class CourseDetail {
 
-    @ManyToMany(
-            fetch = FetchType.LAZY,
-            mappedBy = "courseDetails"
-    )
-    List<Place> places;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "place_id")
+    private Place place;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

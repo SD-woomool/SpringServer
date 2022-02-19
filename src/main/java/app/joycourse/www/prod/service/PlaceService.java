@@ -7,11 +7,11 @@ import app.joycourse.www.prod.domain.Place;
 import app.joycourse.www.prod.dto.PlaceSearchResponseDto;
 import app.joycourse.www.prod.repository.PlaceCacheRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
+import app.joycourse.www.prod.repository.RedisPlaceCacheRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +35,7 @@ public class PlaceService {
     private final RestTemplate restTemplate;
     private final PlaceRepository placeRepository;
     private final PlaceCacheRepository placeCacheRepository;
+    private final RedisPlaceCacheRepository redisPlaceCacheRepository;
     private final KakaoApiClient kakaoApiClient;
     private final ObjectMapper objectMapper;
     private final StringRedisTemplate redisTemplate;
@@ -80,7 +81,7 @@ public class PlaceService {
     }
 
     public Optional<PlaceSearchResponseDto> getPlaceByCache(String key) throws JsonProcessingException {
-        try {
+        /*try {
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
             String placeResponse = stringValueOperations.get(key);
             PlaceSearchResponseDto cachePlaceSearchResponse = objectMapper.readValue(placeResponse, PlaceSearchResponseDto.class);
@@ -88,7 +89,12 @@ public class PlaceService {
             return Optional.ofNullable(cachePlaceSearchResponse);
         } catch (JsonProcessingException | IllegalArgumentException e) {
             return Optional.empty();
+        }*/
+        Optional<PlaceSearchResponseDto> placeResponse = redisPlaceCacheRepository.findById(key);
+        if (placeResponse.isPresent()) {
+            System.out.println("response cached data");
         }
+        return placeResponse;
 
 
     }
@@ -103,8 +109,10 @@ public class PlaceService {
     }
 
     public void cachePlace(String key, PlaceSearchResponseDto placeInfo) throws JsonProcessingException {
-        ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        stringValueOperations.set(key, objectMapper.writeValueAsString(placeInfo));
+        /*ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
+        stringValueOperations.set(key, objectMapper.writeValueAsString(placeInfo));*/
+        placeInfo.setId(key);
+        redisPlaceCacheRepository.save(placeInfo);
     }
 
     public void savePlace(Place place, CourseDetail courseDetail) {

@@ -2,15 +2,19 @@ package app.joycourse.www.prod.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.redis.core.RedisHash;
 
+import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Getter
 @Setter
+@RedisHash(value = "places", timeToLive = 3000)
 public class PlaceSearchResponseDto {
-
+    @Id
+    private String id;
     private List<PlaceInfoDto> documents;
     private Meta meta;
 
