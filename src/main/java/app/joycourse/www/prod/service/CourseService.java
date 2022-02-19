@@ -2,7 +2,7 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.dto.MyCourseListDto;
 import app.joycourse.www.prod.entity.Course;
-import app.joycourse.www.prod.entity.User;
+import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
 import org.springframework.stereotype.Service;

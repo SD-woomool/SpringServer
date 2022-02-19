@@ -7,3 +7,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+
+key:
+  access-token-key: a7349a21d63950b9b02c6129839096d4
+  refresh-token-key: 36260fc7b27bf642d9015c9820e260e2

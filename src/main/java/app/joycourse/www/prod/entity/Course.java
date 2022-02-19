@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.entity;
 
+import app.joycourse.www.prod.entity.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -27,17 +28,13 @@ public class Course {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = true)
     @ColumnDefault("0")
     private Integer likeCnt;
 
-    @Column(nullable = true)
     private String location;
 
-    @Column(nullable = true)
     private String thumbnailUrl;
 
-    @Column(nullable = true)
     private String memo;
 
     @Column
@@ -49,8 +46,7 @@ public class Course {
     private List<CourseDetail> courseDetail;
 
     public void setTotalPrice(){   // 좀 허접해 다시 해
-        double totalPrice = 0;
-        totalPrice = this.courseDetail.stream().filter((detail) -> detail.getPrice() != null).
+        double totalPrice = this.courseDetail.stream().filter((detail) -> detail.getPrice() != null).
                 mapToDouble(CourseDetail::getPrice).sum();
         this.totalPrice = (float) totalPrice;
     }

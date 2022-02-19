@@ -1,4 +1,4 @@
-package app.joycourse.www.prod.entity;
+package app.joycourse.www.prod.entity.user;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,10 +32,6 @@ public class User {
     private Gender gender = Gender.PRIVATE;
 
     private String profileImageUrl;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Provider provider;
 
     @ColumnDefault("false")
     private Boolean isSigned = false;

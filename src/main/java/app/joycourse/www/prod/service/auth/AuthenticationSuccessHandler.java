@@ -1,53 +1,52 @@
 package app.joycourse.www.prod.service.auth;
 
 import app.joycourse.www.prod.config.EndpointConfig;
-import app.joycourse.www.prod.entity.Provider;
-import app.joycourse.www.prod.entity.User;
-import app.joycourse.www.prod.repository.UserRepository;
+import app.joycourse.www.prod.entity.UserAgent;
+import app.joycourse.www.prod.entity.auth.Auth;
+import app.joycourse.www.prod.service.UserService;
+import app.joycourse.www.prod.util.UserAgentUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private final UserRepository userRepository;
     private final EndpointConfig endpointConfig;
+    private final AuthService authService;
+    private final UserService userService;
+    private final ManageAuthService manageAuthService;
 
-    @Transactional
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
-        Provider provider = Provider.valueOf(authToken.getAuthorizedClientRegistrationId().toUpperCase());
-        String uid = provider.name() + "_" + authToken.getPrincipal().getAttribute(authToken.getPrincipal().getName());
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        Auth auth = authService.saveAuth(authentication);
+        // auth의 uid 기반으로 user 동기화한다. authorization도 진행. - 향후 msa 환경이 되면 이 부분은 통신으로 바뀔 예정
+        Boolean isBlocked = userService.syncUser(auth.getUid());
 
-        Optional<User> savedUser = userRepository.findByUid(uid);
-        if (savedUser.isEmpty()) {
-            // DB에 존재하지 않는 경우 생성
-            User user = new User();
-            user.setUid(uid);
-            user.setProvider(provider);
-            userRepository.newUser(user);
+        String targetUrl;
+
+        // web과 app을 구분지어서 작동 현재는 web만 존재한다. 추후에 app 어떤식으로 token 줄지 결정
+        UserAgent userAgent = UserAgentUtil.parse(request.getHeader(HttpHeaders.USER_AGENT));
+
+        if (!isBlocked) {
+            // 정상 유저인 경우
+            targetUrl = Optional.ofNullable(endpointConfig.getRedirect().get(userAgent.getType().toLowerCase())).orElse(endpointConfig.getRedirect().get("web"));
+            // 정상 유저이면 auth 정보도 전달해준다.
+            manageAuthService.deliverAuth(request, response, auth);
+        } else {
+            // 유저가 block 되어서 사용하지 못하는 경우
+            targetUrl = Optional.ofNullable(endpointConfig.getRedirect().get(userAgent.getType().toLowerCase() + "Failure")).orElse(endpointConfig.getRedirect().get("webFailure")) + "?error=BLOCKED_USER";
+            // auth 정보 삭제
+            manageAuthService.clearAuth(request, response);
         }
 
-        Cookie cookie = new Cookie("userId", uid);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setMaxAge(3600); // 1hour
-
-        response.addCookie(cookie);
-
-        getRedirectStrategy().sendRedirect(request, response, endpointConfig.getRedirect().get("web"));
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }

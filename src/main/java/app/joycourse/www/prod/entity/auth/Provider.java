@@ -1,4 +1,4 @@
-package app.joycourse.www.prod.entity;
+package app.joycourse.www.prod.entity.auth;
 
 import lombok.RequiredArgsConstructor;
 
