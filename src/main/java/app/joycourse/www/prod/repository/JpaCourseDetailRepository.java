@@ -6,16 +6,16 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 
 @Repository
-public class JpaCourseDetailRepository implements CourseDetailRepository{
+public class JpaCourseDetailRepository implements CourseDetailRepository {
 
-    private EntityManager em;
+    private final EntityManager em;
 
-    public JpaCourseDetailRepository(EntityManager em){
+    public JpaCourseDetailRepository(EntityManager em) {
         this.em = em;
     }
 
     @Override
-    public CourseDetail saveCourseDetail(CourseDetail courseDetail){
+    public CourseDetail saveCourseDetail(CourseDetail courseDetail) {
         em.persist(courseDetail);
         return courseDetail;
     }

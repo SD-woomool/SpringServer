@@ -1,8 +1,12 @@
 spring:
+  redis:
+    port: 6379
+    host: 127.0.0.1  # 스프링 부트도 도커로 올리면 바꿔야함
   datasource:
-    url: jdbc:h2:tcp://localhost/~/joycourse-test
-    driver-class-name: org.h2.Driver
-    username: sa
+    url: jdbc:mysql://localhost:3306/joycourse?characterEncoding=utf8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: joycourse
   jpa:
     show-sql: true
     hibernate:

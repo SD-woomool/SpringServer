@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    active: ${PROFILE}
   mvc:
     throw-exception-if-no-handler-found: true
   security:
@@ -57,17 +59,11 @@ cors:
   allowed-headers: '*'
   max-age: 3600
 
-api:
-  kakao: ${KAKAKO_API_KEY}
-
-jwt:
-  type: JWT
-  algorithm: HS256
-  secret-key: ${JWT_SECRET_KEY}
-  cookie:
-    name: lkjsdf
-    ttl-millis: 3000
-
 key:
   access-token-key: this0is0just0sample0should0chang
   refresh-token-key: this0is0just0sample0should0chang
+
+place-api:
+  request-parameter:
+    request-uri: https://dapi.kakao.com
+    rest-api-key: ${KAKAO_API_KEY}

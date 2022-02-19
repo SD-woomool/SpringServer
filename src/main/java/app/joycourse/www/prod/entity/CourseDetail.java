@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.entity;
 
+import app.joycourse.www.prod.dto.CourseDetailDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -12,8 +13,12 @@ import javax.persistence.*;
 @Setter
 public class CourseDetail {
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "place_id")
+    private Place place;
+
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_detail_id")
     private Long id;
 
@@ -21,14 +26,22 @@ public class CourseDetail {
     @ColumnDefault("0")
     private Float price;
 
-    @Column(nullable = true)
     private String photo;
 
-    @Column(nullable = true)
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     private Course course;
+
+    public CourseDetail() {
+
+    }
+
+    public CourseDetail(CourseDetailDto courseDetailDto) {
+        this.price = courseDetailDto.getPrice();
+        this.photo = courseDetailDto.getPhoto();
+        this.content = courseDetailDto.getContent();
+    }
 
 }

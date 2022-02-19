@@ -7,11 +7,12 @@ public class CustomException extends RuntimeException {
     @AllArgsConstructor
     @Getter
     public enum CustomError {
-        INVALID_PROVIDER(400, "BAD_REQUEST"),
+        INVALID_PROVIDER(400, "INVALID_PROVIDER"),
         GET_TOKEN_ERROR(403, "FORBIDDEN"),
+        INVALID_PARAMETER(400, "INVALID_PARAMETER"),
         PAGE_NOT_FOUND(404, "PAGE_NOT_FOUND"),
         UNAUTHORIZED(401, "UNAUTHORIZED"),
-        MISSING_PARAMETERS(400, "PARAMETER IS MISSING"),
+        MISSING_PARAMETERS(400, "MISSING_PARAMETERS"),
         BAD_REQUEST(400, "BAD_REQUEST"),
         SERVER_ERROR(500, "SERVER_ERROR");
 
