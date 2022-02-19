@@ -1,7 +1,9 @@
 package app.joycourse.www.prod.entity.auth;
 
 import app.joycourse.www.prod.exception.CustomException;
+import app.joycourse.www.prod.util.HashUtil;
 import lombok.Getter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -11,7 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Getter
-public class AuthPrincipal implements OAuth2User {
+public class AuthPrincipal implements OAuth2User, Authentication {
     private final String uid;
     private final String email;
 
@@ -33,6 +35,34 @@ public class AuthPrincipal implements OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
+    }
+
+    @Override
+    public Object getCredentials() {
+        return null;
+    }
+
+    @Override
+    public Object getDetails() {
+        return null;
+    }
+
+    @Override
+    public Object getPrincipal() {
+        return this;
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return true;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) {
+    }
+
+    public static AuthPrincipal createAuthentication(String uid, String email) {
+        return new AuthPrincipal(uid, email);
     }
 
     public static AuthPrincipal create(OAuth2User oAuth2User, Provider provider) {
@@ -69,15 +99,15 @@ public class AuthPrincipal implements OAuth2User {
                         .orElse(null);
                 break;
             default:
-                throw new CustomException("Unsupported Provider");
+                throw new CustomException(CustomException.CustomError.INVALID_PROVIDER);
         }
 
         if (Objects.isNull(uid) || Objects.isNull(email)) {
-            throw new CustomException("Invalid uid or email");
+            throw new CustomException(CustomException.CustomError.BAD_REQUEST);
         }
 
         // provider간의 uid 겹치는 것을 방지하기 위해, provder로 접두사를 붙인다.
-        uid = provider.name() + "_" + uid;
+        uid = HashUtil.sha256(provider.name() + "_" + uid);
 
         return new AuthPrincipal(uid, email);
     }

@@ -30,7 +30,7 @@ public class AuthService {
         if (optionalAuth.isPresent()) {
             // provider가 다른 경우 error를 던진다. 추후에 계정 통합도 고려해봐야할듯..?
             if (!provider.equals(optionalAuth.get().getProvider())) {
-                throw new CustomException("Provider is wrong. Already signed up with " + optionalAuth.get().getProvider());
+                throw new CustomException(CustomException.CustomError.INVALID_PROVIDER);
             }
         }
 

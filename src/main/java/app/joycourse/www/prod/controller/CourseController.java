@@ -30,7 +30,7 @@ public class CourseController {
             HttpServletRequest request
     ) {  // 예외처리를 하나도 안함.
         Optional<User> optionalUser = Optional.ofNullable((User) request.getAttribute("user"));
-        User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
+        User user = optionalUser.orElseThrow(() -> new CustomException(CustomException.CustomError.MISSING_PARAMETERS));
 
         Course newCourse = courseService.saveCourse(user, course);
 
@@ -56,7 +56,7 @@ public class CourseController {
                                                    HttpServletRequest request
     ) {
         User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
-                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
+                new CustomException(CustomException.CustomError.MISSING_PARAMETERS));
         page = page < 1 ? 1 : page;
         pageLength = pageLength < 1 ? 5 : pageLength;
         return new Response<>(courseService.pagingMyCourse(user, pageLength, page));

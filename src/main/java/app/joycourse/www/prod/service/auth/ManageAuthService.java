@@ -2,6 +2,7 @@ package app.joycourse.www.prod.service.auth;
 
 import app.joycourse.www.prod.entity.UserAgent;
 import app.joycourse.www.prod.entity.auth.Auth;
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.util.DeviceUtil;
 import app.joycourse.www.prod.util.UserAgentUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,18 @@ public class ManageAuthService {
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         return cookie;
+    }
+
+    public void refreshAuth(HttpServletRequest request, HttpServletResponse response) {
+        UserAgent userAgent = UserAgentUtil.parse(request.getHeader(HttpHeaders.USER_AGENT));
+        String deviceId = DeviceUtil.parseDeviceId(request);
+        String uid = parseRefreshToken(request);
+
+        if (userAgent.isWeb()) {
+            // web은 access token cookie에 저장
+            String accessToken = tokenService.issueAccessToken(uid, deviceId);
+            response.addCookie(makeCookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, ACCESS_TOKEN_MAX_AGE));
+        }
     }
 
     public void deliverAuth(HttpServletRequest request, HttpServletResponse response, Auth auth) {
@@ -70,7 +83,7 @@ public class ManageAuthService {
         }
 
         if (Objects.isNull(encryptedAccessToken)) {
-            return null;
+            throw new CustomException(CustomException.CustomError.GET_TOKEN_ERROR);
         }
 
         return tokenService.verifyAccessToken(encryptedAccessToken, deviceId);
@@ -91,7 +104,7 @@ public class ManageAuthService {
         }
 
         if (Objects.isNull(encryptedRefreshToken)) {
-            return null;
+            throw new CustomException(CustomException.CustomError.GET_TOKEN_ERROR);
         }
 
         return tokenService.verifyRefreshToken(encryptedRefreshToken, deviceId);

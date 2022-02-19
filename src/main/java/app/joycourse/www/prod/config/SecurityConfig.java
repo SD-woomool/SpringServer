@@ -1,6 +1,6 @@
 package app.joycourse.www.prod.config;
 
-import app.joycourse.www.prod.exception.ErrorHandler;
+import app.joycourse.www.prod.filter.ExceptionHandlerFilter;
 import app.joycourse.www.prod.service.auth.AuthenticationFailureHandler;
 import app.joycourse.www.prod.service.auth.AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -17,11 +18,11 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationFailureHandler authenticationFailureHandler;
-    private final CorsConfig corsConfig;
-    private final ErrorHandler errorHandler;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final CorsConfig corsConfig;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -35,8 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint((request, response, authException) -> handlerExceptionResolver.resolveException(request, response, errorHandler, authException))
-                .accessDeniedHandler((request, response, accessDeniedException) -> handlerExceptionResolver.resolveException(request, response, errorHandler, accessDeniedException))
+                .authenticationEntryPoint((request, response, authException) -> handlerExceptionResolver.resolveException(request, response, null, authException))
+                .accessDeniedHandler((request, response, accessDeniedException) -> handlerExceptionResolver.resolveException(request, response, null, accessDeniedException))
                 .and()
                 .oauth2Login()
                 .authorizationEndpoint()
@@ -48,8 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userInfoEndpoint()
                 .and()
                 .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
-        ;
+                .failureHandler(authenticationFailureHandler);
+
+        http.addFilterBefore(exceptionHandlerFilter, SecurityContextPersistenceFilter.class);
     }
 
     @Bean
