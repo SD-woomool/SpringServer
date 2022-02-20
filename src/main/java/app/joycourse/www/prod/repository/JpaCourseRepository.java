@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.repository;
 
-import app.joycourse.www.prod.domain.Course;
-import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.entity.Course;
+import app.joycourse.www.prod.entity.user.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

@@ -1,22 +1,20 @@
 package app.joycourse.www.prod.controller;
 
-import app.joycourse.www.prod.domain.Course;
-import app.joycourse.www.prod.domain.Place;
-import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.annotation.AuthorizationUser;
 import app.joycourse.www.prod.dto.*;
+import app.joycourse.www.prod.entity.Course;
+import app.joycourse.www.prod.entity.Place;
+import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
-import app.joycourse.www.prod.service.AccountService;
 import app.joycourse.www.prod.service.CourseService;
 import app.joycourse.www.prod.service.PlaceService;
+import app.joycourse.www.prod.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Objects;
-import java.util.Optional;
 
 
 @RestController
@@ -25,7 +23,7 @@ import java.util.Optional;
 public class CourseController {
 
     private final CourseService courseService;
-    private final AccountService accountService;
+    private final UserService userService;
     private final PlaceService placeService;
 
 
@@ -35,7 +33,7 @@ public class CourseController {
             @PathVariable("course-id") Long courseId
     ) {
         Course findCourse = courseService.getCourse(courseId);
-        return new Response<CourseInfoDto>(new CourseInfoDto(
+        return new Response<>(new CourseInfoDto(
                 findCourse.getId(),
                 findCourse.getUser().getNickname(),
                 findCourse.getTitle(),
@@ -61,20 +59,13 @@ public class CourseController {
     ) {
         page = page < 1 ? 1 : page;
         pageLength = pageLength < 1 ? 5 : pageLength;
-        return new Response<CourseListDto>(courseService.pagingCourse(pageLength, page));
+        return new Response<>(courseService.pagingCourse(pageLength, page));
     }
 
 
     @PostMapping("/")
     @ResponseBody
-    public Response<CourseSaveDto> saveCourse(
-            @RequestBody CourseInfoDto courseInfo,
-            HttpServletRequest request
-    ) {  // 예외처리를 하나도 안함.
-        Optional<User> optionalUser = Optional.ofNullable((User) request.getAttribute("user"));
-        User user = optionalUser.orElseThrow(() -> new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
-
-        //Course course = new Course(courseInfo);
+    public Response<CourseSaveDto> saveCourse(@AuthorizationUser User user, @RequestBody CourseInfoDto courseInfo) {
         Course newCourse = courseService.saveCourse(user, courseInfo);
         CourseInfoDto courseInfoDto = new CourseInfoDto(
                 newCourse.getId(),
@@ -90,7 +81,7 @@ public class CourseController {
         );
 
         CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
-        return new Response<CourseSaveDto>(courseSaveDto);
+        return new Response<>(courseSaveDto);
     }
 
     /*
@@ -106,45 +97,38 @@ public class CourseController {
     public Response<CourseListDto> getMyCourseList(  // page, pageLength 없는경우 아직 해결 안됌
                                                      @RequestParam(name = "page", defaultValue = "1") int page,
                                                      @RequestParam(name = "page-length", defaultValue = "5") int pageLength,
-                                                     HttpServletRequest request
+                                                     @AuthorizationUser User user
     ) {
-        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
-                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
         page = page < 1 ? 1 : page;
         pageLength = pageLength < 1 ? 5 : pageLength;
-        return new Response<CourseListDto>(courseService.pagingMyCourse(user, pageLength, page));
+        return new Response<>(courseService.pagingMyCourse(user, pageLength, page));
     }
 
     @DeleteMapping("/")
     @ResponseBody
     public Response<DeleteCourseDto> deleteCourse(
             @RequestParam(name = "course_id") long id,
-            HttpServletRequest request
+            @AuthorizationUser User user
     ) {
-        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
-                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
         courseService.deleteCourse(user, id);
 
-        return new Response<DeleteCourseDto>(new DeleteCourseDto(true, id));
+        return new Response<>(new DeleteCourseDto(true, id));
     }
 
     @PutMapping("/")
     @ResponseBody
     public Response<CourseInfoDto> editCourse(
             @RequestBody CourseInfoDto courseInfo, // 여기 dto로 바꾸자
-            HttpServletRequest request
+            @AuthorizationUser User user
     ) {
-        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
-                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
-
         Course newCourse = new Course(courseInfo);
         Course course = courseService.getCourse(courseInfo.getId());
-        if (course.equals(newCourse) || !course.getUser().getId().equals(user.getId())) {
-            throw new CustomException("INVALID_COURSE_INFO", CustomException.CustomError.INVALID_PARAMETER);
+        if (course.equals(newCourse) || !course.getUser().getUid().equals(user.getUid())) {
+            throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
         courseService.updateCourse(course, newCourse);
 
-        return new Response<CourseInfoDto>(new CourseInfoDto(course));
+        return new Response<>(new CourseInfoDto(course));
     }
 
     @GetMapping("/place")
@@ -154,11 +138,11 @@ public class CourseController {
             @RequestParam(name = "size", defaultValue = "15") int size,
             @RequestParam(name = "query", defaultValue = "") String query,
             @RequestParam(name = "category_group_code", defaultValue = "") String categoryGroupCode  // 태그를 어떻게 처리하지?
-    ) throws IOException, URISyntaxException, JsonProcessingException {
+    ) {
         if (query == null || query.length() == 0) {
-            throw new CustomException("QUERY REQUIRED", CustomException.CustomError.MISSING_PARAMETERS);
+            throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
         }
-        String key = query + "_" + String.valueOf(page) + "_" + String.valueOf(size) + "_" + categoryGroupCode;
+        String key = query + "_" + page + "_" + size + "_" + categoryGroupCode;
         PlaceSearchResponseDto places = placeService.getPlaceByCache(key).orElseGet(() -> {
             try {
                 System.out.println("response kakao api data");
@@ -180,15 +164,12 @@ public class CourseController {
                 });
                 placeService.cachePlace(key, placeSearchResponse);
                 return placeSearchResponse;
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-                throw new CustomException("INVALID_API_URI", CustomException.CustomError.SERVER_ERROR);
-            } catch (JsonProcessingException e) {
+            } catch (URISyntaxException | JsonProcessingException e) {
                 e.printStackTrace();
                 throw new CustomException(CustomException.CustomError.SERVER_ERROR);
             }
         });
-        return new Response<PlaceSearchResponseDto>(places);
+        return new Response<>(places);
     }
 
 }

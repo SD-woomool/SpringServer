@@ -1,40 +1,26 @@
 package app.joycourse.www.prod.dto;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.jdbc.core.metadata.HanaCallMetaDataProvider;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter
-//@Builder
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Response<T> {
-    private String error;
+    private Integer status;
     private String errorDescription;
     private T data;
 
+    public Response() {
+        this.status = 200;
+    }
+
     public Response(T data) {
         this.data = data;
-        this.error = null;
-        this.errorDescription = null;
+        this.status = 200;
     }
 
-    public Response(String error, String errorDescription) {
-        this.error = error;
+    public Response(Integer status, String errorDescription) {
+        this.status = status;
         this.errorDescription = errorDescription;
-        this.data = null;
     }
-
-    public Response(String error, String errorDescription, T data) {
-        this.error = error;
-        this.errorDescription = errorDescription;
-        this.data = data;
-    }
-
 }

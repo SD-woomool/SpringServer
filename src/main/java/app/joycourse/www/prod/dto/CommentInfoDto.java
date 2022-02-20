@@ -1,6 +1,6 @@
 package app.joycourse.www.prod.dto;
 
-import app.joycourse.www.prod.domain.Comment;
+import app.joycourse.www.prod.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

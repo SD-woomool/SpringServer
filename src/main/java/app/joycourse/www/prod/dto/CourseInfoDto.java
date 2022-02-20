@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.dto;
 
-import app.joycourse.www.prod.domain.Course;
-import app.joycourse.www.prod.domain.CourseDetail;
+import app.joycourse.www.prod.entity.Course;
+import app.joycourse.www.prod.entity.CourseDetail;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,9 +1,12 @@
 package app.joycourse.www.prod.service;
 
 
-import app.joycourse.www.prod.domain.Comment;
-import app.joycourse.www.prod.domain.User;
 import app.joycourse.www.prod.dto.CommentInfoDto;
+import app.joycourse.www.prod.entity.Comment;
+import app.joycourse.www.prod.entity.user.AgeRange;
+import app.joycourse.www.prod.entity.user.Gender;
+import app.joycourse.www.prod.entity.user.User;
+import app.joycourse.www.prod.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,7 @@ import javax.persistence.EntityManager;
 public class CommentServiceTest {
 
     @Autowired
-    AccountService accountService;
+    UserRepository userRepository;
     @Autowired
     EntityManager em;
 
@@ -27,12 +30,10 @@ public class CommentServiceTest {
         System.out.println("test start!!");
         User user1 = new User();
         user1.setNickname("ykh1");
-        user1.setEmail("ykh2@email.com");
-        user1.setAgeRange(20);
-        user1.setGender(1);
-        user1.setCreateAt();
-        accountService.saveUser(user1);
-        Long userId = user1.getId();
+        user1.setAgeRange(AgeRange.TWENTIES);
+        user1.setGender(Gender.MALE);
+        userRepository.save(user1);
+        String userId = user1.getUid();
         //when
         CommentInfoDto commentInfo = new CommentInfoDto();
         Comment comment = new Comment(commentInfo);

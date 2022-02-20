@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public class MemoryPlaceCacheRepository implements PlaceCacheRepository {
 
-    private static Map<String, String> store = new HashMap<>();
+    private static final Map<String, String> store = new HashMap<>();
 
     @Override
     public void save(String key, String value) {

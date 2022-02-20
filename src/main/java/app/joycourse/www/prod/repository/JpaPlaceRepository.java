@@ -1,6 +1,6 @@
 package app.joycourse.www.prod.repository;
 
-import app.joycourse.www.prod.domain.Place;
+import app.joycourse.www.prod.entity.Place;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

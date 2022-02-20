@@ -1,8 +1,8 @@
 package app.joycourse.www.prod.service;
 
-import app.joycourse.www.prod.domain.Comment;
-import app.joycourse.www.prod.domain.Course;
-import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.entity.Comment;
+import app.joycourse.www.prod.entity.Course;
+import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class CommentService {
 
     public Comment findComment(Long commentId) {
         return commentRepository.findById(commentId).orElseThrow(() ->
-                new CustomException("INVALID_COMMENT_ID", CustomException.CustomError.INVALID_PARAMETER)
+                new CustomException(CustomException.CustomError.INVALID_PARAMETER)
         );
     }
 
@@ -50,14 +50,14 @@ public class CommentService {
     }
 
     public Comment updateComment(Comment comment, Comment newComment, User user) {
-        if (!comment.getUser().getId().equals(user.getId())) {
-            throw new CustomException("INVALID_REQUEST", CustomException.CustomError.BAD_REQUEST);
+        if (!comment.getUser().getUid().equals(user.getUid())) {
+            throw new CustomException(CustomException.CustomError.BAD_REQUEST);
         }
         newComment.setId(comment.getId());
         newComment.setUser(user);
         newComment.setCreateAt(comment.getCreatedAt());
         newComment.setCourse(comment.getCourse());
         return commentRepository.mergeComment(newComment).orElseThrow(() ->
-                new CustomException("UPDATE_FAIL", CustomException.CustomError.INVALID_PARAMETER));
+                new CustomException(CustomException.CustomError.INVALID_PARAMETER));
     }
 }

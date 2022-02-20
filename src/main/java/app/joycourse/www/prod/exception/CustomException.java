@@ -1,52 +1,38 @@
 package app.joycourse.www.prod.exception;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 public class CustomException extends RuntimeException {
-    CustomError customError;
-
-    public CustomException() {
-        super("SERVER_ERROR");
-    }
-
-    public CustomException(String message) {
-        super(message);
-    }
-
-    public CustomException(String message, CustomError customError) {
-        super(message);
-        this.customError = customError;
-    }
-
-    public CustomException(CustomError customError) {
-        super("SERVER_ERROR");
-        this.customError = customError;
-    }
-
-    public CustomError getCustomError() {
-        return this.customError;
-    }
-
     @AllArgsConstructor
+    @Getter
     public enum CustomError {
-        INVALID_PROVIDER(400, "BAD_REQUEST"),
+        INVALID_PROVIDER(400, "INVALID_PROVIDER"),
+        GET_TOKEN_ERROR(403, "FORBIDDEN"),
+        ACCESS_TOKEN_EXPIRED(403, "ACCESS_TOKEN_EXPIRED"),
+        REFRESH_TOKEN_EXPIRED(403, "REFRESH_TOKEN_EXPIRED"),
         INVALID_PARAMETER(400, "INVALID_PARAMETER"),
-        GET_TOKEN_ERROR(500, "SERVER_ERROR"),
         PAGE_NOT_FOUND(404, "PAGE_NOT_FOUND"),
         UNAUTHORIZED(401, "UNAUTHORIZED"),
-        MISSING_PARAMETERS(400, "PARAMETER IS MISSING"),
+        MISSING_PARAMETERS(400, "MISSING_PARAMETERS"),
         BAD_REQUEST(400, "BAD_REQUEST"),
         SERVER_ERROR(500, "SERVER_ERROR");
 
-        private int status;
-        private String error;
+        private final int status;
+        private final String errorDescription;
+    }
 
-        public int getStatus() {
-            return this.status;
-        }
+    private final CustomError customError;
 
-        public String getError() {
-            return this.error;
-        }
+    public CustomException(CustomError customError) {
+        this.customError = customError;
+    }
+
+    public int getStatus() {
+        return customError.getStatus();
+    }
+
+    public String getErrorDescription() {
+        return customError.getErrorDescription();
     }
 }

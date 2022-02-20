@@ -2,9 +2,9 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.config.KakaoApiClient;
 import app.joycourse.www.prod.config.PlaceRequestConfig;
-import app.joycourse.www.prod.domain.CourseDetail;
-import app.joycourse.www.prod.domain.Place;
 import app.joycourse.www.prod.dto.PlaceSearchResponseDto;
+import app.joycourse.www.prod.entity.CourseDetail;
+import app.joycourse.www.prod.entity.Place;
 import app.joycourse.www.prod.repository.PlaceCacheRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
 import app.joycourse.www.prod.repository.RedisPlaceCacheRepository;
@@ -22,7 +22,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,7 +42,7 @@ public class PlaceService {
     /*
      * 사용안함
      */
-    public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws UnsupportedEncodingException, IOException {
+    public PlaceSearchResponseDto getPlace(String query, int page, int size, String categoryGroupCode) throws IOException {
         try {
             Optional<String> cachedResponse = findCachedPlaceResponse(query);
             String placeResponse = cachedResponse.get();
@@ -80,7 +79,7 @@ public class PlaceService {
         }
     }
 
-    public Optional<PlaceSearchResponseDto> getPlaceByCache(String key) throws JsonProcessingException {
+    public Optional<PlaceSearchResponseDto> getPlaceByCache(String key) {
         /*try {
             ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
             String placeResponse = stringValueOperations.get(key);

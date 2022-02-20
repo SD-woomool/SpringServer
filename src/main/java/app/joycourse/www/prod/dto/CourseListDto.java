@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.dto;
 
 
-import app.joycourse.www.prod.domain.Course;
+import app.joycourse.www.prod.entity.Course;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,20 +44,20 @@ public class CourseListDto {
             return;
         }
         this.courseList = new ArrayList<>();
-        courseList.forEach((course) -> {
-            this.courseList.add(new CourseInfoDto(
-                    course.getId(),
-                    course.getUser().getNickname(),
-                    course.getTitle(),
-                    course.getContent(),
-                    course.getLocation(),
-                    course.getThumbnailUrl(),
-                    course.getLikeCnt(),
-                    course.getTotalPrice(),
-                    course.getMemo(),
-                    course.getCourseDetail()
-            ));
-        });
+        courseList.forEach((course) ->
+                this.courseList.add(new CourseInfoDto(
+                        course.getId(),
+                        course.getUser().getNickname(),
+                        course.getTitle(),
+                        course.getContent(),
+                        course.getLocation(),
+                        course.getThumbnailUrl(),
+                        course.getLikeCnt(),
+                        course.getTotalPrice(),
+                        course.getMemo(),
+                        course.getCourseDetail()
+                ))
+        );
     }
 
 }

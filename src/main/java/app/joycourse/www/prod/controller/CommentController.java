@@ -1,18 +1,20 @@
 package app.joycourse.www.prod.controller;
 
 
-import app.joycourse.www.prod.domain.Comment;
-import app.joycourse.www.prod.domain.Course;
-import app.joycourse.www.prod.domain.User;
+import app.joycourse.www.prod.annotation.AuthorizationUser;
 import app.joycourse.www.prod.dto.*;
-import app.joycourse.www.prod.exception.CustomException;
+import app.joycourse.www.prod.entity.Comment;
+import app.joycourse.www.prod.entity.Course;
+import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.service.CommentService;
 import app.joycourse.www.prod.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/comments")
@@ -26,15 +28,12 @@ public class CommentController {
     @ResponseBody
     public Response<CommentSaveDto> saveComment(
             @RequestBody CommentRequestBodyDto commentInfo,
-            HttpServletRequest request
+            @AuthorizationUser User user
     ) {
-        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
-                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
-
         Course course = courseService.getCourse(commentInfo.getCourseId());
         Comment comment = new Comment(commentInfo.getCommentInfo());
         Comment savedComment = commentService.saveComment(comment, user, course);
-        return new Response<CommentSaveDto>(new CommentSaveDto(true, new CommentInfoDto(savedComment)));
+        return new Response<>(new CommentSaveDto(true, new CommentInfoDto(savedComment)));
     }
 
 
@@ -51,10 +50,10 @@ public class CommentController {
         List<CommentInfoDto> commentList = new ArrayList<>();
         commentService.pagingComment(course, page, pageLength).stream().flatMap(Collection::stream)
                 .filter(Objects::nonNull)
-                .forEach((comment) -> {
-                    commentList.add(new CommentInfoDto(comment));
-                });
-        return new Response<CommentListDto>(new CommentListDto(
+                .forEach((comment) ->
+                        commentList.add(new CommentInfoDto(comment))
+                );
+        return new Response<>(new CommentListDto(
                 commentList.size() < pageLength,
                 page,
                 pageLength,
@@ -72,31 +71,25 @@ public class CommentController {
     @ResponseBody
     public Response<CommentDeleteDto> deleteComment(
             @RequestParam(name = "comment_id") Long commentId,
-            HttpServletRequest request
+            @AuthorizationUser User user
     ) {
-        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
-                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
-
         Comment targetComment = commentService.findComment(commentId);
         int deleteCnt = commentService.deleteCommentsByParentId(targetComment.getId());
         commentService.deleteComments(targetComment);
         deleteCnt++;
 
-        return new Response<CommentDeleteDto>(new CommentDeleteDto(true, deleteCnt));
+        return new Response<>(new CommentDeleteDto(true, deleteCnt));
     }
 
     @PutMapping("/")
     @ResponseBody
     public Response<CommentUpdateDto> editComment(
             @RequestBody CommentRequestBodyDto commentInfo,
-            HttpServletRequest request
+            @AuthorizationUser User user
     ) {
-        User user = Optional.ofNullable((User) request.getAttribute("user")).orElseThrow(() ->
-                new CustomException("NO_USER", CustomException.CustomError.MISSING_PARAMETERS));
-
         Comment comment = commentService.findComment(commentInfo.getCommentInfo().getId());
         Comment newComment = new Comment(commentInfo.getCommentInfo());
         Comment updatedComment = commentService.updateComment(comment, newComment, user);
-        return new Response<CommentUpdateDto>(new CommentUpdateDto(true, new CommentInfoDto(updatedComment)));
+        return new Response<>(new CommentUpdateDto(true, new CommentInfoDto(updatedComment)));
     }
 }

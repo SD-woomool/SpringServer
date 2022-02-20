@@ -1,6 +1,6 @@
 package app.joycourse.www.prod.dto;
 
-import app.joycourse.www.prod.domain.Place;
+import app.joycourse.www.prod.entity.Place;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
