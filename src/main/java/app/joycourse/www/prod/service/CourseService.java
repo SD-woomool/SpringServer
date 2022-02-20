@@ -2,6 +2,7 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.dto.CourseInfoDto;
 import app.joycourse.www.prod.dto.CourseListDto;
+import app.joycourse.www.prod.dto.PlaceInfoDto;
 import app.joycourse.www.prod.entity.Course;
 import app.joycourse.www.prod.entity.CourseDetail;
 import app.joycourse.www.prod.entity.Place;
@@ -33,24 +34,20 @@ public class CourseService {
         Course course = new Course(courseInfo);
         course.setUser(user);
         courseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detailDto) -> {
-            // 이부분 course_detail에 place자체가 없는건 에러가 아니지 않나??
-            Place place = detailDto.getPlace() == null ? null : placeRepository.findById(detailDto.getPlace().getId()).orElseThrow(() -> new CustomException(CustomException.CustomError.INVALID_PARAMETER));
+            PlaceInfoDto placeDto = detailDto.getPlace();
+            if (placeDto == null) {
+                throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
+            }
+            Place place = placeRepository.findById(placeDto.getId()).orElseThrow(() -> new CustomException(CustomException.CustomError.INVALID_PARAMETER));
             CourseDetail courseDetail = detailDto.convertToEntity();
             courseDetail.setCourse(course);
             courseDetail.setPlace(place);
-            courseDetailRepository.saveCourseDetail(courseDetail);
             course.addCourseDetail(courseDetail);
             if (place != null) {
                 place.setCourseDetails(courseDetail);
             }
         });
         course.setTotalPrice();
-        /*course.getCourseDetail().forEach((detail) -> {
-            detail.setCourse(course);
-            courseDetailRepository.saveCourseDetail(detail);
-            Place place = placeRepository.findById(detail.getPlace().getId()).orElseThrow(() -> new CustomException("INVALID_PLACE_ID"));
-            place.setCourseDetails(detail);
-        });*/
         return courseRepository.saveCourse(course);
     }
 
@@ -95,17 +92,28 @@ public class CourseService {
                 new CustomException(CustomException.CustomError.INVALID_PARAMETER));
     }
 
-    public void updateCourse(Course course, Course newCourseInfo) {
-        newCourseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detail) ->
-                detail.setCourse(course)
-        );
+    public void updateCourse(Course course, CourseInfoDto newCourseInfo) {
+        Course newCourse = new Course(newCourseInfo);
+        newCourseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detailDto) -> {
+            PlaceInfoDto placeDto = detailDto.getPlace();
+            if (placeDto == null) {
+                throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
+            }
+            Place place = placeRepository.findById(placeDto.getId()).orElseThrow(() -> new CustomException(CustomException.CustomError.INVALID_PARAMETER));
+            CourseDetail courseDetail = detailDto.convertToEntity();
+            courseDetail.setPlace(place);
+            courseDetail.setCourse(newCourse);
+            newCourse.addCourseDetail(courseDetail);
+            if (place != null) {
+                place.setCourseDetails(courseDetail);
+            }
+        });
         if (!(course.getId().equals(newCourseInfo.getId()))) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
-        newCourseInfo.setUser(course.getUser());
-        newCourseInfo.setLikeCnt(course.getLikeCnt());
-        courseRepository.mergeCourse(newCourseInfo);
-
+        newCourse.setUser(course.getUser());
+        newCourse.setLikeCnt(course.getLikeCnt());
+        courseRepository.mergeCourse(newCourse);
     }
 
 }

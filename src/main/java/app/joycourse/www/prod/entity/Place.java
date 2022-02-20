@@ -53,6 +53,7 @@ public class Place {
     public Place() {
     }
 
+
     public void setCourseDetails(CourseDetail courseDetail) {
         if (this.courseDetails == null) {
             this.courseDetails = new ArrayList<>();

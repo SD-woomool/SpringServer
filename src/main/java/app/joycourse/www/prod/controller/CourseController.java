@@ -121,12 +121,12 @@ public class CourseController {
             @RequestBody CourseInfoDto courseInfo, // 여기 dto로 바꾸자
             @AuthorizationUser User user
     ) {
-        Course newCourse = new Course(courseInfo);
+        //Course newCourse = new Course(courseInfo);
         Course course = courseService.getCourse(courseInfo.getId());
-        if (course.equals(newCourse) || !course.getUser().getUid().equals(user.getUid())) {
+        if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
-        courseService.updateCourse(course, newCourse);
+        courseService.updateCourse(course, courseInfo);
 
         return new Response<>(new CourseInfoDto(course));
     }
