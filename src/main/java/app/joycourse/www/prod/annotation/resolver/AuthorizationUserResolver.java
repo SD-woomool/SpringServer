@@ -9,7 +9,9 @@ import app.joycourse.www.prod.repository.UserRepository;
 import app.joycourse.www.prod.service.auth.ManageAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -34,6 +36,14 @@ public class AuthorizationUserResolver implements HandlerMethodArgumentResolver 
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         AuthorizationUser authorizationUser = parameter.getParameterAnnotation(AuthorizationUser.class);
         assert authorizationUser != null;
+
+        // TODO: real 환경에서 제거 해야함!!************* only dev!!
+        HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
+        if (ObjectUtils.nullSafeEquals(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION), "tony")) {
+            return userRepository.findByNickname("tony").orElse(null);
+        } else if (ObjectUtils.nullSafeEquals(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION), "ironman")) {
+            return userRepository.findByNickname("ironman").orElse(null);
+        }
 
         String uid = manageAuthService.parseAccessToken((HttpServletRequest) webRequest.getNativeRequest());
         Optional<Auth> optionalAuth = authRepository.findByUid(uid);

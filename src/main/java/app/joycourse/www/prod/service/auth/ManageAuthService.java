@@ -15,12 +15,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ManageAuthService {
     private final TokenService tokenService;
     private final AuthConfig authConfig;
+
+    private String getTokenFromCookie(HttpServletRequest request, String cookieName) {
+        return Optional.ofNullable(request.getCookies())
+                .flatMap(cookies -> Arrays.stream(cookies)
+                        .filter(c -> c.getName().equals(cookieName))
+                        .findFirst()
+                        .map(Cookie::getValue))
+                .orElse(null);
+    }
 
     private Cookie makeCookie(String key, String value, int maxAge) {
         Cookie cookie = new Cookie(key, value);
@@ -73,11 +83,7 @@ public class ManageAuthService {
 
         if (userAgent.isWeb()) {
             // web은 access token, refresh token 둘다 cookie에 저장
-            encryptedAccessToken = Arrays.stream(request.getCookies())
-                    .filter(c -> c.getName().equals(authConfig.getAccessTokenCookieName()))
-                    .findFirst()
-                    .map(Cookie::getValue)
-                    .orElse(null);
+            encryptedAccessToken = getTokenFromCookie(request, authConfig.getAccessTokenCookieName());
         }
 
         if (Objects.isNull(encryptedAccessToken)) {
@@ -94,11 +100,7 @@ public class ManageAuthService {
 
         if (userAgent.isWeb()) {
             // web은 access token, refresh token 둘다 cookie에 저장
-            encryptedRefreshToken = Arrays.stream(request.getCookies())
-                    .filter(c -> c.getName().equals(authConfig.getRefreshTokenCookieName()))
-                    .findFirst()
-                    .map(Cookie::getValue)
-                    .orElse(null);
+            encryptedRefreshToken = getTokenFromCookie(request, authConfig.getRefreshTokenCookieName());
         }
 
         if (Objects.isNull(encryptedRefreshToken)) {
