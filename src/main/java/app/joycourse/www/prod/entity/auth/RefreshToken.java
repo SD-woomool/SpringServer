@@ -2,23 +2,18 @@ package app.joycourse.www.prod.entity.auth;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
-import javax.persistence.*;
-
-@Entity
 @Getter
 @Setter
+@RedisHash(value = "refreshToken", timeToLive = 10800)
 public class RefreshToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long seq; // 자동으로 생성되는 seq
-
-    @Column(nullable = false)
     private String token;
-
-    @Column(nullable = false)
+    @Indexed
     private String uid;
-
-    @Column(nullable = false)
+    @Indexed
     private String deviceId;
 }
