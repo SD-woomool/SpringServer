@@ -8,8 +8,14 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties("key")
-public class KeyConfig {
+@ConfigurationProperties("auth")
+public class AuthConfig {
+    private String accessTokenCookieName;
+    private String refreshTokenCookieName;
+
     private String accessTokenKey;
     private String refreshTokenKey;
+
+    private int accessTokenMaxAge;
+    private int refreshTokenMaxAge;
 }

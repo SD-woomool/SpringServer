@@ -59,9 +59,13 @@ cors:
   allowed-headers: '*'
   max-age: 3600
 
-key:
+auth:
   access-token-key: this0is0just0sample0should0chang
   refresh-token-key: this0is0just0sample0should0chang
+  access-token-cookie-name: actc
+  refresh-token-cookie-name: rctc
+  access-token-max-age: 1800
+  refresh-token-max-age: 10800
 
 place-api:
   request-parameter:

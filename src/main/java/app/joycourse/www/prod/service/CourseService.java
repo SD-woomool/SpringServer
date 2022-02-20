@@ -84,7 +84,7 @@ public class CourseService {
 
     public void deleteCourse(User user, long courseId) {
         Course deleteCourse = courseRepository.findById(courseId).orElse(null);
-        if (deleteCourse == null || deleteCourse.getUser() == user) {
+        if (deleteCourse == null || deleteCourse.getUser() != user) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
         courseRepository.deleteCourse(deleteCourse);

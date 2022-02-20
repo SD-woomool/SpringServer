@@ -1,6 +1,6 @@
 package app.joycourse.www.prod.service.auth;
 
-import app.joycourse.www.prod.config.KeyConfig;
+import app.joycourse.www.prod.config.AuthConfig;
 import app.joycourse.www.prod.entity.auth.RefreshToken;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.RefreshTokenRepository;
@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.net.InetAddress;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,14 +20,12 @@ import java.util.Random;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenService {
-    private static final int REFRESH_TOKEN_MAX_AGE = 10800; // 3h
-
-    private static final String delimiter = "/";
-    private final KeyConfig keyConfig;
+    private static final String delimiter = "&&";
+    private final AuthConfig authConfig;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public String verifyAccessToken(String encryptedAccessToken, String deviceId) {
-        String rawToken = AES256Util.decrypt(keyConfig.getAccessTokenKey(), encryptedAccessToken);
+        String rawToken = AES256Util.decrypt(authConfig.getAccessTokenKey(), encryptedAccessToken);
 
         if (Objects.isNull(rawToken)) {
             log.error("[verifyAccessToken] token is not valid {}->{}", encryptedAccessToken, rawToken);
@@ -34,7 +33,7 @@ public class TokenService {
         }
 
         String[] info = rawToken.split(delimiter);
-        if (info.length != 2) {
+        if (info.length != 3) {
             log.error("[verifyAccessToken] token is not valid {}->{}", encryptedAccessToken, rawToken);
             throw new CustomException(CustomException.CustomError.BAD_REQUEST);
         }
@@ -45,14 +44,22 @@ public class TokenService {
             throw new CustomException(CustomException.CustomError.BAD_REQUEST);
         }
 
+        Timestamp expireTimeStamp = new Timestamp(Long.parseLong(info[2]));
+        Timestamp nowTimeStamp = Timestamp.valueOf(LocalDateTime.now());
+
+        // 만료 시간이 지난 경우
+        if (expireTimeStamp.getTime() < nowTimeStamp.getTime()) {
+            throw new CustomException(CustomException.CustomError.ACCESS_TOKEN_EXPIRED);
+        }
+
         // 정상 인경우 uid를 반환
         return info[0];
     }
 
     public String issueAccessToken(String uid, String deviceId) {
         // uid + device id + time -> encrypt
-        String rawToken = uid + delimiter + deviceId;
-        String encryptedToken = AES256Util.encrypt(keyConfig.getAccessTokenKey(), rawToken);
+        String rawToken = uid + delimiter + deviceId + delimiter + (Timestamp.valueOf(LocalDateTime.now()).getTime() + authConfig.getAccessTokenMaxAge() * 1000L);
+        String encryptedToken = AES256Util.encrypt(authConfig.getAccessTokenKey(), rawToken);
 
         if (Objects.isNull(encryptedToken)) {
             log.error("[issueAccessToken] fail to encrypt token {}->{}", rawToken, encryptedToken);
@@ -86,7 +93,7 @@ public class TokenService {
             InetAddress localHost = InetAddress.getLocalHost();
 
             String rawToken = random.nextInt() + delimiter + localHost.getHostAddress() + delimiter + LocalDateTime.now();
-            String encryptedToken = AES256Util.encrypt(keyConfig.getRefreshTokenKey(), rawToken);
+            String encryptedToken = AES256Util.encrypt(authConfig.getRefreshTokenKey(), rawToken);
             assert encryptedToken != null;
 
             RefreshToken refreshToken = new RefreshToken();

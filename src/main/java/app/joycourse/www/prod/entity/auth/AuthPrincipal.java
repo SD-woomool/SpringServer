@@ -3,7 +3,6 @@ package app.joycourse.www.prod.entity.auth;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.util.HashUtil;
 import lombok.Getter;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -13,7 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Getter
-public class AuthPrincipal implements OAuth2User, Authentication {
+public class AuthPrincipal implements OAuth2User {
     private final String uid;
     private final String email;
 
@@ -35,34 +34,6 @@ public class AuthPrincipal implements OAuth2User, Authentication {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
-    }
-
-    @Override
-    public Object getCredentials() {
-        return null;
-    }
-
-    @Override
-    public Object getDetails() {
-        return null;
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return this;
-    }
-
-    @Override
-    public boolean isAuthenticated() {
-        return true;
-    }
-
-    @Override
-    public void setAuthenticated(boolean isAuthenticated) {
-    }
-
-    public static AuthPrincipal createAuthentication(String uid, String email) {
-        return new AuthPrincipal(uid, email);
     }
 
     public static AuthPrincipal create(OAuth2User oAuth2User, Provider provider) {

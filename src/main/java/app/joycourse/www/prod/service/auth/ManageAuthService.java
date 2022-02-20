@@ -1,5 +1,6 @@
 package app.joycourse.www.prod.service.auth;
 
+import app.joycourse.www.prod.config.AuthConfig;
 import app.joycourse.www.prod.entity.UserAgent;
 import app.joycourse.www.prod.entity.auth.Auth;
 import app.joycourse.www.prod.exception.CustomException;
@@ -19,10 +20,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ManageAuthService {
     private final TokenService tokenService;
-    private static final String ACCESS_TOKEN_COOKIE_NAME = "actc";
-    private static final String REFRESH_TOKEN_COOKIE_NAME = "rctc";
-    private static final int ACCESS_TOKEN_MAX_AGE = 1800; // 30m
-    private static final int REFRESH_TOKEN_MAX_AGE = 10800; // 3h
+    private final AuthConfig authConfig;
 
     private Cookie makeCookie(String key, String value, int maxAge) {
         Cookie cookie = new Cookie(key, value);
@@ -41,7 +39,7 @@ public class ManageAuthService {
         if (userAgent.isWeb()) {
             // web은 access token cookie에 저장
             String accessToken = tokenService.issueAccessToken(uid, deviceId);
-            response.addCookie(makeCookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, ACCESS_TOKEN_MAX_AGE));
+            response.addCookie(makeCookie(authConfig.getAccessTokenCookieName(), accessToken, authConfig.getAccessTokenMaxAge()));
         }
     }
 
@@ -54,8 +52,8 @@ public class ManageAuthService {
             String accessToken = tokenService.issueAccessToken(auth.getUid(), deviceId);
             String refreshToken = tokenService.issueRefreshToken(auth.getUid(), deviceId);
 
-            response.addCookie(makeCookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, ACCESS_TOKEN_MAX_AGE));
-            response.addCookie(makeCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, REFRESH_TOKEN_MAX_AGE));
+            response.addCookie(makeCookie(authConfig.getAccessTokenCookieName(), accessToken, authConfig.getAccessTokenMaxAge()));
+            response.addCookie(makeCookie(authConfig.getRefreshTokenCookieName(), refreshToken, authConfig.getRefreshTokenMaxAge()));
         }
         // app app은 header에 전달..?
     }
@@ -63,8 +61,8 @@ public class ManageAuthService {
     public void clearAuth(HttpServletRequest request, HttpServletResponse response) {
         UserAgent userAgent = UserAgentUtil.parse(request.getHeader(HttpHeaders.USER_AGENT));
         if (userAgent.isWeb()) {
-            response.addCookie(makeCookie(ACCESS_TOKEN_COOKIE_NAME, "", 0));
-            response.addCookie(makeCookie(REFRESH_TOKEN_COOKIE_NAME, "", 0));
+            response.addCookie(makeCookie(authConfig.getAccessTokenCookieName(), "", 0));
+            response.addCookie(makeCookie(authConfig.getRefreshTokenCookieName(), "", 0));
         }
     }
 
@@ -76,7 +74,7 @@ public class ManageAuthService {
         if (userAgent.isWeb()) {
             // web은 access token, refresh token 둘다 cookie에 저장
             encryptedAccessToken = Arrays.stream(request.getCookies())
-                    .filter(c -> c.getName().equals(ACCESS_TOKEN_COOKIE_NAME))
+                    .filter(c -> c.getName().equals(authConfig.getAccessTokenCookieName()))
                     .findFirst()
                     .map(Cookie::getValue)
                     .orElse(null);
@@ -97,7 +95,7 @@ public class ManageAuthService {
         if (userAgent.isWeb()) {
             // web은 access token, refresh token 둘다 cookie에 저장
             encryptedRefreshToken = Arrays.stream(request.getCookies())
-                    .filter(c -> c.getName().equals(REFRESH_TOKEN_COOKIE_NAME))
+                    .filter(c -> c.getName().equals(authConfig.getRefreshTokenCookieName()))
                     .findFirst()
                     .map(Cookie::getValue)
                     .orElse(null);
