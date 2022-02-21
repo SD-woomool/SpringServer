@@ -7,13 +7,17 @@ import app.joycourse.www.prod.entity.Place;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CourseService;
+import app.joycourse.www.prod.service.FileService;
 import app.joycourse.www.prod.service.PlaceService;
 import app.joycourse.www.prod.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -25,6 +29,7 @@ public class CourseController {
     private final CourseService courseService;
     private final UserService userService;
     private final PlaceService placeService;
+    private final FileService fileService;
 
 
     @GetMapping("/{course-id}/")
@@ -84,6 +89,17 @@ public class CourseController {
         return new Response<>(courseSaveDto);
     }
 
+    @PostMapping(path = "new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @ResponseBody
+    public Response<CourseSaveDto> saveCourseFormData(
+            @AuthorizationUser User user,
+            @RequestParam("body") String jsonBody,
+            @RequestPart("files") List<MultipartFile> files
+    ) {
+        fileService.fileUpload(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
+        return null;
+    }
+
     /*
      * 일단 유저확인 o
      * 유져로 계시글 찾기
@@ -121,7 +137,6 @@ public class CourseController {
             @RequestBody CourseInfoDto courseInfo, // 여기 dto로 바꾸자
             @AuthorizationUser User user
     ) {
-        //Course newCourse = new Course(courseInfo);
         Course course = courseService.getCourse(courseInfo.getId());
         if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
@@ -134,6 +149,7 @@ public class CourseController {
     @GetMapping("/place")
     @ResponseBody
     public Response<PlaceSearchResponseDto> getPlace(
+            @AuthorizationUser User user,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "15") int size,
             @RequestParam(name = "query", defaultValue = "") String query,

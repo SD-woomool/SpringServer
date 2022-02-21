@@ -71,3 +71,7 @@ place-api:
   request-parameter:
     request-uri: https://dapi.kakao.com
     rest-api-key: ${KAKAO_API_KEY}
+
+file-dir:
+  path: .\images
+
