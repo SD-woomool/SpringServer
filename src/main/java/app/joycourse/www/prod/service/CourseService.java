@@ -12,8 +12,10 @@ import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,9 +30,11 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseDetailRepository courseDetailRepository;
     private final PlaceRepository placeRepository;
+    private final FileService fileService;
+    @Value("${file-dir.download-url}")
+    private String fileDownLoadUrl;
 
-
-    public Course saveCourse(User user, CourseInfoDto courseInfo) {
+    public Course saveCourse(User user, CourseInfoDto courseInfo, List<MultipartFile> files) {
         Course course = new Course(courseInfo);
         course.setUser(user);
         courseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detailDto) -> {
@@ -48,6 +52,19 @@ public class CourseService {
             }
         });
         course.setTotalPrice();
+        if (files != null) {
+            List<String> fileNameList = fileService.fileUpload(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
+            int[] index = {0};
+            course.getCourseDetail().stream()
+                    .filter((detail) -> detail.getPhoto() != null)
+                    .forEach((detail) -> {
+                        if (index[0] >= fileNameList.size()) {
+                            throw new CustomException(CustomException.CustomError.BAD_REQUEST);
+                        }
+                        detail.setPhoto(this.fileDownLoadUrl + fileNameList.get(index[0]));
+                        index[0]++;
+                    });
+        }
         return courseRepository.saveCourse(course);
     }
 

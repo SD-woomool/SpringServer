@@ -11,11 +11,13 @@ import app.joycourse.www.prod.service.FileService;
 import app.joycourse.www.prod.service.PlaceService;
 import app.joycourse.www.prod.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +32,7 @@ public class CourseController {
     private final UserService userService;
     private final PlaceService placeService;
     private final FileService fileService;
+    private final ObjectMapper objectMapper;
 
 
     @GetMapping("/{course-id}/")
@@ -67,7 +70,7 @@ public class CourseController {
         return new Response<>(courseService.pagingCourse(pageLength, page));
     }
 
-
+/*
     @PostMapping("/")
     @ResponseBody
     public Response<CourseSaveDto> saveCourse(@AuthorizationUser User user, @RequestBody CourseInfoDto courseInfo) {
@@ -87,17 +90,39 @@ public class CourseController {
 
         CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
         return new Response<>(courseSaveDto);
-    }
+    }*/
 
+    /*
+     * save sevice에서 파일저장도 해야함
+     * 그리고 file controller 주소 photo에 넣어서 주기
+     * file controller httpservletresponse 에 파일넣어서 하기
+     */
     @PostMapping(path = "new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public Response<CourseSaveDto> saveCourseFormData(
             @AuthorizationUser User user,
             @RequestParam("body") String jsonBody,
-            @RequestPart("files") List<MultipartFile> files
-    ) {
-        fileService.fileUpload(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
-        return null;
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            HttpServletResponse response
+    ) throws JsonProcessingException {
+
+        CourseInfoDto courseInfo = objectMapper.readValue(jsonBody, CourseInfoDto.class);
+        Course newCourse = courseService.saveCourse(user, courseInfo, files);
+        CourseInfoDto courseInfoDto = new CourseInfoDto(
+                newCourse.getId(),
+                newCourse.getUser().getNickname(),
+                newCourse.getTitle(),
+                newCourse.getContent(),
+                newCourse.getLocation(),
+                newCourse.getThumbnailUrl(),
+                newCourse.getLikeCnt(),
+                newCourse.getTotalPrice(),
+                newCourse.getMemo(),
+                newCourse.getCourseDetail()
+        );
+
+        CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
+        return new Response<>(courseSaveDto);
     }
 
     /*
