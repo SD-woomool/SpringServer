@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Transactional
@@ -53,16 +50,12 @@ public class CourseService {
         });
         course.setTotalPrice();
         if (files != null) {
-            List<String> fileNameList = fileService.fileUpload(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
-            int[] index = {0};
+            Map<String, String> fileNameMap = fileService.fileUpload(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
             course.getCourseDetail().stream()
                     .filter((detail) -> detail.getPhoto() != null)
                     .forEach((detail) -> {
-                        if (index[0] >= fileNameList.size()) {
-                            throw new CustomException(CustomException.CustomError.BAD_REQUEST);
-                        }
-                        detail.setPhoto(this.fileDownLoadUrl + fileNameList.get(index[0]));
-                        index[0]++;
+                        String newFileName = Optional.ofNullable(fileNameMap.get(detail.getPhoto())).orElseThrow(() -> new CustomException(CustomException.CustomError.SERVER_ERROR));
+                        detail.setPhoto(this.fileDownLoadUrl + newFileName);
                     });
         }
         return courseRepository.saveCourse(course);

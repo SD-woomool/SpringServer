@@ -93,9 +93,7 @@ public class CourseController {
     }*/
 
     /*
-     * save sevice에서 파일저장도 해야함
-     * 그리고 file controller 주소 photo에 넣어서 주기
-     * file controller httpservletresponse 에 파일넣어서 하기
+     * 파일 용량재한 설정 해야함
      */
     @PostMapping(path = "new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
