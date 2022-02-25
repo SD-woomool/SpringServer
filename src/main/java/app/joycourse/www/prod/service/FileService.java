@@ -50,6 +50,18 @@ public class FileService {
         return fileNameMap;
     }
 
+
+    public boolean deleteFile(String fileName, ImageFileType imageFileType) {
+        Path dirLocation = Paths.get(fileDir
+                , imageFileType.getPath()
+                , fileName);
+        if (!Files.exists(dirLocation)) {
+            throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
+        }
+        return dirLocation.toFile().delete();
+    }
+
+
     @AllArgsConstructor
     @Getter
     public enum ImageFileType {

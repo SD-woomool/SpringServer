@@ -95,7 +95,7 @@ public class CourseController {
     /*
      * 파일 용량재한 설정 해야함
      */
-    @PostMapping(path = "new", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public Response<CourseSaveDto> saveCourseFormData(
             @AuthorizationUser User user,
@@ -154,17 +154,19 @@ public class CourseController {
         return new Response<>(new DeleteCourseDto(true, id));
     }
 
-    @PutMapping("/")
+    @PutMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseBody
     public Response<CourseInfoDto> editCourse(
-            @RequestBody CourseInfoDto courseInfo, // 여기 dto로 바꾸자
-            @AuthorizationUser User user
-    ) {
+            @RequestParam("body") String jsonBody,
+            @AuthorizationUser User user,
+            @RequestPart("files") List<MultipartFile> files
+    ) throws JsonProcessingException {
+        CourseInfoDto courseInfo = objectMapper.readValue(jsonBody, CourseInfoDto.class);
         Course course = courseService.getCourse(courseInfo.getId());
         if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
-        courseService.updateCourse(course, courseInfo);
+        courseService.updateCourse(course, courseInfo, files);
 
         return new Response<>(new CourseInfoDto(course));
     }

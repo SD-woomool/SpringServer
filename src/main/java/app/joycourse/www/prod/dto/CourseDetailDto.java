@@ -14,7 +14,7 @@ public class CourseDetailDto {
     private Long courseId;
     private float price;
     private String content;
-    private String photo;
+    private PhotoInfoDto photo;
     private PlaceInfoDto place;
 
     public CourseDetailDto() {
