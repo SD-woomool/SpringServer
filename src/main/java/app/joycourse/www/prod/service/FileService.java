@@ -1,6 +1,7 @@
 package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.exception.CustomException;
+import app.joycourse.www.prod.util.HashUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +31,8 @@ public class FileService {
         files.stream().filter(Objects::nonNull).forEach((file) -> {
             String fileName = Optional.ofNullable(file.getOriginalFilename()).orElseThrow(() -> new CustomException(CustomException.CustomError.MISSING_PARAMETERS));
             int splitPoint = fileName.lastIndexOf(".");
-            String newFileName = StringUtils.cleanPath(fileName.substring(0, splitPoint))
-                    + "_" + String.valueOf(System.currentTimeMillis()) + "." + fileName.substring(splitPoint + 1);
+            String newFileName = HashUtil.sha256(StringUtils.cleanPath(fileName.substring(0, splitPoint))
+                    + "_" + String.valueOf(System.currentTimeMillis())) + "." + fileName.substring(splitPoint + 1);
 
             Path dirLocation = Paths.get(fileDir
                     , imageFileType.getPath()

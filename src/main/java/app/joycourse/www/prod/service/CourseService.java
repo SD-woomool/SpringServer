@@ -120,8 +120,9 @@ public class CourseService {
             courseDetail.setCourse(newCourse);
             newCourse.addCourseDetail(courseDetail);
             place.setCourseDetails(courseDetail);
-            if (detailDto.getPhoto().getFileName() != null) {
-                String fileName = detailDto.getPhoto().getFileUrl().substring(detailDto.getPhoto().getFileUrl().lastIndexOf("\\") + 1);
+            if (detailDto.getPhoto().getFileUrl() != null && detailDto.getPhoto().getFileName() != null) { // 사진이 변경된 경우 기존 파일을 지우는 부분
+                // 파일 이름을 구하는 더 좋은방법을 알아보자
+                String fileName = detailDto.getPhoto().getFileUrl().substring(detailDto.getPhoto().getFileUrl().lastIndexOf("/") + 1);
                 if (!fileService.deleteFile(fileName, FileService.ImageFileType.COURSE_DETAIL_IMAGE)) {
                     throw new CustomException(CustomException.CustomError.SERVER_ERROR);
                 }
