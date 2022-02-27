@@ -13,7 +13,6 @@ import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +28,7 @@ public class CourseService {
     private final CourseDetailRepository courseDetailRepository;
     private final PlaceRepository placeRepository;
     private final FileService fileService;
-    @Value("${file-dir.download-url}")
-    private String fileDownLoadUrl;
+
 
     public Course saveCourse(User user, CourseInfoDto courseInfo, List<MultipartFile> files) {
         Course course = new Course(courseInfo);
@@ -49,12 +47,12 @@ public class CourseService {
         });
         course.setTotalPrice();
         if (files != null) {
-            Map<String, String> fileNameMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
+            Map<String, String> fileUrlMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
             course.getCourseDetail().stream()
                     .filter((detail) -> detail.getPhoto() != null)
                     .forEach((detail) -> {
-                        String newFileName = Optional.ofNullable(fileNameMap.get(detail.getPhoto())).orElseThrow(() -> new CustomException(CustomException.CustomError.SERVER_ERROR));
-                        detail.setPhoto(this.fileDownLoadUrl + newFileName);
+                        String newFileUrl = Optional.ofNullable(fileUrlMap.get(detail.getPhoto())).orElseThrow(() -> new CustomException(CustomException.CustomError.SERVER_ERROR));
+                        detail.setPhoto(newFileUrl);
                     });
         }
         return courseRepository.saveCourse(course);
@@ -135,11 +133,11 @@ public class CourseService {
         newCourse.setUser(course.getUser());
         newCourse.setLikeCnt(course.getLikeCnt());
         if (files != null) {
-            Map<String, String> fileNameMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
+            Map<String, String> fileUrlMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
             newCourse.getCourseDetail().stream().filter((detail) -> detail.getPhoto() != null).forEach((detail) -> {
-                String newFileName = fileNameMap.get(detail.getPhoto());
-                if (newFileName != null) {
-                    detail.setPhoto(this.fileDownLoadUrl + newFileName);
+                String newFileUrl = fileUrlMap.get(detail.getPhoto());
+                if (newFileUrl != null) {
+                    detail.setPhoto(newFileUrl);
                 }
             });
         }
