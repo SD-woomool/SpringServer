@@ -21,13 +21,15 @@ public class FileService {
 
     @Value("${file-dir.path}")
     private String fileDir;
+    @Value("${file-dir.download-url}")
+    private String fileDownLoadUrl;
 
     /*
      * 파일 이름 고치는거(파일이름에 뭘 더 추가할지 생각해봐
      * 그리고 컨트롤러 가서 나머지 save 로직하면 됨
      */
     public Map<String, String> uploadFiles(List<MultipartFile> files, ImageFileType imageFileType) {
-        Map<String, String> fileNameMap = new HashMap<>();
+        Map<String, String> fileUrlMap = new HashMap<>();
         files.stream().filter(Objects::nonNull).forEach((file) -> {
             String fileName = Optional.ofNullable(file.getOriginalFilename()).orElseThrow(() -> new CustomException(CustomException.CustomError.MISSING_PARAMETERS));
             int splitPoint = fileName.lastIndexOf(".");
@@ -42,13 +44,13 @@ public class FileService {
                     dirLocation = Files.createDirectories(dirLocation);
                 }
                 Files.copy(Objects.requireNonNull(file).getInputStream(), dirLocation, StandardCopyOption.REPLACE_EXISTING);
-                fileNameMap.put(fileName, newFileName);
+                fileUrlMap.put(fileName, fileDownLoadUrl + newFileName);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
             }
         });
-        return fileNameMap;
+        return fileUrlMap;
     }
 
 
