@@ -68,8 +68,6 @@ public class Course {
         this.thumbnailUrl = courseInfo.getThumbnailUrl();
         this.memo = courseInfo.getMemo();
         this.totalPrice = courseInfo.getTotalPrice();
-        //this.courseDetail = Optional.ofNullable(courseInfo.getCourseDetail()).stream().flatMap(Collection::stream)
-        //        .map(CourseDetailDto::convertToEntity).collect(Collectors.toList());  // 원래 add 하는거 보다 이게 더 나은듯
     }
 
     public void setCourseDetail(List<CourseDetail> newCourseDetail) {

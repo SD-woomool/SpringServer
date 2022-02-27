@@ -52,7 +52,7 @@ public class CourseInfoDto {
         this.likeCnt = likeCnt;
         this.courseDetail = Optional.ofNullable(courseDetailList).stream().flatMap(Collection::stream)
                 .map((detail) ->
-                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto(), new PlaceInfoDto(detail.getPlace())))
+                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), new PhotoInfoDto(detail.getPhoto(), null, false), new PlaceInfoDto(detail.getPlace())))
                 .collect(Collectors.toList());
     }
 
@@ -68,7 +68,7 @@ public class CourseInfoDto {
         this.likeCnt = course.getLikeCnt();
         this.courseDetail = Optional.ofNullable(course.getCourseDetail()).stream().flatMap(Collection::stream)
                 .map((detail) ->
-                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), detail.getPhoto(), new PlaceInfoDto(detail.getPlace())))
+                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), new PhotoInfoDto(detail.getPhoto(), null, false), new PlaceInfoDto(detail.getPlace())))
                 .collect(Collectors.toList());
     }
 
