@@ -40,7 +40,7 @@ public class CourseDetail {
 
     public CourseDetail(CourseDetailDto courseDetailDto) {
         this.price = courseDetailDto.getPrice();
-        this.photo = courseDetailDto.getPhoto();
+        this.photo = courseDetailDto.getPhoto() == null ? null : courseDetailDto.getPhoto().getFileName();
         this.content = courseDetailDto.getContent();
     }
 

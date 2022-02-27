@@ -7,13 +7,19 @@ import app.joycourse.www.prod.entity.Place;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CourseService;
+import app.joycourse.www.prod.service.FileService;
 import app.joycourse.www.prod.service.PlaceService;
 import app.joycourse.www.prod.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -25,6 +31,8 @@ public class CourseController {
     private final CourseService courseService;
     private final UserService userService;
     private final PlaceService placeService;
+    private final FileService fileService;
+    private final ObjectMapper objectMapper;
 
 
     @GetMapping("/{course-id}/")
@@ -63,10 +71,16 @@ public class CourseController {
     }
 
 
-    @PostMapping("/")
+    @PostMapping(path = "/")
     @ResponseBody
-    public Response<CourseSaveDto> saveCourse(@AuthorizationUser User user, @RequestBody CourseInfoDto courseInfo) {
-        Course newCourse = courseService.saveCourse(user, courseInfo);
+    public Response<CourseSaveDto> saveCourseFormData(
+            @AuthorizationUser User user,
+            @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            HttpServletResponse response
+    ) throws JsonProcessingException {
+
+        Course newCourse = courseService.saveCourse(user, courseInfo, files);
         CourseInfoDto courseInfoDto = new CourseInfoDto(
                 newCourse.getId(),
                 newCourse.getUser().getNickname(),
@@ -84,14 +98,7 @@ public class CourseController {
         return new Response<>(courseSaveDto);
     }
 
-    /*
-     * 일단 유저확인 o
-     * 유져로 계시글 찾기
-     * 근데 몇개씩 찾을지 정해야함
-     * 중요한건 쿼리를 몇개씩 찾아오는게 가능한지, 가능하면 어떻게 해야하는지?
-     * paging해야함 -> 시작 인덱스, 가져올 갯수, isEnd, 지금 몇번째 페이지 인지등 알면 될듯?
-     */
-
+    
     @GetMapping("/my-course")
     @ResponseBody
     public Response<CourseListDto> getMyCourseList(  // page, pageLength 없는경우 아직 해결 안됌
@@ -115,18 +122,19 @@ public class CourseController {
         return new Response<>(new DeleteCourseDto(true, id));
     }
 
-    @PutMapping("/")
+
+    @PutMapping(value = "/")
     @ResponseBody
     public Response<CourseInfoDto> editCourse(
-            @RequestBody CourseInfoDto courseInfo, // 여기 dto로 바꾸자
-            @AuthorizationUser User user
-    ) {
-        Course newCourse = new Course(courseInfo);
+            @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
+            @AuthorizationUser User user,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+    ) throws JsonProcessingException {
         Course course = courseService.getCourse(courseInfo.getId());
-        if (course.equals(newCourse) || !course.getUser().getUid().equals(user.getUid())) {
+        if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
-        courseService.updateCourse(course, newCourse);
+        courseService.updateCourse(course, courseInfo, files);
 
         return new Response<>(new CourseInfoDto(course));
     }
@@ -134,6 +142,7 @@ public class CourseController {
     @GetMapping("/place")
     @ResponseBody
     public Response<PlaceSearchResponseDto> getPlace(
+            @AuthorizationUser User user,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "15") int size,
             @RequestParam(name = "query", defaultValue = "") String query,
