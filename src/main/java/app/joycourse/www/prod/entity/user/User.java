@@ -20,7 +20,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String uid;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 10)
     private String nickname;
 
     @ColumnDefault("'PRIVATE'")
