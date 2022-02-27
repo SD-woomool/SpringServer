@@ -33,7 +33,7 @@ public class FileController {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
         String fileType = Files.probeContentType(targetFile);
-        response.setContentType("application/" + fileType);
+        response.setContentType(fileType);
         response.getOutputStream().write(FileUtils.readFileToByteArray(targetFile.toFile()));
         response.getOutputStream().flush();
         response.getOutputStream().close();

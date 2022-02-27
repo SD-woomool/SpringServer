@@ -1,5 +1,9 @@
 server:
   port: 8080
+  servlet:
+    multipart:
+      maxFileSize: 5MB
+      maxRequestSize: 10MB
 
 spring:
   profiles:
@@ -72,7 +76,4 @@ place-api:
     request-uri: https://dapi.kakao.com
     rest-api-key: ${KAKAO_API_KEY}
 
-file-dir:
-  path: .\images
-  download-url: http://127.0.0.1:8080/files/
 

@@ -13,11 +13,11 @@ import app.joycourse.www.prod.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
@@ -70,41 +70,16 @@ public class CourseController {
         return new Response<>(courseService.pagingCourse(pageLength, page));
     }
 
-/*
-    @PostMapping("/")
-    @ResponseBody
-    public Response<CourseSaveDto> saveCourse(@AuthorizationUser User user, @RequestBody CourseInfoDto courseInfo) {
-        Course newCourse = courseService.saveCourse(user, courseInfo);
-        CourseInfoDto courseInfoDto = new CourseInfoDto(
-                newCourse.getId(),
-                newCourse.getUser().getNickname(),
-                newCourse.getTitle(),
-                newCourse.getContent(),
-                newCourse.getLocation(),
-                newCourse.getThumbnailUrl(),
-                newCourse.getLikeCnt(),
-                newCourse.getTotalPrice(),
-                newCourse.getMemo(),
-                newCourse.getCourseDetail()
-        );
 
-        CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
-        return new Response<>(courseSaveDto);
-    }*/
-
-    /*
-     * 파일 용량재한 설정 해야함
-     */
-    @PostMapping(path = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/")
     @ResponseBody
     public Response<CourseSaveDto> saveCourseFormData(
             @AuthorizationUser User user,
-            @RequestParam("body") String jsonBody,
+            @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             HttpServletResponse response
     ) throws JsonProcessingException {
 
-        CourseInfoDto courseInfo = objectMapper.readValue(jsonBody, CourseInfoDto.class);
         Course newCourse = courseService.saveCourse(user, courseInfo, files);
         CourseInfoDto courseInfoDto = new CourseInfoDto(
                 newCourse.getId(),
@@ -123,14 +98,7 @@ public class CourseController {
         return new Response<>(courseSaveDto);
     }
 
-    /*
-     * 일단 유저확인 o
-     * 유져로 계시글 찾기
-     * 근데 몇개씩 찾을지 정해야함
-     * 중요한건 쿼리를 몇개씩 찾아오는게 가능한지, 가능하면 어떻게 해야하는지?
-     * paging해야함 -> 시작 인덱스, 가져올 갯수, isEnd, 지금 몇번째 페이지 인지등 알면 될듯?
-     */
-
+    
     @GetMapping("/my-course")
     @ResponseBody
     public Response<CourseListDto> getMyCourseList(  // page, pageLength 없는경우 아직 해결 안됌
@@ -154,14 +122,14 @@ public class CourseController {
         return new Response<>(new DeleteCourseDto(true, id));
     }
 
-    @PutMapping(value = "/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+
+    @PutMapping(value = "/")
     @ResponseBody
     public Response<CourseInfoDto> editCourse(
-            @RequestParam("body") String jsonBody,
+            @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
             @AuthorizationUser User user,
-            @RequestPart("files") List<MultipartFile> files
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) throws JsonProcessingException {
-        CourseInfoDto courseInfo = objectMapper.readValue(jsonBody, CourseInfoDto.class);
         Course course = courseService.getCourse(courseInfo.getId());
         if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);

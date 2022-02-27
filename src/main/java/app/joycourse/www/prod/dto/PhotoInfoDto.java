@@ -10,6 +10,7 @@ import lombok.Setter;
 public class PhotoInfoDto {
     private String fileUrl;
     private String fileName;
+    private Boolean deleted;
 
     public PhotoInfoDto() {
     }

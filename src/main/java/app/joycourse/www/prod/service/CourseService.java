@@ -2,6 +2,7 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.dto.CourseInfoDto;
 import app.joycourse.www.prod.dto.CourseListDto;
+import app.joycourse.www.prod.dto.PhotoInfoDto;
 import app.joycourse.www.prod.dto.PlaceInfoDto;
 import app.joycourse.www.prod.entity.Course;
 import app.joycourse.www.prod.entity.CourseDetail;
@@ -48,7 +49,7 @@ public class CourseService {
         });
         course.setTotalPrice();
         if (files != null) {
-            Map<String, String> fileNameMap = fileService.fileUpload(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
+            Map<String, String> fileNameMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
             course.getCourseDetail().stream()
                     .filter((detail) -> detail.getPhoto() != null)
                     .forEach((detail) -> {
@@ -120,19 +121,21 @@ public class CourseService {
             courseDetail.setCourse(newCourse);
             newCourse.addCourseDetail(courseDetail);
             place.setCourseDetails(courseDetail);
-            if (detailDto.getPhoto().getFileUrl() != null && detailDto.getPhoto().getFileName() != null) { // 사진이 변경된 경우 기존 파일을 지우는 부분
-                // 파일 이름을 구하는 더 좋은방법을 알아보자
-                String fileName = detailDto.getPhoto().getFileUrl().substring(detailDto.getPhoto().getFileUrl().lastIndexOf("/") + 1);
+            PhotoInfoDto photoInfo = Optional.ofNullable(detailDto.getPhoto()).orElse(new PhotoInfoDto());
+            Boolean fileDeleted = Optional.ofNullable(photoInfo.getDeleted()).orElse(false);
+            if (photoInfo.getFileUrl() != null && (photoInfo.getFileName() != null || fileDeleted)) { // 사진이 변경된 경우 기존 파일을 지우는 부분
+                String fileName = photoInfo.getFileUrl().split("files/")[1];
                 if (!fileService.deleteFile(fileName, FileService.ImageFileType.COURSE_DETAIL_IMAGE)) {
                     throw new CustomException(CustomException.CustomError.SERVER_ERROR);
                 }
-                courseDetail.setPhoto(detailDto.getPhoto().getFileName());
+                String photoName = fileDeleted ? null : photoInfo.getFileName();
+                courseDetail.setPhoto(photoName);
             }
         });
         newCourse.setUser(course.getUser());
         newCourse.setLikeCnt(course.getLikeCnt());
         if (files != null) {
-            Map<String, String> fileNameMap = fileService.fileUpload(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
+            Map<String, String> fileNameMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
             newCourse.getCourseDetail().stream().filter((detail) -> detail.getPhoto() != null).forEach((detail) -> {
                 String newFileName = fileNameMap.get(detail.getPhoto());
                 if (newFileName != null) {

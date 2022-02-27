@@ -26,13 +26,13 @@ public class FileService {
      * 파일 이름 고치는거(파일이름에 뭘 더 추가할지 생각해봐
      * 그리고 컨트롤러 가서 나머지 save 로직하면 됨
      */
-    public Map<String, String> fileUpload(List<MultipartFile> files, ImageFileType imageFileType) {
+    public Map<String, String> uploadFiles(List<MultipartFile> files, ImageFileType imageFileType) {
         Map<String, String> fileNameMap = new HashMap<>();
         files.stream().filter(Objects::nonNull).forEach((file) -> {
             String fileName = Optional.ofNullable(file.getOriginalFilename()).orElseThrow(() -> new CustomException(CustomException.CustomError.MISSING_PARAMETERS));
             int splitPoint = fileName.lastIndexOf(".");
-            String newFileName = HashUtil.sha256(StringUtils.cleanPath(fileName.substring(0, splitPoint))
-                    + "_" + String.valueOf(System.currentTimeMillis())) + "." + fileName.substring(splitPoint + 1);
+            String newFileName = StringUtils.cleanPath(Objects.requireNonNull(HashUtil.sha256(fileName.substring(0, splitPoint) + "_" + String.valueOf(System.currentTimeMillis()))))
+                    + fileName.substring(splitPoint);
 
             Path dirLocation = Paths.get(fileDir
                     , imageFileType.getPath()
