@@ -41,9 +41,8 @@ public class UserController {
     public Response<UserInfoDto> me(@AuthorizationUser User user) {
         return new Response<>(
                 UserInfoDto.builder()
-                        .ageRange(user.getAgeRange())
-                        .agreement(user.getAgreement())
-                        .gender(user.getGender())
+                        .ageRangeEnum(user.getAgeRangeEnum())
+                        .genderEnum(user.getGenderEnum())
                         .nickname(user.getNickname())
                         .profileImageUrl(user.getProfileImageUrl())
                         .build());

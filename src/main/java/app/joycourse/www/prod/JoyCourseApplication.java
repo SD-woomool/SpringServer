@@ -1,10 +1,13 @@
 package app.joycourse.www.prod;
 
+import app.joycourse.www.prod.entity.Agreement;
+import app.joycourse.www.prod.entity.AgreementLog;
 import app.joycourse.www.prod.entity.auth.Auth;
 import app.joycourse.www.prod.entity.auth.Provider;
-import app.joycourse.www.prod.entity.user.Agreement;
 import app.joycourse.www.prod.entity.user.User;
-import app.joycourse.www.prod.entity.user.UserRole;
+import app.joycourse.www.prod.entity.user.UserRoleEnum;
+import app.joycourse.www.prod.repository.AgreementLogRepository;
+import app.joycourse.www.prod.repository.AgreementRepository;
 import app.joycourse.www.prod.repository.AuthRepository;
 import app.joycourse.www.prod.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +34,7 @@ public class JoyCourseApplication {
     }
 
     @Bean
-    CommandLineRunner insertTestData(UserRepository userRepository, AuthRepository authRepository) {
+    CommandLineRunner insertTestData(UserRepository userRepository, AuthRepository authRepository, AgreementRepository agreementRepository, AgreementLogRepository agreementLogRepository) {
         return new CommandLineRunner() {
             @Override
             @Transactional
@@ -46,8 +49,7 @@ public class JoyCourseApplication {
                 tony.setUid(tonyAuth.getUid());
                 tony.setNickname("tony");
                 tony.setIsSigned(true);
-                tony.setAgreement(Agreement.BASIC);
-                tony.setRole(UserRole.ADMIN);
+                tony.setRole(UserRoleEnum.ADMIN);
                 userRepository.save(tony);
 
                 Auth ironmanAuth = new Auth();
@@ -60,11 +62,27 @@ public class JoyCourseApplication {
                 ironman.setUid(ironmanAuth.getUid());
                 ironman.setNickname("ironman");
                 ironman.setIsSigned(true);
-                ironman.setAgreement(Agreement.BASIC);
-                ironman.setRole(UserRole.NORMAL);
+                ironman.setRole(UserRoleEnum.NORMAL);
                 userRepository.save(ironman);
 
                 log.info("Test user(Tony, Ironman) is created");
+
+                Agreement agreement = new Agreement();
+                agreement.setTitle("개인정보 약관");
+                agreement.setContent("제 1조");
+                agreement.setIsRequired(true);
+                agreementRepository.save(agreement);
+
+
+                AgreementLog tonyAgreementLog = new AgreementLog();
+                tonyAgreementLog.setAgreementSeq(agreement.getSeq());
+                tonyAgreementLog.setUserSeq(tony.getSeq());
+                agreementLogRepository.save(tonyAgreementLog);
+
+                AgreementLog ironmanAgreementLog = new AgreementLog();
+                ironmanAgreementLog.setAgreementSeq(agreement.getSeq());
+                ironmanAgreementLog.setUserSeq(ironman.getSeq());
+                agreementLogRepository.save(ironmanAgreementLog);
             }
         };
     }

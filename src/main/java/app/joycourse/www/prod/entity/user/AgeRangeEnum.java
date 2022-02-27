@@ -4,7 +4,7 @@ package app.joycourse.www.prod.entity.user;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum AgeRange {
+public enum AgeRangeEnum {
     PRIVATE("PRIVATE"),
     TEENS("TEENS"),
     TWENTIES("TWENTIES"),

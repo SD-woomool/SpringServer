@@ -3,7 +3,7 @@ package app.joycourse.www.prod.service;
 import app.joycourse.www.prod.dto.request.UserSignDto;
 import app.joycourse.www.prod.dto.request.UserUpdateDto;
 import app.joycourse.www.prod.entity.user.User;
-import app.joycourse.www.prod.entity.user.UserRole;
+import app.joycourse.www.prod.entity.user.UserRoleEnum;
 import app.joycourse.www.prod.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,14 +20,14 @@ public class UserService {
 
     public void signUser(User user, UserSignDto userSignDto, MultipartFile profileImageFile) {
         user.setNickname(userSignDto.getNickname());
-        user.setAgeRange(userSignDto.getAgeRange());
-        user.setGender(userSignDto.getGender());
+        user.setAgeRangeEnum(userSignDto.getAgeRangeEnum());
+        user.setGenderEnum(userSignDto.getGenderEnum());
         user.setIsSigned(true);
     }
 
     public void updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile profileImageFile) {
-        user.setAgeRange(userUpdateDto.getAgeRange());
-        user.setGender(userUpdateDto.getGender());
+        user.setAgeRangeEnum(userUpdateDto.getAgeRangeEnum());
+        user.setGenderEnum(userUpdateDto.getGenderEnum());
     }
 
     // MSA 환경일때 이부분은 유저에 대한 정보를 주게된다.
@@ -42,6 +42,6 @@ public class UserService {
             return newUser;
         });
 
-        return user.getRole().equals(UserRole.BLOCK);
+        return user.getRole().equals(UserRoleEnum.BLOCK);
     }
 }

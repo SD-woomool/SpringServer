@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.dto.request;
 
-import app.joycourse.www.prod.entity.user.AgeRange;
-import app.joycourse.www.prod.entity.user.Gender;
+import app.joycourse.www.prod.entity.user.AgeRangeEnum;
+import app.joycourse.www.prod.entity.user.GenderEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +14,6 @@ public class UserSignDto {
     @NotBlank
     @Size(min = 3, max = 10)
     private String nickname;
-    private AgeRange ageRange;
-    private Gender gender;
+    private AgeRangeEnum ageRangeEnum;
+    private GenderEnum genderEnum;
 }

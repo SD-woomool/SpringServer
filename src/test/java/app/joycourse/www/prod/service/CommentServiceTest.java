@@ -3,8 +3,8 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.dto.CommentInfoDto;
 import app.joycourse.www.prod.entity.Comment;
-import app.joycourse.www.prod.entity.user.AgeRange;
-import app.joycourse.www.prod.entity.user.Gender;
+import app.joycourse.www.prod.entity.user.AgeRangeEnum;
+import app.joycourse.www.prod.entity.user.GenderEnum;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -30,8 +30,8 @@ public class CommentServiceTest {
         System.out.println("test start!!");
         User user1 = new User();
         user1.setNickname("ykh1");
-        user1.setAgeRange(AgeRange.TWENTIES);
-        user1.setGender(Gender.MALE);
+        user1.setAgeRangeEnum(AgeRangeEnum.TWENTIES);
+        user1.setGenderEnum(GenderEnum.MALE);
         userRepository.save(user1);
         String userId = user1.getUid();
         //when
