@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserUpdateDto {
-    private AgeRangeEnum ageRangeEnum;
-    private GenderEnum genderEnum;
+    private AgeRangeEnum ageRange;
+    private GenderEnum gender;
 }

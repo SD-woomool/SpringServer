@@ -4,14 +4,23 @@ import app.joycourse.www.prod.dto.request.UserSignDto;
 import app.joycourse.www.prod.dto.request.UserUpdateDto;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.entity.user.UserRoleEnum;
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
+    private final FileService fileService;
     private final UserRepository userRepository;
 
     public Boolean alreadyExistNickname(String nickname) {
@@ -19,15 +28,30 @@ public class UserService {
     }
 
     public void signUser(User user, UserSignDto userSignDto, MultipartFile profileImageFile) {
+        if(user.getIsSigned()) {
+            log.info("[signUser] Fail to sign, cause already signed user: {}", user.getSeq());
+            throw new CustomException(CustomException.CustomError.UNAUTHORIZED);
+        }
+        Map<String, String> fileMap = fileService.uploadFiles(List.of(profileImageFile), FileService.ImageFileType.PROFILE_IMAGE);
+        user.setProfileImageUrl(fileMap.get(profileImageFile.getOriginalFilename()));
         user.setNickname(userSignDto.getNickname());
-        user.setAgeRangeEnum(userSignDto.getAgeRangeEnum());
-        user.setGenderEnum(userSignDto.getGenderEnum());
+        user.setAgeRangeEnum(userSignDto.getAgeRange());
+        user.setGenderEnum(userSignDto.getGender());
         user.setIsSigned(true);
+        userRepository.save(user);
     }
 
     public void updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile profileImageFile) {
-        user.setAgeRangeEnum(userUpdateDto.getAgeRangeEnum());
-        user.setGenderEnum(userUpdateDto.getGenderEnum());
+        // TODO: 삭제 로직 바뀌면 수정해야함!
+//        if (!fileService.deleteFile(기존 유저 떰네일 기반으로 삭제, FileService.ImageFileType.PROFILE_IMAGE)) {
+//            log.error("[updateUser] Fail to delete profile. User: {}, ProfileImage: {}", user.getSeq(), profileImageFile.getOriginalFilename());
+//            throw new CustomException(CustomException.CustomError.SERVER_ERROR);
+//        }
+        Map<String, String> fileMap = fileService.uploadFiles(List.of(profileImageFile), FileService.ImageFileType.PROFILE_IMAGE);
+        user.setProfileImageUrl(fileMap.get(profileImageFile.getOriginalFilename()));
+        user.setAgeRangeEnum(userUpdateDto.getAgeRange());
+        user.setGenderEnum(userUpdateDto.getGender());
+        userRepository.save(user);
     }
 
     // MSA 환경일때 이부분은 유저에 대한 정보를 주게된다.

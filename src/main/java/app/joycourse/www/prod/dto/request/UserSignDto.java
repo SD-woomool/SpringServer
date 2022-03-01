@@ -14,6 +14,6 @@ public class UserSignDto {
     @NotBlank
     @Size(min = 3, max = 10)
     private String nickname;
-    private AgeRangeEnum ageRangeEnum;
-    private GenderEnum genderEnum;
+    private AgeRangeEnum ageRange;
+    private GenderEnum gender;
 }
