@@ -16,6 +16,10 @@ auth:
   access-token-key: a7349a21d63950b9b02c6129839096d4
   refresh-token-key: 36260fc7b27bf642d9015c9820e260e2
 
+elasticsearch:
+  host: 127.0.0.1
+  port: 9200
+
 file-dir:
   path: .\images
   download-url: http://127.0.0.1:8080/files/
