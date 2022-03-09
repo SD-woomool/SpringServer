@@ -1,8 +1,8 @@
 package app.joycourse.www.prod.entity.user;
 
+import app.joycourse.www.prod.entity.ImageFile;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -23,22 +23,22 @@ public class User {
     @Column(unique = true, length = 10)
     private String nickname;
 
-    @ColumnDefault("'PRIVATE'")
     @Enumerated(EnumType.STRING)
-    private AgeRangeEnum ageRangeEnum = AgeRangeEnum.PRIVATE;
+    private AgeRange ageRange;
 
-    @ColumnDefault("'PRIVATE'")
     @Enumerated(EnumType.STRING)
-    private GenderEnum genderEnum = GenderEnum.PRIVATE;
+    private Gender gender;
 
-    private String profileImageUrl;
-
-    @ColumnDefault("false")
+    @Column(nullable = false)
     private Boolean isSigned = false;
 
-    @ColumnDefault("'NORMAL'")
     @Enumerated(EnumType.STRING)
-    private UserRoleEnum role = UserRoleEnum.NORMAL;
+    @Column(nullable = false)
+    private UserRole role = UserRole.NORMAL;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ImageFile imageFile;
 
     @CreatedDate
     private LocalDateTime createdAt;

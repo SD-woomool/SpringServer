@@ -36,6 +36,7 @@ public class AuthPrincipal implements OAuth2User {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public static AuthPrincipal create(OAuth2User oAuth2User, Provider provider) {
         Map<String, Object> oAuthAttributes = oAuth2User.getAttributes();
 

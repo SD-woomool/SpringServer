@@ -3,7 +3,7 @@ package app.joycourse.www.prod.entity.user;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum UserRoleEnum {
+public enum UserRole {
     NORMAL("NORMAL"),
     BLOCK("BLOCK"),
     ADMIN("ADMIN");

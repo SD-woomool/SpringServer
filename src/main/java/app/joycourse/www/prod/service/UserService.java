@@ -2,8 +2,10 @@ package app.joycourse.www.prod.service;
 
 import app.joycourse.www.prod.dto.request.UserSignDto;
 import app.joycourse.www.prod.dto.request.UserUpdateDto;
+import app.joycourse.www.prod.entity.ImageFile;
+import app.joycourse.www.prod.entity.ImageFileType;
 import app.joycourse.www.prod.entity.user.User;
-import app.joycourse.www.prod.entity.user.UserRoleEnum;
+import app.joycourse.www.prod.entity.user.UserRole;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -28,29 +28,35 @@ public class UserService {
     }
 
     public void signUser(User user, UserSignDto userSignDto, MultipartFile profileImageFile) {
-        if(user.getIsSigned()) {
+        if (user.getIsSigned()) {
             log.info("[signUser] Fail to sign, cause already signed user: {}", user.getSeq());
-            throw new CustomException(CustomException.CustomError.UNAUTHORIZED);
+            throw new CustomException(CustomException.CustomError.ALREADY_SIGNED);
         }
-        Map<String, String> fileMap = fileService.uploadFiles(List.of(profileImageFile), FileService.ImageFileType.PROFILE_IMAGE);
-        user.setProfileImageUrl(fileMap.get(profileImageFile.getOriginalFilename()));
+
+        ImageFile imageFile = Optional.ofNullable(profileImageFile)
+                .map(file -> fileService.uploadFile(ImageFileType.PROFILE, file))
+                .orElse(null);
+        user.setImageFile(imageFile);
         user.setNickname(userSignDto.getNickname());
-        user.setAgeRangeEnum(userSignDto.getAgeRange());
-        user.setGenderEnum(userSignDto.getGender());
+        user.setAgeRange(userSignDto.getAgeRange());
+        user.setGender(userSignDto.getGender());
         user.setIsSigned(true);
         userRepository.save(user);
     }
 
     public void updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile profileImageFile) {
-        // TODO: 삭제 로직 바뀌면 수정해야함!
-//        if (!fileService.deleteFile(기존 유저 떰네일 기반으로 삭제, FileService.ImageFileType.PROFILE_IMAGE)) {
-//            log.error("[updateUser] Fail to delete profile. User: {}, ProfileImage: {}", user.getSeq(), profileImageFile.getOriginalFilename());
-//            throw new CustomException(CustomException.CustomError.SERVER_ERROR);
-//        }
-        Map<String, String> fileMap = fileService.uploadFiles(List.of(profileImageFile), FileService.ImageFileType.PROFILE_IMAGE);
-        user.setProfileImageUrl(fileMap.get(profileImageFile.getOriginalFilename()));
-        user.setAgeRangeEnum(userUpdateDto.getAgeRange());
-        user.setGenderEnum(userUpdateDto.getGender());
+        ImageFile imageFile = Optional.ofNullable(profileImageFile)
+                .map(file -> {
+                    if(Objects.nonNull(user.getImageFile())) {
+                        fileService.deleteFile(ImageFileType.PROFILE, user.getImageFile().getHashedName());
+                    }
+
+                    return fileService.uploadFile(ImageFileType.PROFILE, file);
+                })
+                .orElse(null);
+        user.setImageFile(imageFile);
+        user.setAgeRange(userUpdateDto.getAgeRange());
+        user.setGender(userUpdateDto.getGender());
         userRepository.save(user);
     }
 
@@ -66,6 +72,6 @@ public class UserService {
             return newUser;
         });
 
-        return user.getRole().equals(UserRoleEnum.BLOCK);
+        return user.getRole().equals(UserRole.BLOCK);
     }
 }

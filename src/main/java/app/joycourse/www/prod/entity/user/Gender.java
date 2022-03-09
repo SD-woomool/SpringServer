@@ -3,7 +3,7 @@ package app.joycourse.www.prod.entity.user;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum GenderEnum {
+public enum Gender {
     PRIVATE("PRIVATE"),
     FEMALE("FEMALE"),
     MALE("MALE");

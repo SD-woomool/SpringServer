@@ -4,8 +4,10 @@ import app.joycourse.www.prod.entity.Agreement;
 import app.joycourse.www.prod.entity.AgreementLog;
 import app.joycourse.www.prod.entity.auth.Auth;
 import app.joycourse.www.prod.entity.auth.Provider;
+import app.joycourse.www.prod.entity.user.AgeRange;
+import app.joycourse.www.prod.entity.user.Gender;
 import app.joycourse.www.prod.entity.user.User;
-import app.joycourse.www.prod.entity.user.UserRoleEnum;
+import app.joycourse.www.prod.entity.user.UserRole;
 import app.joycourse.www.prod.repository.AgreementLogRepository;
 import app.joycourse.www.prod.repository.AgreementRepository;
 import app.joycourse.www.prod.repository.AuthRepository;
@@ -49,7 +51,9 @@ public class JoyCourseApplication {
                 tony.setUid(tonyAuth.getUid());
                 tony.setNickname("tony");
                 tony.setIsSigned(true);
-                tony.setRole(UserRoleEnum.ADMIN);
+                tony.setAgeRange(AgeRange.PRIVATE);
+                tony.setGender(Gender.PRIVATE);
+                tony.setRole(UserRole.ADMIN);
                 userRepository.save(tony);
 
                 Auth ironmanAuth = new Auth();
@@ -62,7 +66,9 @@ public class JoyCourseApplication {
                 ironman.setUid(ironmanAuth.getUid());
                 ironman.setNickname("ironman");
                 ironman.setIsSigned(true);
-                ironman.setRole(UserRoleEnum.NORMAL);
+                ironman.setAgeRange(AgeRange.PRIVATE);
+                ironman.setGender(Gender.PRIVATE);
+                ironman.setRole(UserRole.NORMAL);
                 userRepository.save(ironman);
 
                 log.info("Test user(Tony, Ironman) is created");

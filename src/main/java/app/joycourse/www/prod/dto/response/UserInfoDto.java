@@ -1,7 +1,7 @@
 package app.joycourse.www.prod.dto.response;
 
-import app.joycourse.www.prod.entity.user.AgeRangeEnum;
-import app.joycourse.www.prod.entity.user.GenderEnum;
+import app.joycourse.www.prod.entity.user.AgeRange;
+import app.joycourse.www.prod.entity.user.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +12,6 @@ import lombok.Getter;
 public class UserInfoDto {
     private String nickname;
     private String profileImageUrl;
-    private AgeRangeEnum ageRangeEnum;
-    private GenderEnum genderEnum;
+    private AgeRange ageRange;
+    private Gender gender;
 }
