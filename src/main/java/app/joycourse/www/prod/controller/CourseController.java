@@ -98,7 +98,7 @@ public class CourseController {
         return new Response<>(courseSaveDto);
     }
 
-    
+
     @GetMapping("/my-course")
     @ResponseBody
     public Response<CourseListDto> getMyCourseList(  // page, pageLength 없는경우 아직 해결 안됌
@@ -147,11 +147,12 @@ public class CourseController {
             @RequestParam(name = "size", defaultValue = "15") int size,
             @RequestParam(name = "query", defaultValue = "") String query,
             @RequestParam(name = "category_group_code", defaultValue = "") String categoryGroupCode  // 태그를 어떻게 처리하지?
-    ) {
+    ) throws URISyntaxException, JsonProcessingException {
         if (query == null || query.length() == 0) {
             throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
         }
         String key = query + "_" + page + "_" + size + "_" + categoryGroupCode;
+        /*
         PlaceSearchResponseDto places = placeService.getPlaceByCache(key).orElseGet(() -> {
             try {
                 System.out.println("response kakao api data");
@@ -178,6 +179,22 @@ public class CourseController {
                 throw new CustomException(CustomException.CustomError.SERVER_ERROR);
             }
         });
+         */
+        PlaceSearchResponseDto places = placeService.getPlaceByCache(key).orElse(null);
+        if (places == null) {
+            places = placeService.getPlaceByFeign(query, page, size, categoryGroupCode).orElseThrow(() -> new CustomException(CustomException.CustomError.SERVER_ERROR));
+            places.getDocuments().stream().filter(Objects::nonNull).forEach((placeInfo) -> {
+                Place place = new Place(
+                        null, placeInfo.getX(), placeInfo.getY(), placeInfo.getPlaceName(),
+                        placeInfo.getCategoryName(), placeInfo.getCategoryGroupCode(), placeInfo.getCategoryGroupName(),
+                        placeInfo.getPhone(), placeInfo.getAddressName(), placeInfo.getRoadAddressName(), placeInfo.getPlaceUrl(),
+                        placeInfo.getDistance(), null
+                );
+                placeService.savePlace(place, null);
+                placeInfo.setId(place.getId());
+            });
+            placeService.cachePlace(key, places);
+        }
         return new Response<>(places);
     }
 

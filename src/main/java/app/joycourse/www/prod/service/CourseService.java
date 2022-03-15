@@ -10,6 +10,7 @@ import app.joycourse.www.prod.entity.Place;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.CourseDetailRepository;
+import app.joycourse.www.prod.repository.CourseDocumentRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class CourseService {
     private final CourseDetailRepository courseDetailRepository;
     private final PlaceRepository placeRepository;
     private final FileService fileService;
+    private final CourseDocumentRepository courseDocumentRepository;
 
 
     public Course saveCourse(User user, CourseInfoDto courseInfo, List<MultipartFile> files) {
