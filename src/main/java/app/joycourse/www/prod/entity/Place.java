@@ -2,6 +2,7 @@ package app.joycourse.www.prod.entity;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @Entity
 @AllArgsConstructor
+@Builder
 public class Place {
 
     @Id
@@ -49,9 +51,6 @@ public class Place {
     )
     @Column(name = "course_detail_id")
     private List<CourseDetail> courseDetails;
-
-    public Place() {
-    }
 
 
     public void setCourseDetails(CourseDetail courseDetail) {

@@ -10,6 +10,7 @@ import app.joycourse.www.prod.service.CourseService;
 import app.joycourse.www.prod.service.FileService;
 import app.joycourse.www.prod.service.PlaceService;
 import app.joycourse.www.prod.service.UserService;
+import app.joycourse.www.prod.util.MapStruct;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -184,12 +185,8 @@ public class CourseController {
         if (places == null) {
             places = placeService.getPlaceByFeign(query, page, size, categoryGroupCode).orElseThrow(() -> new CustomException(CustomException.CustomError.SERVER_ERROR));
             places.getDocuments().stream().filter(Objects::nonNull).forEach((placeInfo) -> {
-                Place place = new Place(
-                        null, placeInfo.getX(), placeInfo.getY(), placeInfo.getPlaceName(),
-                        placeInfo.getCategoryName(), placeInfo.getCategoryGroupCode(), placeInfo.getCategoryGroupName(),
-                        placeInfo.getPhone(), placeInfo.getAddressName(), placeInfo.getRoadAddressName(), placeInfo.getPlaceUrl(),
-                        placeInfo.getDistance(), null
-                );
+                Place place = MapStruct.INSTANCE.placeDtoToEntity(placeInfo);
+                place.setId(null);
                 placeService.savePlace(place, null);
                 placeInfo.setId(place.getId());
             });
