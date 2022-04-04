@@ -20,29 +20,25 @@ public class User {
     @Column(unique = true, nullable = false)
     private String uid;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 10)
     private String nickname;
 
     @ColumnDefault("'PRIVATE'")
     @Enumerated(EnumType.STRING)
-    private AgeRange ageRange = AgeRange.PRIVATE;
+    private AgeRangeEnum ageRangeEnum = AgeRangeEnum.PRIVATE;
 
     @ColumnDefault("'PRIVATE'")
     @Enumerated(EnumType.STRING)
-    private Gender gender = Gender.PRIVATE;
+    private GenderEnum genderEnum = GenderEnum.PRIVATE;
 
     private String profileImageUrl;
 
     @ColumnDefault("false")
     private Boolean isSigned = false;
 
-    @ColumnDefault("'NONE'")
-    @Enumerated(EnumType.STRING)
-    private Agreement agreement = Agreement.NONE;
-
     @ColumnDefault("'NORMAL'")
     @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.NORMAL;
+    private UserRoleEnum role = UserRoleEnum.NORMAL;
 
     @CreatedDate
     private LocalDateTime createdAt;
