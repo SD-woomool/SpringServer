@@ -1,4 +1,4 @@
-package app.joycourse.www.prod.util;
+package app.joycourse.www.prod.mapper;
 
 import app.joycourse.www.prod.dto.PlaceInfoDto;
 import app.joycourse.www.prod.entity.Place;

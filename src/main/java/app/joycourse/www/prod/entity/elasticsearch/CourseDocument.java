@@ -1,6 +1,13 @@
 package app.joycourse.www.prod.entity.elasticsearch;
 
-/*
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 @Getter
 @Setter
 @Document(indexName = "course")
@@ -16,4 +23,4 @@ public class CourseDocument {
 
     @Field(type = FieldType.Text)
     private String title;
-}*/
+}

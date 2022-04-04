@@ -108,8 +108,6 @@ public class PlaceService {
     }
 
     public void cachePlace(String key, PlaceSearchResponseDto placeInfo) throws JsonProcessingException {
-        /*ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-        stringValueOperations.set(key, objectMapper.writeValueAsString(placeInfo));*/
         placeInfo.setId(key);
         redisPlaceCacheRepository.save(placeInfo);
     }
