@@ -98,7 +98,7 @@ public class CourseController {
         return new Response<>(courseSaveDto);
     }
 
-    
+
     @GetMapping("/my-course")
     @ResponseBody
     public Response<CourseListDto> getMyCourseList(  // page, pageLength 없는경우 아직 해결 안됌

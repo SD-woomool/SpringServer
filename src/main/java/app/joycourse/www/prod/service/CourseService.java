@@ -72,7 +72,7 @@ public class CourseService {
         );
     }
 
-    public CourseListDto pagingMyCourse(User user, int pageLength, int page) { // 여기서 dto를 작성해서 isend 이런거 다하는거 어떰?
+    public CourseListDto pagingMyCourse(User user, int pageLength, int page) {
         List<CourseInfoDto> courseInfoList = new ArrayList<>();
         courseRepository.pagingByUser(user, pageLength, page).stream().flatMap(Collection::stream)
                 .forEach((course) ->
@@ -100,12 +100,6 @@ public class CourseService {
     }
 
 
-    /*
-     * 게시글 수정 시 파일을 어쩔래?
-     * 파일이 들어옴 -> photo에 파일 이름이 있으면 파일을 저장하면 됨
-     * 근데 문제가 만약 기존에 파일이 있던 courseDetail이면 파일을 지워야 하잖아
-     * 프론트에서 줄때 리스트로 [기존 url, 새로운 파일이름]이렇게 주면 되는데 이러면 photo<List<String>>으로 바꿔야하는게 문제지
-     */
     public void updateCourse(Course course, CourseInfoDto newCourseInfo, List<MultipartFile> files) {
         Course newCourse = new Course(newCourseInfo);
         newCourseInfo.getCourseDetail().stream().filter(Objects::nonNull).forEach((detailDto) -> {

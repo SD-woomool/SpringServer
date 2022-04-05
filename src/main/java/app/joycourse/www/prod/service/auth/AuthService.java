@@ -6,6 +6,7 @@ import app.joycourse.www.prod.entity.auth.Provider;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.AuthRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -47,5 +48,10 @@ public class AuthService {
         authRepository.save(auth);
 
         return auth;
+    }
+
+    @Cacheable(key = "#id", value = "auth", cacheManager = "cacheManager")
+    public Optional<Auth> getAuthByUid(String uid) {
+        return authRepository.findByUid(uid);
     }
 }

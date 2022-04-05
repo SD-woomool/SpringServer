@@ -4,8 +4,8 @@ import app.joycourse.www.prod.annotation.AuthorizationUser;
 import app.joycourse.www.prod.entity.auth.Auth;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
-import app.joycourse.www.prod.repository.AuthRepository;
-import app.joycourse.www.prod.repository.UserRepository;
+import app.joycourse.www.prod.service.UserService;
+import app.joycourse.www.prod.service.auth.AuthService;
 import app.joycourse.www.prod.service.auth.ManageAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -23,9 +23,9 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class AuthorizationUserResolver implements HandlerMethodArgumentResolver {
-    private final UserRepository userRepository;
     private final ManageAuthService manageAuthService;
-    private final AuthRepository authRepository;
+    private final AuthService authService;
+    private final UserService userService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -40,13 +40,13 @@ public class AuthorizationUserResolver implements HandlerMethodArgumentResolver 
         // TODO: real 환경에서 제거 해야함!!************* only dev!!
         HttpServletRequest httpServletRequest = (HttpServletRequest) webRequest.getNativeRequest();
         if (ObjectUtils.nullSafeEquals(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION), "tony")) {
-            return userRepository.findByNickname("tony").orElse(null);
+            return userService.getUserByNickname("tony").orElse(null);
         } else if (ObjectUtils.nullSafeEquals(httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION), "ironman")) {
-            return userRepository.findByNickname("ironman").orElse(null);
+            return userService.getUserByNickname("ironman").orElse(null);
         }
 
         String uid = manageAuthService.parseAccessToken((HttpServletRequest) webRequest.getNativeRequest());
-        Optional<Auth> optionalAuth = authRepository.findByUid(uid);
+        Optional<Auth> optionalAuth = authService.getAuthByUid(uid);
         if (optionalAuth.isEmpty()) {
             if (authorizationUser.whenEmptyThrow()) {
                 throw new CustomException(CustomException.CustomError.UNAUTHORIZED);
@@ -54,8 +54,7 @@ public class AuthorizationUserResolver implements HandlerMethodArgumentResolver 
                 return null;
             }
         }
-
-        Optional<User> optionalUser = userRepository.findByUid(uid);
+        Optional<User> optionalUser = userService.getUserByUid(uid);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (!user.getIsSigned()) {
