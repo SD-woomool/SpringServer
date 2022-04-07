@@ -131,6 +131,7 @@ public class CourseController {
             @AuthorizationUser User user,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) throws JsonProcessingException {
+
         Course course = courseService.getCourse(courseInfo.getId());
         if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
