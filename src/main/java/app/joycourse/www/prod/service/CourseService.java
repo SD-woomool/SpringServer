@@ -13,6 +13,7 @@ import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,6 +73,7 @@ public class CourseService {
         );
     }
 
+    @CacheEvict(value = "user", key = "#user.nickname")
     public CourseListDto pagingMyCourse(User user, int pageLength, int page) {
         List<CourseInfoDto> courseInfoList = new ArrayList<>();
         courseRepository.pagingByUser(user, pageLength, page).stream().flatMap(Collection::stream)

@@ -80,7 +80,6 @@ public class UserService {
 
     @Cacheable(value = "user", key = "#nickname", cacheManager = "cacheManager") // -> 테스트 사용자 없어지면 지우자
     public Optional<User> getUserByNickname(String nickname) {
-        System.out.println("hi");
         return userRepository.findByNickname(nickname);
     }
 }
