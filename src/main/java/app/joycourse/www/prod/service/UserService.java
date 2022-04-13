@@ -42,7 +42,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @CacheEvict(value = "user", key = "#user.nickname") // -> 테스트 사용자 없어지면 key = "#user.uid"로 바꾸자
+    @CacheEvict(value = "AuthorizedUser", key = "'nickname_' + #user.nickname")// -> 테스트 사용자 없어지면 key = "#user.uid"로 바꾸자
     public void updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile profileImageFile) {
         // TODO: 삭제 로직 바뀌면 수정해야함!
 //        if (!fileService.deleteFile(기존 유저 떰네일 기반으로 삭제, FileService.ImageFileType.PROFILE_IMAGE)) {
@@ -73,12 +73,13 @@ public class UserService {
         return user.getRole().equals(UserRoleEnum.BLOCK);
     }
 
-    @Cacheable(value = "user", key = "#uid", cacheManager = "cacheManger")
+    @Cacheable(value = "AuthorizedUser", key = "'uid_' + #uid", cacheManager = "cacheManger")
     public Optional<User> getUserByUid(String uid) {
         return userRepository.findByUid(uid);
     }
 
-    @Cacheable(value = "user", key = "#nickname", cacheManager = "cacheManager") // -> 테스트 사용자 없어지면 지우자
+    @Cacheable(value = "AuthorizedUser", key = "'nickname_' + #nickname", cacheManager = "cacheManager")
+    // -> 테스트 사용자 없어지면 지우자
     public Optional<User> getUserByNickname(String nickname) {
         return userRepository.findByNickname(nickname);
     }

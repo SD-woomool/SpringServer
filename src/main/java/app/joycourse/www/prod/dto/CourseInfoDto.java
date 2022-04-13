@@ -5,9 +5,7 @@ import app.joycourse.www.prod.entity.CourseDetail;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -23,7 +21,7 @@ public class CourseInfoDto {
     private Integer likeCnt;
     private Float totalPrice;
     private String memo;
-    private List<CourseDetailDto> courseDetail;
+    private List<CourseDetailDto> courseDetailDtoList;
 
     public CourseInfoDto() {
 
@@ -50,10 +48,9 @@ public class CourseInfoDto {
         this.totalPrice = totalPrice;
         this.memo = memo;
         this.likeCnt = likeCnt;
-        this.courseDetail = Optional.ofNullable(courseDetailList).stream().flatMap(Collection::stream)
-                .map((detail) ->
-                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), new PhotoInfoDto(detail.getPhoto(), null, false), new PlaceInfoDto(detail.getPlace())))
-                .collect(Collectors.toList());
+        this.courseDetailDtoList = courseDetailList != null ? courseDetailList.stream().map((detail) ->
+                        CourseDetailDto.of(detail, new PhotoInfoDto(detail.getPhoto(), null, false), new PlaceInfoDto(detail.getPlace())))
+                .collect(Collectors.toList()) : null;
     }
 
     public CourseInfoDto(Course course) {
@@ -66,11 +63,10 @@ public class CourseInfoDto {
         this.totalPrice = course.getTotalPrice();
         this.memo = course.getMemo();
         this.likeCnt = course.getLikeCnt();
-        this.courseDetail = Optional.ofNullable(course.getCourseDetail()).stream().flatMap(Collection::stream)
+        this.courseDetailDtoList = course.getCourseDetailList() != null ? course.getCourseDetailList().stream()
                 .map((detail) ->
-                        new CourseDetailDto(detail.getCourse().getId(), detail.getPrice(), detail.getContent(), new PhotoInfoDto(detail.getPhoto(), null, false), new PlaceInfoDto(detail.getPlace())))
-                .collect(Collectors.toList());
+                        CourseDetailDto.of(detail, new PhotoInfoDto(detail.getPhoto(), null, false), new PlaceInfoDto(detail.getPlace())))
+                .collect(Collectors.toList()) : null;
     }
-
 
 }

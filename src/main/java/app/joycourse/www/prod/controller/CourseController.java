@@ -51,7 +51,7 @@ public class CourseController {
                 findCourse.getLikeCnt(),
                 findCourse.getTotalPrice(),
                 findCourse.getMemo(),
-                findCourse.getCourseDetail()
+                findCourse.getCourseDetailList()
         ));
     }
 
@@ -91,7 +91,7 @@ public class CourseController {
                 newCourse.getLikeCnt(),
                 newCourse.getTotalPrice(),
                 newCourse.getMemo(),
-                newCourse.getCourseDetail()
+                newCourse.getCourseDetailList()
         );
 
         CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
