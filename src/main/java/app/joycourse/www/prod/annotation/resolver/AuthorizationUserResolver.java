@@ -49,7 +49,7 @@ public class AuthorizationUserResolver implements HandlerMethodArgumentResolver 
         Optional<Auth> optionalAuth = authRepository.findByUid(uid);
         if (optionalAuth.isEmpty()) {
             if (authorizationUser.whenEmptyThrow()) {
-                throw new CustomException(CustomException.CustomError.UNAUTHORIZED);
+                throw new CustomException(CustomException.CustomError.FORBIDDEN);
             } else {
                 return null;
             }
@@ -60,11 +60,13 @@ public class AuthorizationUserResolver implements HandlerMethodArgumentResolver 
             User user = optionalUser.get();
             if (!user.getIsSigned()) {
                 throw new CustomException(CustomException.CustomError.UNSIGNED);
+            } else if (!user.getIsAgreed()) {
+                throw new CustomException(CustomException.CustomError.SHOULD_AGREE);
             }
             return user;
         } else {
             if (authorizationUser.whenEmptyThrow()) {
-                throw new CustomException(CustomException.CustomError.UNAUTHORIZED);
+                throw new CustomException(CustomException.CustomError.FORBIDDEN);
             } else {
                 return null;
             }
