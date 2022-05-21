@@ -11,10 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +26,9 @@ public class UserService {
     }
 
     public void signUser(User user, UserSignDto userSignDto, MultipartFile profileImageFile) {
-        if(user.getIsSigned()) {
+        if (user.getIsSigned()) {
             log.info("[signUser] Fail to sign, cause already signed user: {}", user.getSeq());
-            throw new CustomException(CustomException.CustomError.UNAUTHORIZED);
+            throw new CustomException(CustomException.CustomError.FORBIDDEN);
         }
         Map<String, String> fileMap = fileService.uploadFiles(List.of(profileImageFile), FileService.ImageFileType.PROFILE_IMAGE);
         user.setProfileImageUrl(fileMap.get(profileImageFile.getOriginalFilename()));
