@@ -1,6 +1,9 @@
 package app.joycourse.www.prod.service;
 
-import app.joycourse.www.prod.dto.*;
+import app.joycourse.www.prod.dto.CourseDetailDto;
+import app.joycourse.www.prod.dto.CourseInfoDto;
+import app.joycourse.www.prod.dto.CourseListDto;
+import app.joycourse.www.prod.dto.PlaceInfoDto;
 import app.joycourse.www.prod.entity.Course;
 import app.joycourse.www.prod.entity.CourseDetail;
 import app.joycourse.www.prod.entity.Place;
@@ -29,31 +32,35 @@ public class CourseService {
     @Transactional
     public Course saveCourse(User user, CourseInfoDto courseInfo, List<MultipartFile> files) {
         Course course = Course.of(courseInfo, user, null, null);
+        if (files != null) {
+            matchFiles(files, courseInfo.getCourseDetailDtoList());
+        }
         List<CourseDetail> courseDetails = getCourseDetailList(courseInfo.getCourseDetailDtoList(), course);
         course.setCourseDetail(courseDetails);
         course.setTotalPrice();
-        if (files != null) {
-            matchFiles(files, courseDetails);
-        }
         return courseRepository.saveCourse(course);
     }
 
-    private void matchFiles(List<MultipartFile> files, List<CourseDetail> courseDetails) {
+
+    private void matchFiles(List<MultipartFile> files, List<CourseDetailDto> courseDetailDtos) {
         Map<String, String> fileUrlMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
-        courseDetails.stream()
+        courseDetailDtos.stream()
                 .filter((detail) -> detail.getPhoto() != null)
+                .filter(detail -> detail.getPhoto().getFileName() != null)
                 .forEach((detail) -> {
-                    String newFileUrl = Optional.ofNullable(fileUrlMap.get(detail.getPhoto())).orElseThrow(() -> new CustomException(CustomException.CustomError.SERVER_ERROR));
-                    detail.setPhoto(newFileUrl);
+                    String newFileUrl = Optional.ofNullable(fileUrlMap.get(detail.getPhoto().getFileName())).orElseThrow(() -> new CustomException(CustomException.CustomError.SERVER_ERROR));
+                    detail.getPhoto().setFileUrl(newFileUrl);
                 });
     }
 
     private List<CourseDetail> getCourseDetailList(List<CourseDetailDto> courseDetailDtoList, Course course) {
         return courseDetailDtoList.stream().filter(Objects::nonNull).map(detailDto -> {
             PlaceInfoDto placeDto = detailDto.getPlace();
+
             if (placeDto == null) {
                 throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
             }
+
             Place place = placeRepository.findById(placeDto.getId()).orElseThrow(() -> new CustomException(CustomException.CustomError.INVALID_PARAMETER));
             return CourseDetail.of(detailDto, course, place);
         }).collect(Collectors.toList());
@@ -106,42 +113,31 @@ public class CourseService {
 
 
     @Transactional
-    public void updateCourse(Course course, CourseInfoDto newCourseInfo, List<MultipartFile> files) {
-        Course newCourse = new Course(newCourseInfo);
-        newCourseInfo.getCourseDetailDtoList().stream().filter(Objects::nonNull).forEach((detailDto) -> {
-            PlaceInfoDto placeDto = detailDto.getPlace();
-            if (placeDto == null) {
-                throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
-            }
-            Place place = placeRepository.findById(placeDto.getId()).orElseThrow(() -> new CustomException(CustomException.CustomError.INVALID_PARAMETER));
-            CourseDetail courseDetail = detailDto.convertToEntity();
-            courseDetail.setPlace(place);
-            courseDetail.setCourse(newCourse);
-            newCourse.addCourseDetail(courseDetail);
-            place.setCourseDetails(courseDetail);
-            PhotoInfoDto photoInfo = Optional.ofNullable(detailDto.getPhoto()).orElse(new PhotoInfoDto());
-            Boolean fileDeleted = Optional.ofNullable(photoInfo.getDeleted()).orElse(false);
-            if (photoInfo.getFileUrl() != null && (photoInfo.getFileName() != null || fileDeleted)) { // 사진이 변경된 경우 기존 파일을 지우는 부분
-                String fileName = photoInfo.getFileUrl().split("files/")[1];
-                if (!fileService.deleteFile(fileName, FileService.ImageFileType.COURSE_DETAIL_IMAGE)) {
-                    throw new CustomException(CustomException.CustomError.SERVER_ERROR);
-                }
-                String photoName = fileDeleted ? null : photoInfo.getFileName();
-                courseDetail.setPhoto(photoName);
-            }
-        });
-        newCourse.setUser(course.getUser());
-        newCourse.setLikeCnt(course.getLikeCnt());
+    public void updateCourse(User user, Course course, CourseInfoDto newCourseInfo, List<MultipartFile> files) {
+        Course newCourse = Course.of(newCourseInfo, user, null, null);
+        deleteUnmatchedFile(newCourseInfo.getCourseDetailDtoList());
         if (files != null) {
-            Map<String, String> fileUrlMap = fileService.uploadFiles(files, FileService.ImageFileType.COURSE_DETAIL_IMAGE);
-            newCourse.getCourseDetailList().stream().filter((detail) -> detail.getPhoto() != null).forEach((detail) -> {
-                String newFileUrl = fileUrlMap.get(detail.getPhoto());
-                if (newFileUrl != null) {
-                    detail.setPhoto(newFileUrl);
-                }
-            });
+            matchFiles(files, newCourseInfo.getCourseDetailDtoList());
         }
+        List<CourseDetail> courseDetails = getCourseDetailList(newCourseInfo.getCourseDetailDtoList(), newCourse);
+        newCourse.setCourseDetail(courseDetails);
+        newCourse.setTotalPrice();
+        newCourse.setLikeCnt(course.getLikeCnt());
+        newCourse.setComments(course.getComments());
         courseRepository.mergeCourse(newCourse);
+    }
+
+    private void deleteUnmatchedFile(List<CourseDetailDto> courseDetailDtoList) {
+        courseDetailDtoList.stream().map(CourseDetailDto::getPhoto)
+                .filter(Objects::nonNull)
+                .filter(photoInfo -> photoInfo.getFileUrl() != null && (photoInfo.getDeleted() || photoInfo.getFileName() != null))
+                .forEach((photoInfo) -> {
+                    String fileName = photoInfo.getFileUrl().split("files/")[1];
+                    if (!fileService.deleteFile(fileName, FileService.ImageFileType.COURSE_DETAIL_IMAGE)) {
+                        throw new CustomException(CustomException.CustomError.SERVER_ERROR);
+                    }
+                    photoInfo.setFileUrl(null);
+                });
     }
 
 }

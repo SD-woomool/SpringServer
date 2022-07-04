@@ -134,7 +134,7 @@ public class CourseController {
         if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
-        courseService.updateCourse(course, courseInfo, files);
+        courseService.updateCourse(user, course, courseInfo, files);
 
         return new Response<>(new CourseInfoDto(course));
     }

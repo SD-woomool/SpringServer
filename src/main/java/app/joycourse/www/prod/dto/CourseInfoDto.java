@@ -24,7 +24,6 @@ public class CourseInfoDto {
     private List<CourseDetailDto> courseDetailDtoList;
 
     public CourseInfoDto() {
-
     }
 
     public CourseInfoDto(

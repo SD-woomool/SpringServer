@@ -2,9 +2,7 @@ package app.joycourse.www.prod.entity;
 
 import app.joycourse.www.prod.dto.CourseInfoDto;
 import app.joycourse.www.prod.entity.user.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -15,6 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Course {
 
     @Id
@@ -58,9 +58,6 @@ public class Course {
     )
     private List<Comment> comments;
 
-    public Course() {
-    }
-
     public Course(CourseInfoDto courseInfo) {
         this.id = courseInfo.getId();
         this.title = courseInfo.getTitle();
@@ -75,6 +72,7 @@ public class Course {
     public static Course of(CourseInfoDto courseInfoDto, User user, List<CourseDetail> courseDetailList, List<Comment> comments) {
         return Course.builder()
                 .id(courseInfoDto.getId())
+                .user(user)
                 .title(courseInfoDto.getTitle())
                 .content(courseInfoDto.getContent())
                 .likeCnt(courseInfoDto.getLikeCnt())

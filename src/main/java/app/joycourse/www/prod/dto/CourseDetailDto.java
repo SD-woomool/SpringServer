@@ -43,6 +43,6 @@ public class CourseDetailDto {
     }
 
     public CourseDetail convertToEntity() {
-        return new CourseDetail(this);
+        return CourseDetail.of(this, null, null);
     }
 }
