@@ -5,6 +5,7 @@ import app.joycourse.www.prod.config.PlaceRequestConfig;
 import app.joycourse.www.prod.dto.PlaceSearchResponseDto;
 import app.joycourse.www.prod.entity.CourseDetail;
 import app.joycourse.www.prod.entity.Place;
+import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.PlaceCacheRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
 import app.joycourse.www.prod.repository.RedisPlaceCacheRepository;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -33,16 +35,28 @@ public class PlaceService {
     private final StringRedisTemplate redisTemplate;
 
 
+    public PlaceSearchResponseDto getPlace(String key, String query, int page, int size, String categoryGroupCode) {
+        return getPlaceByCache(key).orElseGet(() -> {
+            try {
+                System.out.println("response kakao api data");
+                PlaceSearchResponseDto placeSearchResponse = getPlaceByFeign(query, page, size, categoryGroupCode).orElseThrow();
+                placeSearchResponse.getDocuments().stream().filter(Objects::nonNull).forEach((placeInfo) -> {
+                    placeInfo.setId(null);
+                    Place place = Place.of(placeInfo, null);
+                    savePlace(place, null);
+                    placeInfo.setId(place.getId());
+                });
+                cachePlace(key, placeSearchResponse);
+                return placeSearchResponse;
+            } catch (URISyntaxException | JsonProcessingException e) {
+                e.printStackTrace();
+                throw new CustomException(CustomException.CustomError.SERVER_ERROR);
+            }
+        });
+    }
+
+
     public Optional<PlaceSearchResponseDto> getPlaceByCache(String key) {
-        /*try {
-            ValueOperations<String, String> stringValueOperations = redisTemplate.opsForValue();
-            String placeResponse = stringValueOperations.get(key);
-            PlaceSearchResponseDto cachePlaceSearchResponse = objectMapper.readValue(placeResponse, PlaceSearchResponseDto.class);
-            System.out.println("response cached data");
-            return Optional.ofNullable(cachePlaceSearchResponse);
-        } catch (JsonProcessingException | IllegalArgumentException e) {
-            return Optional.empty();
-        }*/
         Optional<PlaceSearchResponseDto> placeResponse = redisPlaceCacheRepository.findById(key);
         if (placeResponse.isPresent()) {
             System.out.println("response cached data");

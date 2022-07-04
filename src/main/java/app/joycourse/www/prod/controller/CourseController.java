@@ -3,7 +3,6 @@ package app.joycourse.www.prod.controller;
 import app.joycourse.www.prod.annotation.AuthorizationUser;
 import app.joycourse.www.prod.dto.*;
 import app.joycourse.www.prod.entity.Course;
-import app.joycourse.www.prod.entity.Place;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.CourseService;
@@ -18,9 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 
 
 @RestController
@@ -41,18 +38,7 @@ public class CourseController {
             @PathVariable("course-id") Long courseId
     ) {
         Course findCourse = courseService.getCourse(courseId);
-        return new Response<>(new CourseInfoDto(
-                findCourse.getId(),
-                findCourse.getUser().getNickname(),
-                findCourse.getTitle(),
-                findCourse.getContent(),
-                findCourse.getLocation(),
-                findCourse.getThumbnailUrl(),
-                findCourse.getLikeCnt(),
-                findCourse.getTotalPrice(),
-                findCourse.getMemo(),
-                findCourse.getCourseDetailList()
-        ));
+        return new Response<>(new CourseInfoDto(findCourse));
     }
 
 
@@ -81,19 +67,7 @@ public class CourseController {
     ) throws JsonProcessingException {
 
         Course newCourse = courseService.saveCourse(user, courseInfo, files);
-        CourseInfoDto courseInfoDto = new CourseInfoDto(
-                newCourse.getId(),
-                newCourse.getUser().getNickname(),
-                newCourse.getTitle(),
-                newCourse.getContent(),
-                newCourse.getLocation(),
-                newCourse.getThumbnailUrl(),
-                newCourse.getLikeCnt(),
-                newCourse.getTotalPrice(),
-                newCourse.getMemo(),
-                newCourse.getCourseDetailList()
-        );
-
+        CourseInfoDto courseInfoDto = new CourseInfoDto(newCourse);
         CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
         return new Response<>(courseSaveDto);
     }
@@ -152,32 +126,7 @@ public class CourseController {
             throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
         }
         String key = query + "_" + page + "_" + size + "_" + categoryGroupCode;
-        PlaceSearchResponseDto places = placeService.getPlaceByCache(key).orElseGet(() -> {
-            try {
-                System.out.println("response kakao api data");
-                PlaceSearchResponseDto placeSearchResponse = placeService.getPlaceByFeign(
-                        query,
-                        page,
-                        size,
-                        categoryGroupCode
-                ).orElseThrow();
-                placeSearchResponse.getDocuments().stream().filter(Objects::nonNull).forEach((placeInfo) -> {
-                    Place place = new Place(
-                            null, placeInfo.getX(), placeInfo.getY(), placeInfo.getPlaceName(),
-                            placeInfo.getCategoryName(), placeInfo.getCategoryGroupCode(), placeInfo.getCategoryGroupName(),
-                            placeInfo.getPhone(), placeInfo.getAddressName(), placeInfo.getRoadAddressName(), placeInfo.getPlaceUrl(),
-                            placeInfo.getDistance(), null
-                    );
-                    placeService.savePlace(place, null);
-                    placeInfo.setId(place.getId());
-                });
-                placeService.cachePlace(key, placeSearchResponse);
-                return placeSearchResponse;
-            } catch (URISyntaxException | JsonProcessingException e) {
-                e.printStackTrace();
-                throw new CustomException(CustomException.CustomError.SERVER_ERROR);
-            }
-        });
+        PlaceSearchResponseDto places = placeService.getPlace(key, query, page, size, categoryGroupCode);
         return new Response<>(places);
     }
 
