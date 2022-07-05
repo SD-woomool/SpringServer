@@ -1,5 +1,9 @@
 package app.joycourse.www.prod.entity.user;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -50,6 +54,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRoleEnum role = UserRoleEnum.NORMAL;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @CreatedDate
     private LocalDateTime createdAt;
 

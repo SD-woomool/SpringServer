@@ -8,6 +8,8 @@ import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,14 +41,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @CacheEvict(value = "AuthorizedUser", key = "'nickname_' + #user.nickname")// -> 테스트 사용자 없어지면 key = "#user.uid"로 바꾸자
     public void updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile profileImageFile) {
         // TODO: 삭제 로직 바뀌면 수정해야함!
 //        if (!fileService.deleteFile(기존 유저 떰네일 기반으로 삭제, FileService.ImageFileType.PROFILE_IMAGE)) {
 //            log.error("[updateUser] Fail to delete profile. User: {}, ProfileImage: {}", user.getSeq(), profileImageFile.getOriginalFilename());
 //            throw new CustomException(CustomException.CustomError.SERVER_ERROR);
 //        }
-        Map<String, String> fileMap = fileService.uploadFiles(List.of(profileImageFile), FileService.ImageFileType.PROFILE_IMAGE);
-        user.setProfileImageUrl(fileMap.get(profileImageFile.getOriginalFilename()));
+        if (!profileImageFile.isEmpty()) {
+            Map<String, String> fileMap = fileService.uploadFiles(List.of(profileImageFile), FileService.ImageFileType.PROFILE_IMAGE);
+            user.setProfileImageUrl(fileMap.get(profileImageFile.getOriginalFilename()));
+        }
         user.setAgeRangeEnum(userUpdateDto.getAgeRange());
         user.setGenderEnum(userUpdateDto.getGender());
         userRepository.save(user);
@@ -65,5 +70,16 @@ public class UserService {
         });
 
         return user.getRole().equals(UserRoleEnum.BLOCK);
+    }
+
+    @Cacheable(value = "AuthorizedUser", key = "'uid_' + #uid", cacheManager = "cacheManger")
+    public Optional<User> getUserByUid(String uid) {
+        return userRepository.findByUid(uid);
+    }
+
+    @Cacheable(value = "AuthorizedUser", key = "'nickname_' + #nickname", cacheManager = "cacheManager")
+    // -> 테스트 사용자 없어지면 지우자
+    public Optional<User> getUserByNickname(String nickname) {
+        return userRepository.findByNickname(nickname);
     }
 }
