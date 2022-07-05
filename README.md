@@ -2,6 +2,9 @@
 
 [JoyCourse](https://www.joycourse.app)
 
+## Project 관리
+https://github.com/SD-woomool/SpringServer/projects/1
+
 ## Architecture
 
 --- 

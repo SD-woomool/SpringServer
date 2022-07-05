@@ -9,6 +9,7 @@ import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.repository.AgreementLogRepository;
 import app.joycourse.www.prod.repository.AgreementRepository;
+import app.joycourse.www.prod.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class AgreementService {
+    private final UserRepository userRepository;
     private final AgreementRepository agreementRepository;
     private final AgreementLogRepository agreementLogRepository;
 
@@ -50,10 +52,10 @@ public class AgreementService {
     }
 
     @Transactional
-    public void agreeAgreements(AgreementRequestDto agreementRequestDto) {
+    public void agreeAgreements(User user, AgreementRequestDto agreementRequestDto) {
         List<AgreementRequest> agreementsRequest = agreementRequestDto.getAgreements();
         List<Long> seqList = agreementsRequest.stream().map(AgreementRequest::getAgreementSeq).collect(Collectors.toList());
-        List<Agreement> agreements = agreementRepository.findAllBySeqIn(seqList);
+        List<Agreement> agreements = agreementRepository.findAll();
 
         if (seqList.size() != agreements.size()) {
             // 잘못된 약관 번호인 경우
@@ -63,8 +65,8 @@ public class AgreementService {
 
         agreements.forEach(agreement -> {
             // 필터로 해당 약관은 무조건 있을것이다. 바로 위에 이프문에서 검증하기때문이다.
-            AgreementRequest agreementRequest = agreementsRequest.stream().filter(ar -> ar.getAgreementSeq().equals(agreement.getSeq())).findAny().get();
-            if (agreement.getIsRequired() && !agreementRequest.getIsAgree()) {
+            Optional<AgreementRequest> optionalAgreementRequest = agreementsRequest.stream().filter(ar -> ar.getAgreementSeq().equals(agreement.getSeq())).findAny();
+            if (agreement.getIsRequired() && (optionalAgreementRequest.isEmpty() || !optionalAgreementRequest.get().getIsAgree())) {
                 // 필수 약관을 동의하지 않은 경우, 프론트에서 1차적으로 막아야한다.
                 log.error("[agreeAgreements] Should agree required agreement.");
                 throw new CustomException(CustomException.CustomError.SHOULD_AGREE);
@@ -73,9 +75,12 @@ public class AgreementService {
             // 하나라도 오류나면 Transactional 때문에 rollback 될것이다.
             AgreementLog agreementLog = new AgreementLog();
             agreementLog.setAgreementSeq(agreement.getSeq());
-            agreementLog.setUserSeq(agreement.getSeq());
+            agreementLog.setUserSeq(user.getSeq());
             agreementLogRepository.save(agreementLog);
         });
+
+        user.setIsAgreed(true);
+        userRepository.save(user);
     }
 
 }

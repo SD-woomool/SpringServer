@@ -9,7 +9,14 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -39,6 +46,9 @@ public class User {
 
     @ColumnDefault("false")
     private Boolean isSigned = false;
+
+    @ColumnDefault("false")
+    private Boolean isAgreed = false;
 
     @ColumnDefault("'NORMAL'")
     @Enumerated(EnumType.STRING)

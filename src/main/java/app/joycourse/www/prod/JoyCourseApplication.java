@@ -49,6 +49,7 @@ public class JoyCourseApplication {
                 tony.setUid(tonyAuth.getUid());
                 tony.setNickname("tony");
                 tony.setIsSigned(true);
+                tony.setIsAgreed(true);
                 tony.setRole(UserRoleEnum.ADMIN);
                 userRepository.save(tony);
 
@@ -62,6 +63,7 @@ public class JoyCourseApplication {
                 ironman.setUid(ironmanAuth.getUid());
                 ironman.setNickname("ironman");
                 ironman.setIsSigned(true);
+                ironman.setIsAgreed(true);
                 ironman.setRole(UserRoleEnum.NORMAL);
                 userRepository.save(ironman);
 
