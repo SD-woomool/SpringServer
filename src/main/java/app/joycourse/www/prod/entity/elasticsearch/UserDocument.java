@@ -1,8 +1,8 @@
 package app.joycourse.www.prod.entity.elasticsearch;
 
 
-import app.joycourse.www.prod.entity.user.AgeRange;
-import app.joycourse.www.prod.entity.user.Gender;
+import app.joycourse.www.prod.entity.user.AgeRangeEnum;
+import app.joycourse.www.prod.entity.user.GenderEnum;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -22,8 +22,8 @@ public class UserDocument {
     private String nickname;
 
     @Field(type = FieldType.Auto)
-    private AgeRange ageRange;
+    private AgeRangeEnum ageRange;
 
     @Field(type = FieldType.Auto)
-    private Gender gender;
+    private GenderEnum gender;
 }

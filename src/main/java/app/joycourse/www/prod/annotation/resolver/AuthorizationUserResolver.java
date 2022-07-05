@@ -57,7 +57,11 @@ public class AuthorizationUserResolver implements HandlerMethodArgumentResolver 
 
         Optional<User> optionalUser = userRepository.findByUid(uid);
         if (optionalUser.isPresent()) {
-            return optionalUser.get();
+            User user = optionalUser.get();
+            if (!user.getIsSigned()) {
+                throw new CustomException(CustomException.CustomError.UNSIGNED);
+            }
+            return user;
         } else {
             if (authorizationUser.whenEmptyThrow()) {
                 throw new CustomException(CustomException.CustomError.UNAUTHORIZED);

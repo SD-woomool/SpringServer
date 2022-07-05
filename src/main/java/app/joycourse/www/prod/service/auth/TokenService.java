@@ -69,10 +69,10 @@ public class TokenService {
     }
 
     public String verifyRefreshToken(String encryptedRefreshToken, String deviceId) {
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByToken(encryptedRefreshToken);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findById(encryptedRefreshToken);
         if (optionalRefreshToken.isEmpty()) {
             log.error("[verifyRefreshToken] refresh token is not existed: {}", encryptedRefreshToken);
-            throw new CustomException(CustomException.CustomError.SERVER_ERROR);
+            throw new CustomException(CustomException.CustomError.REFRESH_TOKEN_EXPIRED);
         }
 
         // device id가 다른 경우 token이 hijacking 당한걸꺼이다. (CSRF)
@@ -96,13 +96,16 @@ public class TokenService {
             String encryptedToken = AES256Util.encrypt(authConfig.getRefreshTokenKey(), rawToken);
             assert encryptedToken != null;
 
+            // 기존 토큰 삭제
+            Optional<RefreshToken> existedRefreshToken = refreshTokenRepository.findByUidAndDeviceId(uid, deviceId);
+            existedRefreshToken.ifPresent(refreshTokenRepository::delete);
+
             RefreshToken refreshToken = new RefreshToken();
             refreshToken.setToken(encryptedToken);
             refreshToken.setUid(uid);
             refreshToken.setDeviceId(deviceId);
-
-            // TODO: redis로 변경하고 시간 지정해야함.
             refreshTokenRepository.save(refreshToken);
+
             return encryptedToken;
         } catch (Exception e) {
             log.error("[issueRefreshToken] fail to issue refresh token\n{}", e.getMessage());
