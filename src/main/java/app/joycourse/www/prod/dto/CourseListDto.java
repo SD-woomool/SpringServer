@@ -55,7 +55,7 @@ public class CourseListDto {
                         course.getLikeCnt(),
                         course.getTotalPrice(),
                         course.getMemo(),
-                        course.getCourseDetail()
+                        course.getCourseDetailList()
                 ))
         );
     }

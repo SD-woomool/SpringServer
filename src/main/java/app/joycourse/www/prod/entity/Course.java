@@ -2,8 +2,7 @@ package app.joycourse.www.prod.entity;
 
 import app.joycourse.www.prod.dto.CourseInfoDto;
 import app.joycourse.www.prod.entity.user.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -13,6 +12,9 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Course {
 
     @Id
@@ -48,16 +50,13 @@ public class Course {
             orphanRemoval = true
     )
     @Column(nullable = false)
-    private List<CourseDetail> courseDetail;
+    private List<CourseDetail> courseDetailList;
 
     @OneToMany(cascade = CascadeType.REMOVE,
             mappedBy = "course",
             fetch = FetchType.LAZY
     )
     private List<Comment> comments;
-
-    public Course() {
-    }
 
     public Course(CourseInfoDto courseInfo) {
         this.id = courseInfo.getId();
@@ -70,22 +69,39 @@ public class Course {
         this.totalPrice = courseInfo.getTotalPrice();
     }
 
+    public static Course of(CourseInfoDto courseInfoDto, User user, List<CourseDetail> courseDetailList, List<Comment> comments) {
+        return Course.builder()
+                .id(courseInfoDto.getId())
+                .user(user)
+                .title(courseInfoDto.getTitle())
+                .content(courseInfoDto.getContent())
+                .likeCnt(courseInfoDto.getLikeCnt())
+                .location(courseInfoDto.getLocation())
+                .thumbnailUrl(courseInfoDto.getThumbnailUrl())
+                .memo(courseInfoDto.getMemo())
+                .totalPrice(courseInfoDto.getTotalPrice())
+                .courseDetailList(courseDetailList)
+                .comments(comments)
+                .build();
+    }
+
+
     public void setCourseDetail(List<CourseDetail> newCourseDetail) {
-        if (this.courseDetail != null) {
-            this.courseDetail.clear();
+        if (this.courseDetailList != null) {
+            this.courseDetailList.clear();
         }
-        this.courseDetail = newCourseDetail;
+        this.courseDetailList = newCourseDetail;
     }
 
     public void addCourseDetail(CourseDetail courseDetail) {
-        if (this.courseDetail == null) {
-            this.courseDetail = new ArrayList<>();
+        if (this.courseDetailList == null) {
+            this.courseDetailList = new ArrayList<>();
         }
-        this.courseDetail.add(courseDetail);
+        this.courseDetailList.add(courseDetail);
     }
 
     public void setTotalPrice() {   // 좀 허접해 다시 해
-        double totalPrice = this.courseDetail.stream().filter((detail) -> detail.getPrice() != null).
+        double totalPrice = this.courseDetailList.stream().filter((detail) -> detail.getPrice() != null).
                 mapToDouble(CourseDetail::getPrice).sum();
         this.totalPrice = (float) totalPrice;
     }

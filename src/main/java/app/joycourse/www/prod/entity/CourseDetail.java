@@ -1,8 +1,7 @@
 package app.joycourse.www.prod.entity;
 
 import app.joycourse.www.prod.dto.CourseDetailDto;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -11,11 +10,10 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourseDetail {
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "place_id")
-    private Place place;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,14 +32,20 @@ public class CourseDetail {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    public CourseDetail() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "place_id")
+    private Place place;
 
-    }
-
-    public CourseDetail(CourseDetailDto courseDetailDto) {
-        this.price = courseDetailDto.getPrice();
-        this.photo = courseDetailDto.getPhoto() == null ? null : courseDetailDto.getPhoto().getFileName();
-        this.content = courseDetailDto.getContent();
+    public static CourseDetail of(CourseDetailDto courseDetailDto, Course course, Place place) {
+        String photo = courseDetailDto.getPhoto() != null ? courseDetailDto.getPhoto().getFileUrl() : null;
+        return CourseDetail.builder()
+                .content(courseDetailDto.getContent())
+                .id(courseDetailDto.getId())
+                .course(course)
+                .place(place)
+                .photo(photo)
+                .price(courseDetailDto.getPrice())
+                .build();
     }
 
 }

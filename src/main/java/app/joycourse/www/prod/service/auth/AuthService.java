@@ -48,4 +48,8 @@ public class AuthService {
 
         return auth;
     }
+
+    public Optional<Auth> getAuthByUid(String uid) {
+        return authRepository.findByUid(uid);
+    }
 }
