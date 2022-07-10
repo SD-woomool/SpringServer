@@ -37,7 +37,7 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
     implementation "org.springframework.cloud:spring-cloud-starter-loadbalancer"
     implementation "org.springframework.boot:spring-boot-starter-data-redis"
-    implementation "org.springframework.data:spring-data-elasticsearch:4.3.0"
+    implementation "org.springframework.data:spring-data-elasticsearch"
     //implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.1"
     //implementation "org.elasticsearch.client:elasticsearch-rest-client:7.9.3"
     //implementation "org.elasticsearch:elasticsearch:7.9.3"

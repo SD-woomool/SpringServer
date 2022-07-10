@@ -20,6 +20,15 @@ elasticsearch:
   host: 127.0.0.1
   port: 9200
 
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            client:
+              WIRE: TRACE
+
 file-dir:
   path: .\images
   download-url: http://127.0.0.1:8080/files/

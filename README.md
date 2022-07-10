@@ -70,7 +70,7 @@ $ docker run -d -p 6379:6379 --name joycourse-redis -v ~/redis:/data joycourse-r
 $ docker exec -it joycourse-redis redis-cli
 ```
 
-### Elasticsearch
+#### Elasticsearch
 
 ```shell
 # docker build, image의 tag를 joycourse-redis

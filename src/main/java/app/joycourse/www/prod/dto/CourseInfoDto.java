@@ -4,11 +4,13 @@ import app.joycourse.www.prod.entity.Course;
 import app.joycourse.www.prod.entity.CourseDetail;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Document(indexName = "course")
 @Getter
 @Setter
 public class CourseInfoDto {
@@ -21,6 +23,7 @@ public class CourseInfoDto {
     private Integer likeCnt;
     private Float totalPrice;
     private String memo;
+    @Transient
     private List<CourseDetailDto> courseDetailDtoList;
 
     public CourseInfoDto() {

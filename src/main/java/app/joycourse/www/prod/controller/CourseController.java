@@ -5,10 +5,7 @@ import app.joycourse.www.prod.dto.*;
 import app.joycourse.www.prod.entity.Course;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
-import app.joycourse.www.prod.service.CourseService;
-import app.joycourse.www.prod.service.FileService;
-import app.joycourse.www.prod.service.PlaceService;
-import app.joycourse.www.prod.service.UserService;
+import app.joycourse.www.prod.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
@@ -32,6 +29,7 @@ import java.util.List;
 public class CourseController {
 
     private final CourseService courseService;
+    private final CourseElasticsearchService courseElasticsearch;
     private final UserService userService;
     private final PlaceService placeService;
     private final FileService fileService;
@@ -102,8 +100,10 @@ public class CourseController {
     ) {
 
         Course newCourse = courseService.saveCourse(user, courseInfo, files);
+
         CourseInfoDto courseInfoDto = new CourseInfoDto(newCourse);
         CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
+        courseElasticsearch.save(courseInfoDto);
         return new Response<>(courseSaveDto);
     }
 

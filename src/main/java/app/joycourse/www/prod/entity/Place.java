@@ -50,7 +50,7 @@ public class Place {
     )
     @Column(name = "course_detail_id")
     private List<CourseDetail> courseDetails;
-    
+
 
     public static Place of(PlaceInfoDto placeInfo, List<CourseDetail> courseDetailList) {
         return Place.builder()
