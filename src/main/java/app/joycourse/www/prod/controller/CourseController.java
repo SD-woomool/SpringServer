@@ -205,4 +205,12 @@ public class CourseController {
         return new Response<>(places);
     }
 
+    @GetMapping("/course_search")
+    public Response<CourseListDto> searchCourse(
+            @RequestParam(name = "query") String query
+    ) {
+        CourseListDto courseList = courseElasticsearch.searchCourseByQuery(query);
+        return new Response<>(courseList);
+    }
+
 }
