@@ -6,14 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-@Document(indexName = "course_detail")
+//@Document(indexName = "course_detail")
 public class CourseDetailDto {
 
     private Long id;

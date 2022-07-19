@@ -1,7 +1,6 @@
 package app.joycourse.www.prod.config;
 
 
-import app.joycourse.www.prod.service.CourseElasticsearchService;
 import lombok.Getter;
 import lombok.Setter;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -13,10 +12,9 @@ import org.springframework.data.elasticsearch.client.RestClients;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackageClasses = CourseElasticsearchService.class)
+//@EnableElasticsearchRepositories(basePackageClasses = CourseElasticsearchService.class)
 @ConfigurationProperties("elasticsearch")
 @Setter
 @Getter

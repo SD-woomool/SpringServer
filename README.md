@@ -73,10 +73,10 @@ $ docker exec -it joycourse-redis redis-cli
 #### Elasticsearch
 
 ```shell
-# docker build, image의 tag를 joycourse-redis
+# docker build, image의 tag를 joycourse-elasticsearch
 $ docker build dockerfiles/elasticsearch --tag joycourse-elasticsearch
 
-# docker joycourse-redis로 실행
+# docker joycourse-elasticsearch로 실행
 docker run -d -p 9200:9200 -p 9300:9300 --name joycourse-elasticsearch -v elasticsearch:/usr/share/elasticsearch/data -e "discovery.type=single-node" joycourse-elasticsearch
 
 ```

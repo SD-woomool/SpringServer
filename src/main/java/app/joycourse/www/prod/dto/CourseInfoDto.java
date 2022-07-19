@@ -3,15 +3,19 @@ package app.joycourse.www.prod.dto;
 import app.joycourse.www.prod.entity.Course;
 import app.joycourse.www.prod.entity.CourseDetail;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Document(indexName = "course")
 @Getter
 @Setter
+@NoArgsConstructor
+@Document(indexName = "course", createIndex = false)
+//@Setting(settingPath = "/settings.json")
+//@Mapping(mappingPath = "/mappings.json")
 public class CourseInfoDto {
     private Long id;
     private String userNickname;
@@ -22,11 +26,7 @@ public class CourseInfoDto {
     private Integer likeCnt;
     private Float totalPrice;
     private String memo;
-    //@Transient
     private List<CourseDetailDto> courseDetailDtoList;
-
-    public CourseInfoDto() {
-    }
 
     public CourseInfoDto(
             Long id,
