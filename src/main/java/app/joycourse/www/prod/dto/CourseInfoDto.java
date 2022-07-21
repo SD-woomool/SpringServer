@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Mapping;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,8 +16,8 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @Document(indexName = "course", createIndex = false)
-//@Setting(settingPath = "/settings.json")
-//@Mapping(mappingPath = "/mappings.json")
+@Setting(settingPath = "courseDocumentSettings.json")
+@Mapping(mappingPath = "courseDocumentMappings.json")
 public class CourseInfoDto {
     private Long id;
     private String userNickname;

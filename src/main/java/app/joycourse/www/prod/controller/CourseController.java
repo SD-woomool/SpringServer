@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class CourseController {
             @AuthorizationUser User user,
             @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
-    ) {
+    ) throws IOException {
 
         Course newCourse = courseService.saveCourse(user, courseInfo, files);
 
