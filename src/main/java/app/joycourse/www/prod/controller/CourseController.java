@@ -169,14 +169,15 @@ public class CourseController {
             @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
             @AuthorizationUser User user,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
-    ) {
+    ) throws IOException {
         Course course = courseService.getCourse(courseInfo.getId());
         if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
         courseService.updateCourse(user, course, courseInfo, files);
-
-        return new Response<>(new CourseInfoDto(course));
+        CourseInfoDto courseInfoDto = new CourseInfoDto(course);
+        courseElasticsearch.save(courseInfoDto);
+        return new Response<>(courseInfoDto);
     }
 
     @ApiOperation(

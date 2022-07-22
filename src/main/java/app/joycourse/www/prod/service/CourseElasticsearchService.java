@@ -36,9 +36,9 @@ import java.util.stream.Collectors;
 public class CourseElasticsearchService {
     private final ElasticsearchOperations es;
     @Value("classpath:courseDocumentMappings.json")
-    Resource mapping;
+    private Resource mapping;
     @Value("classpath:courseDocumentSettings.json")
-    Resource setting;
+    private Resource setting;
 
     private boolean createIndex(IndexCoordinates indexCoordinates) throws IOException {
         IndexOperations indexOperations = es.indexOps(indexCoordinates);
@@ -61,7 +61,13 @@ public class CourseElasticsearchService {
                 .withId(course.getId().toString())
                 .withObject(course)
                 .build();
+
         return es.index(indexQuery, indexCoordinates);
+    }
+
+    public String delete(CourseInfoDto course) {
+        IndexCoordinates indexCoordinates = es.getIndexCoordinatesFor(CourseInfoDto.class);
+        return es.delete(course, indexCoordinates);
     }
 
     public CourseListDto searchCourseByQuery(String query, int page, int size) {
