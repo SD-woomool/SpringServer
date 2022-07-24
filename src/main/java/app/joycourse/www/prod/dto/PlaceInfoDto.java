@@ -3,13 +3,14 @@ package app.joycourse.www.prod.dto;
 import app.joycourse.www.prod.entity.Place;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-//@Document(indexName = "place")
 public class PlaceInfoDto {
 
     private String addressName;
@@ -36,6 +37,8 @@ public class PlaceInfoDto {
 
     private Float y;
 
+    private Location location;
+
     public PlaceInfoDto() {
     }
 
@@ -53,6 +56,7 @@ public class PlaceInfoDto {
             this.roadAddressName = place.getRoadAddressName();
             this.x = place.getX();
             this.y = place.getY();
+            this.location = new Location(x, y);
         }
 
     }
@@ -74,4 +78,13 @@ public class PlaceInfoDto {
                 ", y=" + y +
                 '}';
     }
+}
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+class Location {
+    private float lon;
+    private float lat;
 }

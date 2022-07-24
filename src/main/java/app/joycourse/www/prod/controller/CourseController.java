@@ -211,9 +211,19 @@ public class CourseController {
     public Response<CourseListDto> searchCourse(
             @RequestParam(name = "query") String query,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size
+            @RequestParam(name = "size", defaultValue = "15") int size,
+            @RequestParam(name = "left_top", required = false) double[] leftTop, // (x, y)
+            @RequestParam(name = "right_bottom", required = false) double[] rightBottom //(x, y)
     ) {
-        CourseListDto courseList = courseElasticsearch.searchCourseByQuery(query, page, size);
+        CourseListDto courseList;
+        if (leftTop == null || rightBottom == null) {
+            courseList = courseElasticsearch.searchCourseByQuery(query, page, size);
+        } else {
+            if (leftTop.length != 2 || rightBottom.length != 2) {
+                throw new CustomException(CustomException.CustomError.BAD_REQUEST);
+            }
+            courseList = courseElasticsearch.searchCourseByGeoQuery(query, leftTop, rightBottom, page, size);
+        }
         return new Response<>(courseList);
     }
 

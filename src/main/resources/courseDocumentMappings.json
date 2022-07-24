@@ -4,7 +4,12 @@
       "type": "long"
     },
     "userNickname": {
-      "type": "text"
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword"
+        }
+      }
     },
     "location": {
       "type": "text"
@@ -22,8 +27,13 @@
       "type": "text"
     },
     "title": {
-      "type": "text",
-      "analyzer": "mixed_analyzer"
+      "type": "keyword",
+      "fields": {
+        "nori": {
+          "type": "text",
+          "analyzer": "mixed_analyzer"
+        }
+      }
     },
     "content": {
       "type": "text",
@@ -60,8 +70,13 @@
         "place": {
           "properties": {
             "addressName": {
-              "type": "text",
-              "analyzer": "mixed_analyzer"
+              "type": "keyword",
+              "fields": {
+                "nori": {
+                  "type": "text",
+                  "analyzer": "mixed_analyzer"
+                }
+              }
             },
             "categoryGroupCode": {
               "type": "text",
@@ -103,8 +118,13 @@
               }
             },
             "placeName": {
-              "type": "text",
-              "analyzer": "mixed_analyzer"
+              "type": "keyword",
+              "fields": {
+                "nori": {
+                  "type": "text",
+                  "analyzer": "mixed_analyzer"
+                }
+              }
             },
             "roadAddressName": {
               "type": "text",
@@ -120,6 +140,9 @@
             },
             "y": {
               "type": "float"
+            },
+            "location": {
+              "type": "geo_point"
             }
           }
         }

@@ -137,6 +137,11 @@ public class CourseService {
         courseRepository.mergeCourse(newCourse);
     }
 
+    /*
+     * photo:{fileUrl: String, isDeleted: boolean, fileName: string}
+     * fileUrl이 존재 and (isDeleted가 true or fileName이 null이 아님) -> fileUrl에 해당하는 파일 삭제
+     * (fileName이 null이 아님 -> 기존 파일이 새로운 파일로 변경됨을 의미)
+     */
     private void deleteUnmatchedFile(List<CourseDetailDto> courseDetailDtoList) {
         courseDetailDtoList.stream().map(CourseDetailDto::getPhoto)
                 .filter(Objects::nonNull)
