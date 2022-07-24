@@ -7,10 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+//@Document(indexName = "course_detail")
 public class CourseDetailDto {
 
     private Long id;

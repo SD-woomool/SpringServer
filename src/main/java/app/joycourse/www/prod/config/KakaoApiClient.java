@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface KakaoApiClient {
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/v2/local/search/keyword.json",
+            value = "/v2/local/search/keyword.json",  // 이거 yml로 빼자
             produces = "application/json"
     )
     PlaceSearchResponseDto requestPlace(

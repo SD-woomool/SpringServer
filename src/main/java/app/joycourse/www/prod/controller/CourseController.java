@@ -1,19 +1,11 @@
 package app.joycourse.www.prod.controller;
 
 import app.joycourse.www.prod.annotation.AuthorizationUser;
-import app.joycourse.www.prod.dto.CourseInfoDto;
-import app.joycourse.www.prod.dto.CourseListDto;
-import app.joycourse.www.prod.dto.CourseSaveDto;
-import app.joycourse.www.prod.dto.DeleteCourseDto;
-import app.joycourse.www.prod.dto.PlaceSearchResponseDto;
-import app.joycourse.www.prod.dto.Response;
+import app.joycourse.www.prod.dto.*;
 import app.joycourse.www.prod.entity.Course;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
-import app.joycourse.www.prod.service.CourseService;
-import app.joycourse.www.prod.service.FileService;
-import app.joycourse.www.prod.service.PlaceService;
-import app.joycourse.www.prod.service.UserService;
+import app.joycourse.www.prod.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
@@ -22,18 +14,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 
@@ -44,6 +30,7 @@ import java.util.List;
 public class CourseController {
 
     private final CourseService courseService;
+    private final CourseElasticsearchService courseElasticsearch;
     private final UserService userService;
     private final PlaceService placeService;
     private final FileService fileService;
@@ -111,14 +98,15 @@ public class CourseController {
             @AuthorizationUser User user,
             @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
-    ) {
+    ) throws IOException {
 
         Course newCourse = courseService.saveCourse(user, courseInfo, files);
+
         CourseInfoDto courseInfoDto = new CourseInfoDto(newCourse);
         CourseSaveDto courseSaveDto = new CourseSaveDto(true, courseInfoDto);
+        courseElasticsearch.save(courseInfoDto);
         return new Response<>(courseSaveDto);
     }
-
 
 
     @ApiOperation(
@@ -181,14 +169,15 @@ public class CourseController {
             @Valid @RequestPart(value = "body") CourseInfoDto courseInfo,
             @AuthorizationUser User user,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
-    ) {
+    ) throws IOException {
         Course course = courseService.getCourse(courseInfo.getId());
         if (!course.getUser().getUid().equals(user.getUid()) || !course.getId().equals(courseInfo.getId())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
         courseService.updateCourse(user, course, courseInfo, files);
-
-        return new Response<>(new CourseInfoDto(course));
+        CourseInfoDto courseInfoDto = new CourseInfoDto(course);
+        courseElasticsearch.save(courseInfoDto);
+        return new Response<>(courseInfoDto);
     }
 
     @ApiOperation(
@@ -209,13 +198,33 @@ public class CourseController {
             @RequestParam(name = "size", defaultValue = "15") int size,
             @RequestParam(name = "query", defaultValue = "") String query,
             @RequestParam(name = "category_group_code", defaultValue = "") String categoryGroupCode  // 태그를 어떻게 처리하지?
-    ) {
+    ) throws URISyntaxException, JsonProcessingException {
         if (query == null || query.length() == 0) {
             throw new CustomException(CustomException.CustomError.MISSING_PARAMETERS);
         }
         String key = query + "_" + page + "_" + size + "_" + categoryGroupCode;
         PlaceSearchResponseDto places = placeService.getPlace(key, query, page, size, categoryGroupCode);
         return new Response<>(places);
+    }
+
+    @GetMapping("/course_search")
+    public Response<CourseListDto> searchCourse(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "15") int size,
+            @RequestParam(name = "left_top", required = false) double[] leftTop, // (x, y)
+            @RequestParam(name = "right_bottom", required = false) double[] rightBottom //(x, y)
+    ) {
+        CourseListDto courseList;
+        if (leftTop == null || rightBottom == null) {
+            courseList = courseElasticsearch.searchCourseByQuery(query, page, size);
+        } else {
+            if (leftTop.length != 2 || rightBottom.length != 2) {
+                throw new CustomException(CustomException.CustomError.BAD_REQUEST);
+            }
+            courseList = courseElasticsearch.searchCourseByGeoQuery(query, leftTop, rightBottom, page, size);
+        }
+        return new Response<>(courseList);
     }
 
 }
