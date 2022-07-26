@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-//@Document(indexName = "photo")
 public class PhotoInfoDto {
     private String fileUrl;
     private String fileName;

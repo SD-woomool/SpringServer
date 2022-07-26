@@ -14,7 +14,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 
 @Configuration
-//@EnableElasticsearchRepositories(basePackageClasses = CourseElasticsearchService.class)
 @ConfigurationProperties("elasticsearch")
 @Setter
 @Getter
