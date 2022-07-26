@@ -3,6 +3,7 @@
 [JoyCourse](https://www.joycourse.app)
 
 ## Project 관리
+
 https://github.com/SD-woomool/SpringServer/projects/1
 
 ## Architecture
@@ -67,6 +68,17 @@ $ docker run -d -p 6379:6379 --name joycourse-redis -v ~/redis:/data joycourse-r
 
 # docker redis 접속 방법
 $ docker exec -it joycourse-redis redis-cli
+```
+
+#### Elasticsearch
+
+```shell
+# docker build, image의 tag를 joycourse-elasticsearch
+$ docker build dockerfiles/elasticsearch --tag joycourse-elasticsearch
+
+# docker joycourse-elasticsearch로 실행
+$ docker run -d -p 9200:9200 -p 9300:9300 --name joycourse-elasticsearch -v elasticsearch:/usr/share/elasticsearch/data -e "discovery.type=single-node" joycourse-elasticsearch
+
 ```
 
 #### Spring

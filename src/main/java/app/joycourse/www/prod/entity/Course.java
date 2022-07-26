@@ -100,7 +100,7 @@ public class Course {
         this.courseDetailList.add(courseDetail);
     }
 
-    public void setTotalPrice() {   // 좀 허접해 다시 해
+    public void setTotalPrice() {
         double totalPrice = this.courseDetailList.stream().filter((detail) -> detail.getPrice() != null).
                 mapToDouble(CourseDetail::getPrice).sum();
         this.totalPrice = (float) totalPrice;

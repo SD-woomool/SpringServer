@@ -9,7 +9,6 @@ import app.joycourse.www.prod.entity.CourseDetail;
 import app.joycourse.www.prod.entity.Place;
 import app.joycourse.www.prod.entity.user.User;
 import app.joycourse.www.prod.exception.CustomException;
-import app.joycourse.www.prod.repository.CourseDetailRepository;
 import app.joycourse.www.prod.repository.CourseRepository;
 import app.joycourse.www.prod.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseRepository courseRepository;
-    private final CourseDetailRepository courseDetailRepository;
+    private final CourseElasticsearchService courseElasticsearchService;
     private final PlaceRepository placeRepository;
     private final FileService fileService;
 
@@ -99,10 +98,21 @@ public class CourseService {
     @Transactional
     public void deleteCourse(User user, long courseId) {
         Course deleteCourse = courseRepository.findById(courseId).orElse(null);
-        if (deleteCourse == null || deleteCourse.getUser() != user) {
+        if (deleteCourse == null || !deleteCourse.getUser().getUid().equals(user.getUid())) {
             throw new CustomException(CustomException.CustomError.INVALID_PARAMETER);
         }
+        CourseInfoDto deleteCourseInfoDto = new CourseInfoDto(deleteCourse);
+        courseElasticsearchService.delete(deleteCourseInfoDto);
         courseRepository.deleteCourse(deleteCourse);
+        deleteDeletedCourseFile(deleteCourseInfoDto.getCourseDetailDtoList());
+    }
+
+    private void deleteDeletedCourseFile(List<CourseDetailDto> courseDetailDtos) {
+        courseDetailDtos.stream()
+                .map(CourseDetailDto::getPhoto)
+                .filter(photoInfo -> photoInfo.getFileUrl() != null)
+                .forEach(photoInfo -> photoInfo.setDeleted(true));
+        deleteUnmatchedFile(courseDetailDtos);
     }
 
     @Transactional
@@ -127,6 +137,11 @@ public class CourseService {
         courseRepository.mergeCourse(newCourse);
     }
 
+    /*
+     * photo:{fileUrl: String, isDeleted: boolean, fileName: string}
+     * fileUrl이 존재 and (isDeleted가 true or fileName이 null이 아님) -> fileUrl에 해당하는 파일 삭제
+     * (fileName이 null이 아님 -> 기존 파일이 새로운 파일로 변경됨을 의미)
+     */
     private void deleteUnmatchedFile(List<CourseDetailDto> courseDetailDtoList) {
         courseDetailDtoList.stream().map(CourseDetailDto::getPhoto)
                 .filter(Objects::nonNull)

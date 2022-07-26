@@ -1,0 +1,152 @@
+{
+  "properties": {
+    "id": {
+      "type": "long"
+    },
+    "userNickname": {
+      "type": "text",
+      "fields": {
+        "keyword": {
+          "type": "keyword"
+        }
+      }
+    },
+    "location": {
+      "type": "text"
+    },
+    "thumbnailUrl": {
+      "type": "text"
+    },
+    "likeCnt": {
+      "type": "long"
+    },
+    "totalPrice": {
+      "type": "float"
+    },
+    "memo": {
+      "type": "text"
+    },
+    "title": {
+      "type": "keyword",
+      "fields": {
+        "nori": {
+          "type": "text",
+          "analyzer": "mixed_analyzer"
+        }
+      }
+    },
+    "content": {
+      "type": "text",
+      "analyzer": "mixed_analyzer"
+    },
+    "courseDetailDtoList": {
+      "properties": {
+        "content": {
+          "type": "text",
+          "analyzer": "mixed_analyzer"
+        },
+        "courseId": {
+          "type": "long"
+        },
+        "id": {
+          "type": "long"
+        },
+        "photo": {
+          "properties": {
+            "deleted": {
+              "type": "boolean"
+            },
+            "fileUrl": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "place": {
+          "properties": {
+            "addressName": {
+              "type": "keyword",
+              "fields": {
+                "nori": {
+                  "type": "text",
+                  "analyzer": "mixed_analyzer"
+                }
+              }
+            },
+            "categoryGroupCode": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "categoryGroupName": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "categoryName": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "id": {
+              "type": "long"
+            },
+            "phone": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "placeName": {
+              "type": "keyword",
+              "fields": {
+                "nori": {
+                  "type": "text",
+                  "analyzer": "mixed_analyzer"
+                }
+              }
+            },
+            "roadAddressName": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "x": {
+              "type": "float"
+            },
+            "y": {
+              "type": "float"
+            },
+            "location": {
+              "type": "geo_point"
+            }
+          }
+        }
+      }
+    }
+  }
+}
