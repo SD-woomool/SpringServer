@@ -20,6 +20,8 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
     private String host;
     private String port;
+    private String username;
+    private String password;
 
     @Bean
     @Override
@@ -27,6 +29,7 @@ public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
         final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
                 .connectedTo(host + ":" + port)
                 .withSocketTimeout(10000)
+		.withBasicAuth(username, password)
                 .build();
         return RestClients.create(clientConfiguration).rest();
     }

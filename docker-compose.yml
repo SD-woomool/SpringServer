@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  web: 
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ../../../nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - spring
+  spring:
+    build: .
+    environment:
+      - ELASTICSEARCH_SERVER_ADD=${SERVER_ADD} 
+      - FILE_SERVER_ADD=${SERVER_ADD}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - KAKAO_API_KEY=${KAKAO_API_KEY}
+      - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+      - MYSQL_SERVER_ADD=${MYSQL_SERVER_ADD}
+      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
+      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
+      - PROFILE=${PROFILE}
+      - REDIS_SERVER_ADD=${SERVER_ADD}
+    ports:
+      - 8080:8080 
