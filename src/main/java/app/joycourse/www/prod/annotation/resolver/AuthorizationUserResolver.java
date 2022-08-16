@@ -3,6 +3,7 @@ package app.joycourse.www.prod.annotation.resolver;
 import app.joycourse.www.prod.annotation.AuthorizationUser;
 import app.joycourse.www.prod.entity.auth.Auth;
 import app.joycourse.www.prod.entity.user.User;
+import app.joycourse.www.prod.entity.user.UserRoleEnum;
 import app.joycourse.www.prod.exception.CustomException;
 import app.joycourse.www.prod.service.UserService;
 import app.joycourse.www.prod.service.auth.AuthService;
@@ -61,6 +62,8 @@ public class AuthorizationUserResolver implements HandlerMethodArgumentResolver 
                 throw new CustomException(CustomException.CustomError.UNSIGNED);
             } else if (!user.getIsAgreed()) {
                 throw new CustomException(CustomException.CustomError.SHOULD_AGREE);
+            } else if(user.getRole() == UserRoleEnum.BLOCK) {
+                throw new CustomException(CustomException.CustomError.FORBIDDEN);
             }
             return user;
         } else {
