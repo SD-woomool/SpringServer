@@ -89,3 +89,5 @@ $ docker run -d -p 8080:8080 --name joycourse-spring joycourse-spring
 # 스프링 로그 조회하기
 $ docker logs joycourse-spring 
 ```
+
+#### check jenkins
