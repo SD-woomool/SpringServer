@@ -90,4 +90,4 @@ $ docker run -d -p 8080:8080 --name joycourse-spring joycourse-spring
 $ docker logs joycourse-spring 
 ```
 
-#### check jenkins 13
+#### check jenkins 14
