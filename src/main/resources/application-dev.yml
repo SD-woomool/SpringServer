@@ -3,7 +3,7 @@ spring:
     port: 6379
     host: ${REDIS_SERVER_ADD}  # 스프링 부트도 도커로 올리면 바꿔야함
   datasource:
-    url: jdbc:mysql://${MYSQL_SERVER_ADD}:3306/joycourse?characterEncoding=utf8
+    url: jdbc:mysql://${MYSQL_SERVER_ADD}:3306/joycourse_mysql?characterEncoding=utf8&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
     password: joycourse

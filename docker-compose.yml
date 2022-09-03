@@ -1,7 +1,8 @@
 version: "3"
 
 services:
-  web: 
+  web:
+    container_name: joycourse-nginx
     image: nginx
     ports:
       - 80:80
@@ -10,9 +11,10 @@ services:
     depends_on:
       - spring
   spring:
+    container_name: joycourse-springserver
     build: .
     environment:
-      - ELASTICSEARCH_SERVER_ADD=${SERVER_ADD} 
+      - ELASTICSEARCH_SERVER_ADD=${SERVER_ADD}
       - FILE_SERVER_ADD=${SERVER_ADD}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
@@ -25,4 +27,5 @@ services:
       - PROFILE=${PROFILE}
       - REDIS_SERVER_ADD=${SERVER_ADD}
     ports:
-      - 8080:8080 
+      - 8080:8080
+      - 9022:9022

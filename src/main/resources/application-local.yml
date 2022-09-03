@@ -19,6 +19,8 @@ auth:
 elasticsearch:
   host: 127.0.0.1
   port: 9200
+  username: elastic
+  password: joycourse
 
 logging:
   level:
