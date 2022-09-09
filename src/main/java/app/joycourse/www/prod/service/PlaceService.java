@@ -59,7 +59,7 @@ public class PlaceService {
     public Optional<PlaceSearchResponseDto> getPlaceByCache(String key) {
         Optional<PlaceSearchResponseDto> placeResponse = redisPlaceCacheRepository.findById(key);
         if (placeResponse.isPresent()) {
-            System.out.println("response cached data");
+            System.out.println("response cached data-jenkins-test");
         }
         return placeResponse;
 
